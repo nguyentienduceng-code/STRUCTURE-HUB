@@ -60,25 +60,33 @@ export default function RCComponents() {
       <style>{`
         .tab-nav {
           display: flex;
-          gap: 8px;
+          gap: 6px;
           margin-bottom: 24px;
           border-bottom: 1px solid var(--border-glass);
           padding-bottom: 12px;
           flex-wrap: wrap;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+        }
+        .tab-nav::-webkit-scrollbar {
+          display: none;
         }
         .tab-btn {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 10px 16px;
+          gap: 6px;
+          padding: 8px 14px;
           background: rgba(255, 255, 255, 0.02);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
-          font-size: 0.9rem;
+          font-size: 0.875rem;
           transition: all 0.2s ease;
+          white-space: nowrap;
+          flex-shrink: 0;
         }
         .tab-btn:hover {
           background: rgba(255, 255, 255, 0.05);
@@ -89,6 +97,19 @@ export default function RCComponents() {
           color: #fff;
           border-color: transparent;
           box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+        @media (max-width: 768px) {
+          .tab-nav {
+            flex-wrap: nowrap;
+            gap: 6px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+          }
+          .tab-btn {
+            padding: 7px 10px;
+            font-size: 0.8rem;
+            gap: 4px;
+          }
         }
         .rc-section {
           animation: fadeIn 0.4s ease-out;

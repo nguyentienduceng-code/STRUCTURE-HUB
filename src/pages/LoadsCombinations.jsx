@@ -22,24 +22,32 @@ export default function LoadsCombinations() {
       <style>{`
         .tab-nav {
           display: flex;
-          gap: 8px;
+          gap: 6px;
           margin-bottom: 24px;
           border-bottom: 1px solid var(--border-glass);
           padding-bottom: 12px;
           flex-wrap: wrap;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+        }
+        .tab-nav::-webkit-scrollbar {
+          display: none;
         }
         .tab-btn {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 10px 16px;
+          gap: 6px;
+          padding: 8px 14px;
           background: rgba(255, 255, 255, 0.02);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
-          font-size: 0.9rem;
+          font-size: 0.875rem;
+          white-space: nowrap;
+          flex-shrink: 0;
           transition: all 0.2s ease;
         }
         .tab-btn:hover {
@@ -51,6 +59,16 @@ export default function LoadsCombinations() {
           color: #fff;
           border-color: transparent;
           box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+        @media (max-width: 768px) {
+          .tab-nav {
+            flex-wrap: nowrap;
+          }
+          .tab-btn {
+            padding: 7px 10px;
+            font-size: 0.8rem;
+            gap: 4px;
+          }
         }
         .loads-section {
           animation: fadeIn 0.4s ease-out;
@@ -69,14 +87,15 @@ export default function LoadsCombinations() {
           border-left-color: #f59e0b;
         }
         .formula-line {
-          font-size: 1.35rem;
-          color: #f8fafc;
+          font-size: clamp(1rem, 2vw, 1.3rem);
+          color: var(--text-formula);
           font-weight: 600;
           margin-bottom: 8px;
           text-align: center;
           font-family: 'Cambria Math', 'Times New Roman', Times, serif;
           letter-spacing: 0.5px;
           padding: 6px 0;
+          flex-wrap: wrap;
         }
         .formula-desc {
           font-size: 0.88rem;
@@ -88,22 +107,22 @@ export default function LoadsCombinations() {
           font-family: 'Cambria Math', 'Times New Roman', Times, serif;
           font-style: italic;
           font-weight: 600;
-          color: #f8fafc;
+          color: inherit;
         }
         sub, sup {
-          font-size: 75%;
+          font-size: 70%;
           line-height: 0;
           position: relative;
           vertical-align: baseline;
         }
         sub {
-          bottom: -0.25em;
+          bottom: -0.3em;
         }
         sup {
-          top: -0.5em;
+          top: -0.55em;
         }
         sub sub, sup sup, sub sup, sup sub {
-          font-size: 85%;
+          font-size: 80%;
           vertical-align: bottom;
         }
         .app-box {

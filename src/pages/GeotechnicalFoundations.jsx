@@ -75,24 +75,32 @@ export default function GeotechnicalFoundations() {
       <style>{`
         .tab-nav {
           display: flex;
-          gap: 8px;
+          gap: 6px;
           margin-bottom: 24px;
           border-bottom: 1px solid var(--border-glass);
           padding-bottom: 12px;
           flex-wrap: wrap;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+        }
+        .tab-nav::-webkit-scrollbar {
+          display: none;
         }
         .tab-btn {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 10px 16px;
+          gap: 6px;
+          padding: 8px 14px;
           background: rgba(255, 255, 255, 0.02);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
-          font-size: 0.9rem;
+          font-size: 0.875rem;
+          white-space: nowrap;
+          flex-shrink: 0;
           transition: all 0.2s ease;
         }
         .tab-btn:hover {
@@ -104,6 +112,16 @@ export default function GeotechnicalFoundations() {
           color: #fff;
           border-color: transparent;
           box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+        @media (max-width: 768px) {
+          .tab-nav {
+            flex-wrap: nowrap;
+          }
+          .tab-btn {
+            padding: 7px 10px;
+            font-size: 0.8rem;
+            gap: 4px;
+          }
         }
         .geo-section {
           animation: fadeIn 0.4s ease-out;
@@ -117,10 +135,11 @@ export default function GeotechnicalFoundations() {
           font-family: 'Courier New', Courier, monospace;
         }
         .formula-line {
-          font-size: 1.1rem;
-          color: #f8fafc;
+          font-size: clamp(1rem, 2vw, 1.1rem);
+          color: var(--text-formula);
           font-weight: 700;
           margin-bottom: 8px;
+          flex-wrap: wrap;
         }
         .formula-units {
           font-size: 0.85rem;

@@ -108,13 +108,14 @@
 }
 
 .page-title {
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(1.5rem, 3.5vw, 3rem);
   font-weight: 900;
   margin-bottom: 24px;
   background: var(--accent-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  line-height: 1.2;
 }
 
 .card {
@@ -214,8 +215,8 @@
     border: 1px solid var(--border-glass);
     border-radius: 8px;
     cursor: pointer;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     padding: 0;
     transition: background var(--transition);
   }
@@ -259,7 +260,30 @@
   }
   
   .card {
-    padding: 20px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .formula-block {
+    font-size: 0.95rem;
+    padding: 10px 12px;
+    margin: 10px 0;
+    gap: 5px;
+    min-height: 48px;
+  }
+
+  .formula-line {
+    font-size: 0.95rem;
+    gap: 5px;
+  }
+
+  .formula-card {
+    padding: 12px;
+    margin: 10px 0;
+  }
+
+  .page-title {
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
     margin-bottom: 16px;
   }
 }
@@ -305,43 +329,62 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--bg-formula);
+  border: 1px solid var(--border-formula);
   border-left: 4px solid var(--accent-primary);
   padding: 16px 20px;
   margin: 20px 0;
   border-radius: 6px 12px 12px 6px;
   font-family: 'Cambria Math', 'Times New Roman', Times, serif;
-  color: #f8fafc;
-  font-size: 1.35rem;
+  color: var(--text-formula);
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
   font-weight: 600;
   overflow-x: auto;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-formula);
   transition: all 0.3s ease;
 }
 
+/* Styled scrollbar for formulas on mobile */
+.formula-block::-webkit-scrollbar {
+  height: 4px;
+}
+.formula-block::-webkit-scrollbar-track {
+  background: transparent;
+}
+.formula-block::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.2);
+  border-radius: 2px;
+}
+.formula-block::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
 .formula-block:hover {
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--bg-formula);
   border-left-color: #f59e0b;
+  opacity: 0.95;
 }
 
 .formula-card {
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--bg-formula);
+  border: 1px solid var(--border-formula);
   border-left: 4px solid var(--accent-primary);
   padding: 20px;
   border-radius: 6px 12px 12px 6px;
   margin: 20px 0;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-formula);
   transition: all 0.3s ease;
 }
 
 .formula-card:hover {
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--bg-formula);
   border-left-color: #f59e0b;
+  opacity: 0.95;
 }
 
 .formula-line {
-  font-size: 1.35rem;
-  color: #f8fafc;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  color: var(--text-formula);
   font-weight: 600;
   margin-bottom: 8px;
   text-align: center;
@@ -351,7 +394,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .formula-desc {
@@ -365,26 +409,26 @@ var {
   font-family: 'Cambria Math', 'Times New Roman', Times, serif;
   font-style: italic;
   font-weight: 600;
-  color: #f8fafc;
+  color: inherit;
 }
 
 sub, sup {
-  font-size: 75%;
+  font-size: 70%;
   line-height: 0;
   position: relative;
   vertical-align: baseline;
 }
 
 sub {
-  bottom: -0.25em;
+  bottom: -0.3em;
 }
 
 sup {
-  top: -0.5em;
+  top: -0.55em;
 }
 
 sub sub, sup sup, sub sup, sup sub {
-  font-size: 85%;
+  font-size: 80%;
   vertical-align: bottom;
 }
 
@@ -393,18 +437,21 @@ sub sub, sup sup, sub sup, sup sub {
   flex-direction: column;
   vertical-align: middle;
   text-align: center;
-  line-height: 1.1;
-  font-size: 0.9em;
-  padding: 0 4px;
+  line-height: 1.15;
+  font-size: 0.85em;
+  padding: 0 3px;
+  gap: 0;
 }
 
 .numerator {
-  border-bottom: 1px solid currentColor;
-  padding-bottom: 2px;
+  border-bottom: 1.5px solid currentColor;
+  padding-bottom: 1px;
+  min-width: 1em;
 }
 
 .denominator {
-  padding-top: 2px;
+  padding-top: 1px;
+  min-width: 1em;
 }
 
 .alert-box {

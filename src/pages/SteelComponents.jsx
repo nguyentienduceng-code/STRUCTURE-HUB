@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Card from '../components/Card';
+import Skeleton from '../components/Skeleton';
+import ProgressBar from '../components/ProgressBar';
 import { 
   BookOpen, 
   ShieldAlert, 
@@ -14,28 +16,58 @@ import {
 
 export default function SteelComponents() {
   const [activeTab, setActiveTab] = useState('tcvn');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Simulate loading data when tab changes
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [activeTab]);
+
+  const renderSkeletons = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', padding: '16px 0' }}>
+      <ProgressBar isLoading={true} />
+      <div className="sub-grid">
+        <Skeleton height="300px" borderRadius="12px" />
+        <Skeleton height="300px" borderRadius="12px" />
+      </div>
+      <Skeleton height="400px" borderRadius="12px" />
+    </div>
+  );
 
   return (
     <div>
       <style>{`
         .tab-nav {
           display: flex;
-          gap: 12px;
+          gap: 10px;
           margin-bottom: 24px;
           border-bottom: 1px solid var(--border-glass);
           padding-bottom: 12px;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+        }
+        .tab-nav::-webkit-scrollbar {
+          display: none;
         }
         .tab-btn {
           display: flex;
           align-items: center;
           gap: 8px;
-          padding: 10px 20px;
+          padding: 10px 18px;
           background: rgba(255, 255, 255, 0.02);
           border: 1px solid var(--border-glass);
           border-radius: var(--radius-sm);
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
+          font-size: 0.9rem;
+          white-space: nowrap;
+          flex-shrink: 0;
           transition: all var(--transition);
         }
         .tab-btn:hover {
@@ -68,12 +100,12 @@ export default function SteelComponents() {
           .sub-grid {
             grid-template-columns: 1fr;
           }
-          .tab-nav {
-            flex-wrap: wrap;
-          }
+        }
+        @media (max-width: 768px) {
           .tab-btn {
-            flex: 1 1 calc(50% - 6px);
-            justify-content: center;
+            padding: 7px 12px;
+            font-size: 0.8rem;
+            gap: 5px;
           }
         }
       `}</style>
@@ -115,8 +147,11 @@ export default function SteelComponents() {
         </button>
       </div>
 
-      {/* Tab Content: TCVN 5575:2024 */}
-      {activeTab === 'tcvn' && (
+      {/* Tab Content Rendering */}
+      {isLoading ? renderSkeletons() : (
+        <>
+          {/* Tab Content: TCVN 5575:2024 */}
+          {activeTab === 'tcvn' && (
         <div className="steel-section">
           <div className="sub-grid" style={{ marginBottom: '24px' }}>
             <Card title="Phân nhóm Kết cấu & Chọn Vật liệu (Mục 4.3.1)">
@@ -504,6 +539,8 @@ export default function SteelComponents() {
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
 
       {/* Warning Box */}
