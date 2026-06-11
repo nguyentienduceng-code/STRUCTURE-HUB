@@ -11,7 +11,9 @@ import {
   HelpCircle, 
   Activity, 
   CheckCircle,
-  TrendingUp
+  TrendingUp,
+  BarChart3,
+  Zap
 } from 'lucide-react';
 
 export default function LoadsCombinations() {
@@ -251,6 +253,14 @@ export default function LoadsCombinations() {
         <button className={`tab-btn ${activeTab === 'fea_modeling' ? 'active' : ''}`} onClick={() => setActiveTab('fea_modeling')}>
           <Cpu size={18} />
           5. Mô hình hóa & Giải tích FEA
+        </button>
+        <button className={`tab-btn ${activeTab === 'live_load_reduction' ? 'active' : ''}`} onClick={() => setActiveTab('live_load_reduction')}>
+          <BarChart3 size={18} />
+          6. Hoạt tải & Giảm tải XS
+        </button>
+        <button className={`tab-btn ${activeTab === 'earthquake_tcvn' ? 'active' : ''}`} onClick={() => setActiveTab('earthquake_tcvn')}>
+          <Zap size={18} />
+          7. Động đất TCVN 9386
         </button>
       </div>
 
@@ -697,6 +707,345 @@ export default function LoadsCombinations() {
                 </ol>
               </div>
             </Card>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 6: Hoạt tải & Giảm tải Xác suất */}
+      {activeTab === 'live_load_reduction' && (
+        <div className="loads-section">
+          <div className="grid-half">
+            <Card title="Giá trị tiêu chuẩn hoạt tải sử dụng (Bảng 4 – TCVN 2737:2023)">
+              <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
+                Hoạt tải được phân nhóm theo <span className="highlight-text">mục đích công năng</span> của không gian sử dụng. Các khu vực có lưu thông người liên tục hoặc là nút sơ tán khi sự cố phải chịu tải trọng thiết kế cao hơn nhằm đảm bảo an toàn sinh mạng:
+              </p>
+              <div className="param-table-container">
+                <table className="param-table">
+                  <thead>
+                    <tr>
+                      <th>Khu vực / Công năng</th>
+                      <th>p<sub>n</sub> (kN/m²)</th>
+                      <th>Ghi chú</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="highlight-text">Nhà ở, buồng ngủ, bếp</td>
+                      <td><span className="spec-badge">1.5</span></td>
+                      <td>Khu vực A – hoạt động dân sinh thông thường.</td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Văn phòng, hành lang phụ</td>
+                      <td><span className="spec-badge">2.0</span></td>
+                      <td>Khu vực B – làm việc ngồi cố định, lưu thông nhẹ.</td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Sảnh, hành lang chính, lối thoát</td>
+                      <td><span className="spec-badge">3.0 – 4.0</span></td>
+                      <td>Khu vực C – lưu thông liên tục, đông người.</td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Phòng hội thảo, triển lãm, rạp chiếu</td>
+                      <td><span className="spec-badge">4.0 – 5.0</span></td>
+                      <td>Khu vực D – tập trung đông người ngắn hạn.</td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Mái bằng không sử dụng</td>
+                      <td><span className="spec-badge">0.75</span></td>
+                      <td>Chỉ phục vụ bảo trì, không chịu tải trọng người thường xuyên.</td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Mái bằng có sử dụng (sân thượng)</td>
+                      <td><span className="spec-badge">1.5</span></td>
+                      <td>Tương đương hoạt tải nhà ở.</td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Bãi đỗ xe ô tô (hạng nhẹ)</td>
+                      <td><span className="spec-badge">2.5</span></td>
+                      <td>Khu vực F – xe con, xe tải nhẹ ≤ 30 kN.</td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Bãi đỗ xe tải nặng</td>
+                      <td><span className="spec-badge">5.0</span></td>
+                      <td>Khu vực G – chịu tải bánh xe trục lớn.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+
+            <Card title="Hệ số độ tin cậy tĩnh tải γ_f theo loại vật liệu">
+              <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
+                Tĩnh tải được tính toán theo công thức <span className="highlight-text">G<sub>d</sub> = γ<sub><var>f</var></sub> × V × γ<sub><var>vl</var></sub></span>, trong đó <var>V</var> là thể tích hình học và γ<sub><var>vl</var></sub> là trọng lượng riêng vật liệu. Hệ số độ tin cậy phụ thuộc vào mức độ kiểm soát chất lượng sản xuất:
+              </p>
+              <div className="formula-card">
+                <div className="formula-line">
+                  G<sub><var>d</var></sub> = γ<sub><var>f</var></sub> × <var>V</var> × γ<sub><var>vl</var></sub>
+                </div>
+                <div className="formula-desc">
+                  γ<sub><var>f</var></sub> = 1.05 (thép) | 1.15 (BTCT) | 1.20 (BT nhẹ) | 1.30 (vữa thi công)
+                </div>
+              </div>
+              <div className="app-box">
+                <div className="app-box-title">
+                  <CheckCircle size={16} />
+                  <span>Lưu ý thực hành trên ETABS / SAP2000</span>
+                </div>
+                <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
+                  <li>Trọng lượng bản thân kết cấu thường được phần mềm tự động tính và nhân hệ số 1.05 (thép) hoặc 1.15 (BTCT) khi thiết lập tổ hợp.</li>
+                  <li>Tĩnh tải hoàn thiện (SDL – Superimposed Dead Load) như gạch lát, trần thạch cao, thiết bị cơ điện cần khai báo riêng và gán γ<sub><var>f</var></sub> = 1.20–1.30 tùy vật liệu.</li>
+                  <li>Khi tĩnh tải đóng vai trò <strong>có lợi</strong> (chống lật, chống bốc mái): dùng γ<sub><var>f</var></sub> = <strong>0.90</strong>.</li>
+                </ul>
+              </div>
+            </Card>
+          </div>
+
+          <div className="card" style={{ marginTop: '24px' }}>
+            <h3 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <TrendingUp size={20} color="var(--accent-primary)" />
+              <span>Thuật toán Giảm Hoạt tải theo Xác suất (TCVN 2737:2023)</span>
+            </h3>
+            <p style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
+              Đây là <span className="highlight-text">bước tiến cách mạng</span> của TCVN 2737:2023 so với phiên bản cũ: việc minh định cơ sở toán học xác suất cho phép giảm hoạt tải một cách có kiểm soát, tránh thiết kế quá dư thừa khi tổng hợp tải từ nhiều diện tích sàn hoặc nhiều tầng.
+            </p>
+            <div className="grid-half" style={{ marginTop: '16px' }}>
+              <div style={{ background: 'rgba(0,0,0,0.15)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                <h4 style={{ color: 'var(--accent-primary)', marginBottom: '12px' }}>Giảm tải theo Diện tích truyền tải (ψ<sub>A</sub>)</h4>
+                <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                  Khi dầm chịu tải từ diện tích mặt sàn lớn A<sub>t</sub>, xác suất đồng thời đạt cực đại trên toàn bộ diện tích giảm dần theo:
+                </p>
+                <div className="formula-card" style={{ margin: '8px 0' }}>
+                  <div className="formula-line" style={{ fontSize: '1rem' }}>
+                    ψ<sub>A</sub> = 0.4 + 1/√(<var>A</var><sub>t</sub>)
+                  </div>
+                  <div className="formula-desc">Khu vực A, B (nhà ở, văn phòng): kích hoạt khi A<sub>t</sub> &gt; A<sub>0</sub></div>
+                </div>
+                <div className="formula-card" style={{ margin: '8px 0' }}>
+                  <div className="formula-line" style={{ fontSize: '1rem' }}>
+                    ψ<sub>A</sub> = 0.5 + 1/√(<var>A</var><sub>t</sub>)
+                  </div>
+                  <div className="formula-desc">Khu vực C, D (hội trường, lớp học): ngưỡng kích hoạt cao hơn do rủi ro tập trung người cao.</div>
+                </div>
+              </div>
+              <div style={{ background: 'rgba(0,0,0,0.15)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                <h4 style={{ color: 'var(--accent-primary)', marginBottom: '12px' }}>Giảm tải theo Số tầng (ψ<sub>n</sub>)</h4>
+                <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                  Cột và móng chịu tải từ nhiều tầng — xác suất toàn bộ các tầng cùng đạt cực đại hoạt tải đồng thời giảm theo số tầng chịu tải:
+                </p>
+                <div className="formula-card" style={{ margin: '8px 0' }}>
+                  <div className="formula-line" style={{ fontSize: '1rem' }}>
+                    ψ<sub><var>n</var></sub> = (0.4 + 4/√<var>n</var>)
+                  </div>
+                  <div className="formula-desc">Khu vực A, B: giảm dần khi số tầng n tăng. Tối thiểu ψ<sub>n</sub> ≥ 0.6.</div>
+                </div>
+                <div className="formula-card" style={{ margin: '8px 0' }}>
+                  <div className="formula-line" style={{ fontSize: '1rem' }}>
+                    ψ<sub><var>n</var></sub> = (0.5 + 5/√<var>n</var>)
+                  </div>
+                  <div className="formula-desc">Khu vực C, D: hệ số giảm thấp hơn do tính nguy hiểm cao hơn.</div>
+                </div>
+                <div className="app-box" style={{ marginTop: '12px' }}>
+                  <div className="app-box-title">
+                    <CheckCircle size={16} />
+                    <span>Ứng dụng thực tế</span>
+                  </div>
+                  <p style={{ fontSize: '0.88rem', lineHeight: 1.6, margin: 0, color: 'var(--text-secondary)' }}>
+                    Trong ETABS, khai báo hệ số giảm tải tại mục <strong>Live Load Reduction</strong> theo AT và số tầng. Đây là lý do tại sao tiết diện cột tầng hầm trong các tòa tháp thực tế thường nhỏ hơn nhiều so với tính toán cộng dồn tĩnh học thuần túy.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 7: Động đất TCVN 9386:2012 */}
+      {activeTab === 'earthquake_tcvn' && (
+        <div className="loads-section">
+          <div className="grid-half">
+            <Card title="Phổ Phản ứng Thiết kế S_d(T) & Gia tốc Nền">
+              <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
+                Theo <span className="highlight-text">TCVN 9386:2012</span>, tải trọng động đất không phụ thuộc vào lực đẩy ngoài mà phụ thuộc vào <span className="highlight-text">biên độ gia tốc dao động nền đất (PGA)</span>. Gia tốc nền thiết kế được hiệu chỉnh từ gia tốc tham chiếu:
+              </p>
+              <div className="formula-card">
+                <div className="formula-line">
+                  <var>a</var><sub><var>g</var></sub> = γ<sub><var>I</var></sub> × <var>a</var><sub><var>gR</var></sub>
+                </div>
+                <div className="formula-desc">
+                  γ<sub><var>I</var></sub>: Hệ số tầm quan trọng công trình | <var>a</var><sub><var>gR</var></sub>: Đỉnh PGA tham chiếu theo vùng địa chấn
+                </div>
+              </div>
+              <div className="param-table-container">
+                <table className="param-table">
+                  <thead>
+                    <tr>
+                      <th>Vùng địa chấn – Khu vực điển hình</th>
+                      <th>a<sub>gR</sub> (g)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="highlight-text">Vùng I – TP.HCM, Cần Thơ, đồng bằng Nam Bộ</td>
+                      <td><span className="spec-badge">0.054 – 0.082</span></td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Vùng II – Hà Nội, Đà Nẵng, Nha Trang</td>
+                      <td><span className="spec-badge">0.083 – 0.15</span></td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Vùng III – Tây Bắc, Điện Biên, Lai Châu</td>
+                      <td><span className="spec-badge">0.15 – 0.25</span></td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Vùng IV – Một số vùng núi Tây Bắc</td>
+                      <td><span className="spec-badge">&gt; 0.25</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="alert-yellow" style={{ marginTop: '12px' }}>
+                <div className="alert-yellow-title">
+                  <ShieldAlert size={18} />
+                  <span>Hệ số tầm quan trọng γ<sub>I</sub></span>
+                </div>
+                <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
+                  <li>Công trình thông thường (nhà ở, văn phòng): <span className="highlight-text">γ<sub>I</sub> = 1.0</span></li>
+                  <li>Công trình quan trọng (trường học, trung tâm thương mại lớn): <span className="highlight-text">γ<sub>I</sub> = 1.2</span></li>
+                  <li>Công trình thiết yếu (bệnh viện, trạm điện, trạm cứu hỏa): <span className="highlight-text">γ<sub>I</sub> = 1.4</span></li>
+                </ul>
+              </div>
+            </Card>
+
+            <Card title="Hệ số ứng xử q & Triết lý Tiêu tán Năng lượng">
+              <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
+                Điểm tinh túy nhất của kháng chấn theo TCVN 9386:2012 là <span className="highlight-text">hệ số ứng xử q</span> — cho phép kết cấu thiết kế với nội lực thấp hơn mức đàn hồi thuần túy, đổi lại bằng khả năng biến dạng dẻo có kiểm soát:
+              </p>
+              <div className="formula-card" style={{ borderLeftColor: '#f59e0b' }}>
+                <div className="formula-line">
+                  <var>F</var><sub>thiết kế</sub> = <var>F</var><sub>đàn hồi</sub> / <var>q</var>
+                </div>
+                <div className="formula-desc">
+                  Cấu kiện được thiết kế với lực nhỏ hơn q lần — năng lượng động đất dư được tiêu tán qua biến dạng dẻo tại các khớp dẻo (plastic hinges)
+                </div>
+              </div>
+              <div className="param-table-container">
+                <table className="param-table">
+                  <thead>
+                    <tr>
+                      <th>Hệ kết cấu</th>
+                      <th>Cấp dẻo</th>
+                      <th>q</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="highlight-text">Khung BTCT moment thuần</td>
+                      <td>DCH (Dẻo cao)</td>
+                      <td><span className="spec-badge">4.5 α<sub>u</sub>/α<sub>1</sub></span></td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Khung BTCT moment thuần</td>
+                      <td>DCM (Dẻo trung bình)</td>
+                      <td><span className="spec-badge">3.0 α<sub>u</sub>/α<sub>1</sub></span></td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Vách cứng BTCT</td>
+                      <td>DCM</td>
+                      <td><span className="spec-badge">3.0</span></td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Khung thép moment</td>
+                      <td>DCH</td>
+                      <td><span className="spec-badge">6.5</span></td>
+                    </tr>
+                    <tr>
+                      <td className="highlight-text">Kết cấu không dẻo (Low Ductility)</td>
+                      <td>DCL</td>
+                      <td><span className="spec-badge">1.5</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p style={{ fontSize: '0.88rem', lineHeight: 1.6, marginTop: '12px', color: 'var(--text-secondary)' }}>
+                ⚠️ Chọn q cao đòi hỏi thiết kế cấu tạo chi tiết nghiêm ngặt: đai dày, neo cốt thép đặc biệt, tỷ lệ cốt thép tối thiểu theo DCM/DCH.
+              </p>
+            </Card>
+          </div>
+
+          <div className="card" style={{ marginTop: '24px' }}>
+            <h3 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Activity size={20} color="var(--accent-primary)" />
+              <span>Hai Phương pháp Xác định Tải trọng Động đất</span>
+            </h3>
+            <div className="grid-half">
+              <div style={{ background: 'rgba(0,0,0,0.15)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                <h4 style={{ color: 'var(--accent-primary)', marginBottom: '8px' }}>Phương pháp 1: Tĩnh lực ngang Tương đương (ELF)</h4>
+                <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                  Áp dụng cho công trình quy mô thấp, mặt bằng đều đặn, không có giật cấp hình học. Lực cắt đáy tổng:
+                </p>
+                <div className="formula-card" style={{ margin: '8px 0' }}>
+                  <div className="formula-line">
+                    <var>F</var><sub><var>b</var></sub> = S<sub><var>d</var></sub>(<var>T</var><sub>1</sub>) × <var>m</var> × λ
+                  </div>
+                  <div className="formula-desc">
+                    S<sub>d</sub>(T<sub>1</sub>): Tung độ phổ thiết kế | m: Tổng khối lượng hữu dụng | λ = 0.85 (nếu T<sub>1</sub> ≤ 2T<sub>C</sub> và n ≥ 2)
+                  </div>
+                </div>
+                <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
+                  Lực cắt đáy F<sub>b</sub> sau đó được phân bổ tuyến tính lên từng tầng tỷ lệ thuận với tích khối lượng × cao trình tầng.
+                </p>
+              </div>
+              <div style={{ background: 'rgba(0,0,0,0.15)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                <h4 style={{ color: 'var(--accent-primary)', marginBottom: '8px' }}>Phương pháp 2: Phân tích Phổ Phản ứng (RSA)</h4>
+                <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                  Bắt buộc cho nhà cao tầng, hệ bất đối xứng, kết cấu có giật cấp hình học. Phân tích tổng hợp theo các quy tắc kết hợp bình phương:
+                </p>
+                <div className="formula-card" style={{ margin: '8px 0' }}>
+                  <div className="formula-line">
+                    E<sub>total</sub> = √(∑ E<sub>i</sub>²)
+                  </div>
+                  <div className="formula-desc">SRSS: Căn bậc hai tổng bình phương — khi các mode dao động đủ xa nhau về tần số</div>
+                </div>
+                <div className="formula-card" style={{ margin: '8px 0' }}>
+                  <div className="formula-line" style={{ fontSize: '0.95rem' }}>
+                    E<sub>CQC</sub> = √(∑∑ ρ<sub>ij</sub> E<sub>i</sub> E<sub>j</sub>)
+                  </div>
+                  <div className="formula-desc">CQC: Complete Quadratic Combination — chính xác hơn khi các mode gần nhau về tần số</div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '24px' }}>
+              <h4 style={{ marginBottom: '12px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Layers size={18} color="var(--accent-primary)" />
+                Tổ hợp Đặc biệt Kháng chấn (Seismic Combinations)
+              </h4>
+              <p style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
+                Theo TCVN 9386:2012, tổ hợp tải trọng động đất được thiết lập như tổ hợp đặc biệt trong TCVN 2737:2023. Tác động động đất E<sub>d</sub> được xét theo cả hai phương ngang với nguyên tắc:
+              </p>
+              <div className="formula-card" style={{ borderLeftColor: '#ef4444' }}>
+                <div className="formula-line" style={{ color: '#ef4444' }}>
+                  G<sub>k</sub> + ψ<sub>2,i</sub> × Q<sub>k,i</sub> ± A<sub>Ed,x</sub> ± 0.3 × A<sub>Ed,y</sub>
+                </div>
+                <div className="formula-desc">
+                  ψ<sub>2,i</sub>: Hệ số tải trọng tựa thường xuyên — hoạt tải chỉ tính phần dài hạn khi có động đất<br />
+                  Ví dụ: ψ<sub>2</sub> = 0.3 (văn phòng) | 0.6 (kho lưu trữ nặng) | 0 (mái không sử dụng)
+                </div>
+              </div>
+              <div className="app-box" style={{ marginTop: '16px' }}>
+                <div className="app-box-title">
+                  <CheckCircle size={16} />
+                  <span>Quy trình phân tích kháng chấn trên ETABS</span>
+                </div>
+                <ol style={{ paddingLeft: '16px', margin: 0, fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
+                  <li style={{ marginBottom: '8px' }}>Khai báo phổ phản ứng thiết kế S<sub>d</sub>(T) theo vùng địa chấn và loại đất nền (Loại A, B, C, D, E theo TCVN 9386).</li>
+                  <li style={{ marginBottom: '8px' }}>Chọn phương pháp phân tích: ELF cho nhà thấp tầng đều đặn, RSA (Modal Spectral Analysis) cho nhà cao tầng.</li>
+                  <li style={{ marginBottom: '8px' }}>Nhập hệ số ứng xử q tương ứng với hệ kết cấu và cấp dẻo. ETABS tự động chia phổ cho q.</li>
+                  <li style={{ marginBottom: '8px' }}>Tổ hợp 2 phương địa chấn theo quy tắc 100%+30%: xét Ex ± 0.3Ey và 0.3Ex ± Ey.</li>
+                  <li>Kiểm tra điều kiện cấu tạo kháng chấn: đai cột vùng tới hạn, tỷ lệ cốt thép dọc tối thiểu/tối đa theo Phụ lục TCVN 9386.</li>
+                </ol>
+              </div>
+            </div>
           </div>
         </div>
       )}
