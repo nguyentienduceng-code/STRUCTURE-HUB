@@ -3,33 +3,39 @@ import { BookOpen, Map, Mail, Phone, User, Award } from 'lucide-react';
 export default function Home() {
   return (
     <div className="home-container">
-      {/* Hero Section */}
       <section className="hero-section" style={{
-        background: 'linear-gradient(135deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.15) 100%)',
-        padding: '60px 20px',
+        backgroundImage: 'linear-gradient(rgba(10, 14, 26, 0.75), rgba(10, 14, 26, 0.85)), url(/hero-bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        padding: '80px 20px',
         borderRadius: '16px',
         textAlign: 'center',
-        border: '1px solid rgba(102,126,234,0.2)',
+        border: '1px solid rgba(102,126,234,0.3)',
         marginBottom: '40px',
-        boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
+        boxShadow: '0 15px 40px rgba(0,0,0,0.4)',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
         <h1 style={{ 
-          fontSize: '2.5rem', 
-          fontWeight: '700', 
+          fontSize: '2.8rem', 
+          fontWeight: '800', 
           marginBottom: '16px',
-          background: 'linear-gradient(to right, #667eea, #764ba2)',
+          background: 'linear-gradient(to right, #818cf8, #c084fc)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-          textShadow: '0 2px 10px rgba(102,126,234,0.2)'
+          backgroundClip: 'text',
+          textShadow: '0 4px 20px rgba(0,0,0,0.5)',
+          lineHeight: '1.2'
         }}>
           Structural Knowledge Hub – Nơi Tri Thức Kết Cấu Được Hệ Thống Hóa
         </h1>
         <p style={{ 
           fontSize: '1.25rem', 
-          color: 'var(--text-secondary)',
+          color: 'rgba(255,255,255,0.85)',
           maxWidth: '800px',
           margin: '0 auto',
-          fontWeight: '500'
+          fontWeight: '400',
+          textShadow: '0 2px 4px rgba(0,0,0,0.8)'
         }}>
           Thu hẹp khoảng cách giữa lý thuyết tiêu chuẩn và giải pháp thực tế.
         </p>
