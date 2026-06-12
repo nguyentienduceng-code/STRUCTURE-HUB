@@ -74,14 +74,14 @@ export default function RCComponents() {
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 10px 18px;
+          padding: 12px 20px;
           background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
-          font-size: 1.1rem;
+          font-size: 1.15rem;
           transition: all 0.2s ease;
           white-space: nowrap;
           flex-shrink: 0;
@@ -104,8 +104,8 @@ export default function RCComponents() {
             padding-bottom: 8px;
           }
           .tab-btn {
-            padding: 8px 14px;
-            font-size: 0.95rem;
+            padding: 12px 20px;
+            font-size: 1.15rem;
             gap: 4px;
           }
         }
@@ -709,7 +709,7 @@ export default function RCComponents() {
                 
                 <div style={{ background: 'rgba(102,126,234,0.12)', padding: '12px', borderRadius: '6px', border: '1px solid rgba(102,126,234,0.2)' }}>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Gia tốc thiết kế tính toán:</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '4px 0', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '4px 0', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
                     <var>a<sub>g</sub></var> = {calculatedAg}<var>g</var>
                   </div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--accent-secondary)', fontWeight: '600', lineHeight: 1.4 }}>
@@ -774,7 +774,7 @@ export default function RCComponents() {
 
                 <div style={{ background: 'rgba(118,75,162,0.12)', padding: '12px', borderRadius: '6px', border: '1px solid rgba(118,75,162,0.2)' }}>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Khoảng cách cốt đai tối đa cho phép (s<sub>max</sub>):</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '4px 0', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '4px 0', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
                     <var>s</var> &le; {calculatedSpacing} mm
                   </div>
                   <div style={{ fontSize: '0.78rem', color: 'var(--accent-secondary)' }}>

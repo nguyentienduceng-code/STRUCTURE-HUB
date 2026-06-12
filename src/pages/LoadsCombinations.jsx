@@ -40,14 +40,14 @@ export default function LoadsCombinations() {
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 10px 18px;
+          padding: 12px 20px;
           background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
-          font-size: 1.1rem;
+          font-size: 1.15rem;
           white-space: nowrap;
           flex-shrink: 0;
           transition: all 0.2s ease;
@@ -67,8 +67,8 @@ export default function LoadsCombinations() {
             flex-wrap: nowrap;
           }
           .tab-btn {
-            padding: 8px 14px;
-            font-size: 0.95rem;
+            padding: 12px 20px;
+            font-size: 1.15rem;
             gap: 4px;
           }
         }

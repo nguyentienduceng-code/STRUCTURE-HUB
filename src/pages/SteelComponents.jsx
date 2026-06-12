@@ -57,14 +57,14 @@ export default function SteelComponents() {
           display: flex;
           align-items: center;
           gap: 8px;
-          padding: 10px 18px;
+          padding: 12px 20px;
           background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: var(--radius-sm);
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
-          font-size: 0.9rem;
+          font-size: 1.15rem;
           white-space: nowrap;
           flex-shrink: 0;
           transition: all var(--transition);
@@ -102,8 +102,8 @@ export default function SteelComponents() {
         }
         @media (max-width: 768px) {
           .tab-btn {
-            padding: 7px 12px;
-            font-size: 0.95rem;
+            padding: 12px 20px;
+            font-size: 1.15rem;
             gap: 5px;
           }
         }
@@ -186,7 +186,7 @@ export default function SteelComponents() {
           </div>
 
           <div className="card" style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '1.15rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Activity size={20} color="var(--accent-primary)" />
               <span>Tính toán Cường độ Cấu kiện theo TCVN 5575:2024</span>
             </h2>
@@ -225,7 +225,7 @@ export default function SteelComponents() {
           </div>
 
           <div className="card" style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '1.15rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Sliders size={20} color="var(--accent-primary)" />
               <span>Tính toán Ổn định Tổng thể & Cục bộ</span>
             </h2>
@@ -290,7 +290,7 @@ export default function SteelComponents() {
           </div>
 
           <div className="card" style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '1.15rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Hammer size={20} color="var(--accent-primary)" />
               <span>Thiết kế Liên kết Kết cấu Thép theo TCVN</span>
             </h2>
@@ -353,7 +353,7 @@ export default function SteelComponents() {
       {activeTab === 'aisc' && (
         <div className="steel-section">
           <div className="card" style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '1.15rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Crosshair size={20} color="var(--accent-primary)" />
               <span>Học thuyết LRFD và ASD trong AISC 360-10</span>
             </h2>
@@ -489,7 +489,7 @@ export default function SteelComponents() {
       {activeTab === 'compare' && (
         <div className="steel-section">
           <div className="card">
-            <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '1.15rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Shuffle size={20} color="var(--accent-primary)" />
               <span>Đối chiếu chi tiết hai tiêu chuẩn thiết kế</span>
             </h2>
@@ -539,7 +539,7 @@ export default function SteelComponents() {
           </div>
 
           <div className="card" style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '1.15rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Activity size={20} color="var(--accent-primary)" />
               <span>Bảng 1: So sánh giới hạn Độ võng đứng cho kết cấu chịu uốn</span>
             </h2>
@@ -621,7 +621,7 @@ export default function SteelComponents() {
           </div>
 
           <div className="card" style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '1.15rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Shuffle size={20} color="var(--accent-primary)" />
               <span>Bảng 2: So sánh giới hạn Chuyển vị ngang cho Khung và Cột</span>
             </h2>
@@ -701,7 +701,7 @@ export default function SteelComponents() {
           </div>
 
           <div className="card">
-            <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '1.15rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Crosshair size={20} color="var(--accent-primary)" />
               <span>Phân Tích Ứng Dụng Thực Tiễn Từ Các Dự Án Tiêu Biểu</span>
             </h2>
