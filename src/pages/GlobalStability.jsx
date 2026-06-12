@@ -310,14 +310,14 @@ export default function GlobalStability() {
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 12px 20px;
+          padding: 10px 18px;
           background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
-          font-size: 1.15rem;
+          font-size: 1.1rem;
           white-space: nowrap;
           flex-shrink: 0;
           transition: all 0.2s ease;
@@ -337,8 +337,8 @@ export default function GlobalStability() {
             flex-wrap: nowrap;
           }
           .tab-btn {
-            padding: 12px 20px;
-            font-size: 1.15rem;
+            padding: 8px 14px;
+            font-size: 0.85rem;
           }
         }
 
@@ -347,9 +347,9 @@ export default function GlobalStability() {
         }
         .badge {
           display: inline-block;
-          padding: 12px 20px;
+          padding: 4px 10px;
           border-radius: 20px;
-          font-size: 1.15rem;
+          font-size: 0.75rem;
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.05em;
@@ -374,7 +374,7 @@ export default function GlobalStability() {
           background: var(--overlay-very-light);
           border: 1px solid var(--overlay-light);
           border-radius: var(--radius-sm);
-          padding: 12px 20px;
+          padding: 14px 18px;
         }
         .parameter-name {
           font-weight: 600;
@@ -384,7 +384,7 @@ export default function GlobalStability() {
         }
         .parameter-desc {
           color: var(--text-secondary);
-          font-size: 1.15rem;
+          font-size: 0.95rem;
           line-height: 1.5;
         }
         .stability-list {

@@ -91,14 +91,14 @@ export default function GeotechnicalFoundations() {
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 12px 20px;
+          padding: 10px 18px;
           background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
-          font-size: 1.15rem;
+          font-size: 1.1rem;
           white-space: nowrap;
           flex-shrink: 0;
           transition: all 0.2s ease;
@@ -118,8 +118,8 @@ export default function GeotechnicalFoundations() {
             flex-wrap: nowrap;
           }
           .tab-btn {
-            padding: 12px 20px;
-            font-size: 1.15rem;
+            padding: 8px 14px;
+            font-size: 0.95rem;
             gap: 4px;
           }
         }
@@ -142,7 +142,7 @@ export default function GeotechnicalFoundations() {
           flex-wrap: wrap;
         }
         .formula-units {
-          font-size: 1.15rem;
+          font-size: 0.85rem;
           color: var(--accent-secondary);
           margin-top: 4px;
         }
@@ -156,7 +156,7 @@ export default function GeotechnicalFoundations() {
           align-items: flex-start;
           gap: 8px;
           margin-bottom: 8px;
-          font-size: 1.15rem;
+          font-size: 0.92rem;
         }
         .bullet-purple {
           color: var(--accent-primary);
@@ -180,9 +180,9 @@ export default function GeotechnicalFoundations() {
         .spec-badge {
           background: rgba(139, 92, 246, 0.1);
           color: var(--accent-primary);
-          padding: 12px 20px;
+          padding: 2px 8px;
           border-radius: 4px;
-          font-size: 1.15rem;
+          font-size: 0.95rem;
           font-weight: 600;
           border: 1px solid rgba(139, 92, 246, 0.2);
         }
@@ -623,7 +623,7 @@ export default function GeotechnicalFoundations() {
                     <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Cực hạn <var>R</var><sub>u</sub>: <strong>{Ru} kN</strong></span>
                     <span style={{ fontSize: '0.88rem', color: 'var(--accent-secondary)' }}>Thiết kế sơ bộ <var>R</var><sub>design</sub>:</span>
                   </div>
-                  <strong style={{ display: 'block', color: 'var(--accent-primary)', fontSize: '1.15rem', textAlign: 'right', marginTop: '2px' }}>
+                  <strong style={{ display: 'block', color: 'var(--accent-primary)', fontSize: '1.25rem', textAlign: 'right', marginTop: '2px' }}>
                     <var>P</var><sub>cp</sub> &asymp; {Rsafe} kN
                   </strong>
                 </div>

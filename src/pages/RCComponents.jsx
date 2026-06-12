@@ -74,14 +74,14 @@ export default function RCComponents() {
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 12px 20px;
+          padding: 10px 18px;
           background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
-          font-size: 1.15rem;
+          font-size: 1.1rem;
           transition: all 0.2s ease;
           white-space: nowrap;
           flex-shrink: 0;
@@ -104,8 +104,8 @@ export default function RCComponents() {
             padding-bottom: 8px;
           }
           .tab-btn {
-            padding: 12px 20px;
-            font-size: 1.15rem;
+            padding: 8px 14px;
+            font-size: 0.95rem;
             gap: 4px;
           }
         }
@@ -113,7 +113,7 @@ export default function RCComponents() {
           animation: fadeIn 0.4s ease-out;
         }
         .formula-units {
-          font-size: 1.15rem;
+          font-size: 0.85rem;
           color: var(--accent-secondary);
           margin-top: 4px;
           text-align: center;
@@ -128,7 +128,7 @@ export default function RCComponents() {
           align-items: flex-start;
           gap: 8px;
           margin-bottom: 8px;
-          font-size: 1.15rem;
+          font-size: 0.92rem;
         }
         .bullet-blue {
           color: var(--accent-primary);
@@ -148,9 +148,9 @@ export default function RCComponents() {
         .spec-badge {
           background: rgba(59, 130, 246, 0.1);
           color: var(--accent-primary);
-          padding: 12px 20px;
+          padding: 2px 8px;
           border-radius: 4px;
-          font-size: 1.15rem;
+          font-size: 0.95rem;
           font-weight: 600;
           border: 1px solid rgba(59, 130, 246, 0.2);
         }
@@ -709,7 +709,7 @@ export default function RCComponents() {
                 
                 <div style={{ background: 'rgba(102,126,234,0.12)', padding: '12px', borderRadius: '6px', border: '1px solid rgba(102,126,234,0.2)' }}>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Gia tốc thiết kế tính toán:</div>
-                  <div style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '4px 0', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '4px 0', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
                     <var>a<sub>g</sub></var> = {calculatedAg}<var>g</var>
                   </div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--accent-secondary)', fontWeight: '600', lineHeight: 1.4 }}>
@@ -774,7 +774,7 @@ export default function RCComponents() {
 
                 <div style={{ background: 'rgba(118,75,162,0.12)', padding: '12px', borderRadius: '6px', border: '1px solid rgba(118,75,162,0.2)' }}>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Khoảng cách cốt đai tối đa cho phép (s<sub>max</sub>):</div>
-                  <div style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '4px 0', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '4px 0', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
                     <var>s</var> &le; {calculatedSpacing} mm
                   </div>
                   <div style={{ fontSize: '0.78rem', color: 'var(--accent-secondary)' }}>
