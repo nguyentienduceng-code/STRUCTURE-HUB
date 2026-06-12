@@ -30,7 +30,7 @@ export default function Home() {
           Structural Knowledge Hub – Nơi Tri Thức Kết Cấu Được Hệ Thống Hóa
         </h1>
         <p style={{ 
-          fontSize: '1.25rem', 
+          fontSize: '1.15rem', 
           color: 'rgba(255,255,255,0.85)',
           maxWidth: '800px',
           margin: '0 auto',

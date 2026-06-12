@@ -33,14 +33,14 @@ export default function EngineeringFoundations() {
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 10px 18px;
+          padding: 12px 20px;
           background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
-          font-size: 1.1rem;
+          font-size: 1.15rem;
           white-space: nowrap;
           flex-shrink: 0;
           transition: all 0.2s ease;
@@ -60,8 +60,8 @@ export default function EngineeringFoundations() {
             flex-wrap: nowrap;
           }
           .tab-btn {
-            padding: 8px 14px;
-            font-size: 0.95rem;
+            padding: 12px 20px;
+            font-size: 1.15rem;
             gap: 4px;
           }
         }
@@ -83,7 +83,7 @@ export default function EngineeringFoundations() {
           color: #10b981;
           font-weight: 700;
           margin-bottom: 8px;
-          font-size: 0.95rem;
+          font-size: 1.15rem;
         }
         .grid-half {
           display: grid;
@@ -102,9 +102,9 @@ export default function EngineeringFoundations() {
         .spec-badge {
           background: rgba(139, 92, 246, 0.1);
           color: var(--accent-primary);
-          padding: 2px 8px;
+          padding: 12px 20px;
           border-radius: 4px;
-          font-size: 0.95rem;
+          font-size: 1.15rem;
           font-weight: 600;
           border: 1px solid rgba(139, 92, 246, 0.2);
         }

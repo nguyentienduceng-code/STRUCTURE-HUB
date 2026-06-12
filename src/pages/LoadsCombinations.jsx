@@ -40,14 +40,14 @@ export default function LoadsCombinations() {
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 10px 18px;
+          padding: 12px 20px;
           background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
-          font-size: 1.1rem;
+          font-size: 1.15rem;
           white-space: nowrap;
           flex-shrink: 0;
           transition: all 0.2s ease;
@@ -67,8 +67,8 @@ export default function LoadsCombinations() {
             flex-wrap: nowrap;
           }
           .tab-btn {
-            padding: 8px 14px;
-            font-size: 0.95rem;
+            padding: 12px 20px;
+            font-size: 1.15rem;
             gap: 4px;
           }
         }
@@ -100,7 +100,7 @@ export default function LoadsCombinations() {
           flex-wrap: wrap;
         }
         .formula-desc {
-          font-size: 0.88rem;
+          font-size: 1.15rem;
           color: var(--text-secondary);
           margin-top: 8px;
           text-align: center;
@@ -141,7 +141,7 @@ export default function LoadsCombinations() {
           color: #10b981;
           font-weight: 700;
           margin-bottom: 8px;
-          font-size: 0.95rem;
+          font-size: 1.15rem;
         }
         .grid-half {
           display: grid;
@@ -160,9 +160,9 @@ export default function LoadsCombinations() {
         .spec-badge {
           background: rgba(102, 126, 234, 0.1);
           color: var(--accent-primary);
-          padding: 2px 8px;
+          padding: 12px 20px;
           border-radius: 4px;
-          font-size: 0.95rem;
+          font-size: 1.15rem;
           font-weight: 600;
           border: 1px solid rgba(102, 126, 234, 0.2);
         }
@@ -181,17 +181,17 @@ export default function LoadsCombinations() {
           width: 100%;
           border-collapse: collapse;
           text-align: left;
-          font-size: 0.9rem;
+          font-size: 1.15rem;
         }
         .param-table th {
           background: var(--overlay-very-light);
           color: var(--text-primary);
-          padding: 12px 16px;
+          padding: 12px 20px;
           font-weight: 600;
           border-bottom: 1px solid var(--border-glass);
         }
         .param-table td {
-          padding: 12px 16px;
+          padding: 12px 20px;
           color: var(--text-secondary);
           border-bottom: 1px solid var(--border-glass);
         }
@@ -216,7 +216,7 @@ export default function LoadsCombinations() {
           color: #f59e0b;
           font-weight: 700;
           margin-bottom: 8px;
-          font-size: 0.95rem;
+          font-size: 1.15rem;
         }
       `}</style>
 
