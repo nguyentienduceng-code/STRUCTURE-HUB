@@ -376,9 +376,9 @@
   background: var(--bg-formula);
   border: 1px solid var(--border-formula);
   border-left: 4px solid var(--accent-primary);
-  padding: 24px 20px;
+  padding: 16px 20px;
   border-radius: 6px 12px 12px 6px;
-  margin: 20px 0;
+  margin: 16px 0;
   box-shadow: var(--shadow-formula);
   transition: all 0.3s ease;
 }
@@ -390,7 +390,7 @@
 }
 
 .formula-line {
-  font-size: 1.4rem;
+  font-size: 1.15rem;
   color: var(--text-formula);
   font-weight: 600;
   margin-bottom: 8px;
@@ -421,7 +421,7 @@ var {
 }
 
 sub, sup {
-  font-size: 70%;
+  font-size: 75%;
   line-height: 0;
   position: relative;
   vertical-align: baseline;
@@ -446,8 +446,9 @@ sub sub, sup sup, sub sup, sup sub {
   vertical-align: middle;
   text-align: center;
   line-height: 1.15;
-  font-size: 0.9em;
-  padding: 0 3px;
+  font-size: 0.95em;
+  padding: 0 4px;
+  margin: 0 2px;
   gap: 0;
 }
 
