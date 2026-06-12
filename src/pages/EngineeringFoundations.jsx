@@ -33,14 +33,14 @@ export default function EngineeringFoundations() {
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 8px 14px;
+          padding: 10px 18px;
           background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
           cursor: pointer;
           font-weight: 600;
-          font-size: 0.875rem;
+          font-size: 1.1rem;
           white-space: nowrap;
           flex-shrink: 0;
           transition: all 0.2s ease;
@@ -60,8 +60,8 @@ export default function EngineeringFoundations() {
             flex-wrap: nowrap;
           }
           .tab-btn {
-            padding: 7px 10px;
-            font-size: 0.8rem;
+            padding: 8px 14px;
+            font-size: 0.95rem;
             gap: 4px;
           }
         }
@@ -104,7 +104,7 @@ export default function EngineeringFoundations() {
           color: var(--accent-primary);
           padding: 2px 8px;
           border-radius: 4px;
-          font-size: 0.8rem;
+          font-size: 0.95rem;
           font-weight: 600;
           border: 1px solid rgba(139, 92, 246, 0.2);
         }

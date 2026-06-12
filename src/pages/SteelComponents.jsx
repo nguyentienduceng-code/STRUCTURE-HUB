@@ -103,7 +103,7 @@ export default function SteelComponents() {
         @media (max-width: 768px) {
           .tab-btn {
             padding: 7px 12px;
-            font-size: 0.8rem;
+            font-size: 0.95rem;
             gap: 5px;
           }
         }
