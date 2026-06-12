@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import Card from '../components/Card';
+import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   Building2, 
   Layers, 
   Settings, 
-  HelpCircle, 
-  CheckCircle, 
   ShieldAlert, 
   Calculator,
   Activity,
@@ -37,7 +35,7 @@ export default function ParametersDefinitions() {
           align-items: center;
           gap: 6px;
           padding: 8px 14px;
-          background: rgba(255, 255, 255, 0.02);
+          background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
@@ -49,7 +47,7 @@ export default function ParametersDefinitions() {
           transition: all 0.2s ease;
         }
         .tab-btn:hover {
-          background: rgba(255, 255, 255, 0.05);
+          background: var(--overlay-light);
           color: var(--text-primary);
         }
         .tab-btn.active {
@@ -134,19 +132,19 @@ export default function ParametersDefinitions() {
       <div className="tab-nav">
         <button className={`tab-btn ${activeTab === 'concrete' ? 'active' : ''}`} onClick={() => setActiveTab('concrete')}>
           <Building2 size={18} />
-          1. Bê tông (TCVN vs ACI)
+          2.1. Bê tông (TCVN vs ACI)
         </button>
         <button className={`tab-btn ${activeTab === 'steel' ? 'active' : ''}`} onClick={() => setActiveTab('steel')}>
           <Activity size={18} />
-          2. Cốt thép & Thép hình
+          2.2. Cốt thép & Thép hình
         </button>
         <button className={`tab-btn ${activeTab === 'bolts_welding' ? 'active' : ''}`} onClick={() => setActiveTab('bolts_welding')}>
           <Settings size={18} />
-          3. Bu lông & Hàn kết cấu
+          2.3. Bu lông & Hàn kết cấu
         </button>
         <button className={`tab-btn ${activeTab === 'geotechnical' ? 'active' : ''}`} onClick={() => setActiveTab('geotechnical')}>
           <Layers size={18} />
-          4. Đất nền & Móng cọc
+          2.4. Đất nền & Móng cọc
         </button>
       </div>
 
@@ -154,7 +152,7 @@ export default function ParametersDefinitions() {
       {activeTab === 'concrete' && (
         <div className="material-section">
           <div className="grid-layout">
-            <Card title="Phương pháp luận Xác định Cường độ Bê tông">
+            <CollapsibleSection defaultOpen={false} title="Phương pháp luận Xác định Cường độ Bê tông">
               <div style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Cách tiếp cận TCVN (Mẫu Lập phương):</h4>
                 <p>Cường độ dựa trên việc nén mẫu lập phương <strong>150x150x150 mm</strong> dưỡng hộ 28 ngày (TCVN 3118:1993):</p>
@@ -168,9 +166,9 @@ export default function ParametersDefinitions() {
                   <li><strong>Nghiệm thu thống kê:</strong> ACI 318 không yêu cầu mọi mẫu nén đều vượt f'<sub>c</sub>. Việc nghiệm thu đánh giá theo xác suất thống kê (trung bình 3 mẫu liên tiếp &ge; f'<sub>c</sub>, không mẫu nào dưới quá 500 psi hoặc 10%).</li>
                 </ul>
               </div>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="Cơ sở Vật lý của Hiệu ứng Hình dạng Mẫu nén">
+            <CollapsibleSection title="Cơ sở Vật lý của Hiệu ứng Hình dạng Mẫu nén">
               <div style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 <p>
                   Sự khác biệt lớn nhất giữa hai loại mẫu thử nằm ở hiệu ứng kiềm chế ma sát giữa bàn nén của máy và bề mặt mẫu:
@@ -188,7 +186,7 @@ export default function ParametersDefinitions() {
                   <var>f&thinsp;'</var><sub><var>c</var></sub> &asymp; 0.83 &times; <var>B</var> (hoặc <var>f</var><sub><var>cube</var></sub> / <var>f</var><sub><var>cyl</var></sub> = 1.20)
                 </div>
               </div>
-            </Card>
+            </CollapsibleSection>
           </div>
 
           <div className="card" style={{ marginTop: '24px' }}>
@@ -300,7 +298,7 @@ export default function ParametersDefinitions() {
       {activeTab === 'steel' && (
         <div className="material-section">
           <div className="grid-layout">
-            <Card title="Triết lý Thiết kế Thép: TCVN 5575 vs AISC 360">
+            <CollapsibleSection defaultOpen={false} title="Triết lý Thiết kế Thép: TCVN 5575 vs AISC 360">
               <div style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 <h4 style={{ color: 'var(--text-primary)', marginBottom: '6px' }}>TCVN 5575:2012 (Gốc SNIP Nga):</h4>
                 <p>
@@ -313,9 +311,9 @@ export default function ParametersDefinitions() {
                 <p><em>Hệ quả:</em> Cùng một điều kiện tải trọng, giàn thép thiết kế theo tiêu chuẩn Mỹ AISC thường nhẹ hơn và tiết kiệm thép hơn từ 10% - 15% so với thiết kế theo TCVN 5575.
                 </p>
               </div>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="So sánh Danh pháp & Cấp Cường độ Thép">
+            <CollapsibleSection title="So sánh Danh pháp & Cấp Cường độ Thép">
               <div style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Ký hiệu Mác thép:</h4>
                 <ul>
@@ -333,7 +331,7 @@ export default function ParametersDefinitions() {
                   </div>
                 </div>
               </div>
-            </Card>
+            </CollapsibleSection>
           </div>
 
           <div className="card" style={{ marginTop: '24px' }}>
@@ -431,7 +429,7 @@ export default function ParametersDefinitions() {
       {activeTab === 'bolts_welding' && (
         <div className="material-section">
           <div className="grid-layout">
-            <Card title="Bu lông Cường độ cao: Cấp bền ISO vs ASTM">
+            <CollapsibleSection defaultOpen={false} title="Bu lông Cường độ cao: Cấp bền ISO vs ASTM">
               <div style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Ký hiệu Cấp bền TCVN/ISO (Vd: 8.8, 10.9):</h4>
                 <p>Ký hiệu số học thể hiện trực tiếp đặc tính cơ học:</p>
@@ -473,9 +471,9 @@ export default function ParametersDefinitions() {
                   </tbody>
                 </table>
               </div>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="Yêu cầu về Hàn: TCVN so với AWS D1.1">
+            <CollapsibleSection title="Yêu cầu về Hàn: TCVN so với AWS D1.1">
               <div style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Tiêu chuẩn Mỹ AWS D1.1 (Structural Welding Code):</h4>
                 <p>
@@ -494,7 +492,7 @@ export default function ParametersDefinitions() {
                   <li><strong>TCVN 6700 (ISO 9606):</strong> Kiểm tra sát hạch và cấp chứng chỉ cho thợ hàn.</li>
                 </ul>
               </div>
-            </Card>
+            </CollapsibleSection>
           </div>
         </div>
       )}
@@ -503,7 +501,7 @@ export default function ParametersDefinitions() {
       {activeTab === 'geotechnical' && (
         <div className="material-section">
           <div className="grid-layout">
-            <Card title="Sức chịu tải Đất nền & Móng cọc">
+            <CollapsibleSection defaultOpen={false} title="Sức chịu tải Đất nền & Móng cọc">
               <ul style={{ paddingLeft: '16px', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
                 <li style={{ marginBottom: '12px' }}>
                   <strong>Sức chịu tải cực hạn giới hạn (Q<sub>u</sub>):</strong> Khả năng gánh tải trọng lớn nhất của cọc đơn trước khi bị phá hoại cơ học, tính bằng công thức tổng sức kháng mũi và sức kháng ma sát thành bên:
@@ -520,9 +518,9 @@ export default function ParametersDefinitions() {
                   Với &gamma;<sub>g</sub> là hệ số tin cậy đất nền theo tiêu chuẩn mới TCVN 10304:2025 (vd: &gamma;<sub>g</sub> = 1.20 đối với trường hợp xác định từ thí nghiệm nén tĩnh cọc).
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="Các Thông số Địa kỹ thuật Cốt lõi">
+            <CollapsibleSection title="Các Thông số Địa kỹ thuật Cốt lõi">
               <ul style={{ paddingLeft: '16px', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
                 <li style={{ marginBottom: '12px' }}>
                   <strong>Dung trọng tự nhiên (&gamma;):</strong> Trọng lượng riêng của đất, quyết định áp lực địa tầng tự nhiên tại đáy móng.
@@ -540,7 +538,7 @@ export default function ParametersDefinitions() {
                   <strong>Ảnh hưởng của mực nước ngầm:</strong> Sự xuất hiện của mực nước ngầm sẽ đẩy nổi đất làm giảm trọng lượng riêng hữu hiệu (&gamma;' = &gamma;<sub>bão hòa</sub> - &gamma;<sub>nước</sub>) xuống gần 50%, làm giảm trực tiếp áp lực địa tầng hữu hiệu và sức kháng ma sát hông cọc.
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
           </div>
         </div>
       )}

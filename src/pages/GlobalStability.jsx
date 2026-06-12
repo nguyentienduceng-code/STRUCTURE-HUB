@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Card from '../components/Card';
+import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   ShieldAlert, 
   Activity, 
@@ -21,7 +21,7 @@ export default function GlobalStability() {
   const stabilityChecks = [
     {
       id: 'chong-lat',
-      title: '1a. Ổn định Chống Lật Công trình',
+      title: '6.1. Ổn định Chống Lật Công trình',
       ref: 'TCVN 2737:2023, Mục 7.3',
       limitState: 'TTGH1 (Trạng thái giới hạn cực hạn)',
       badgeClass: 'badge-uls',
@@ -47,7 +47,7 @@ export default function GlobalStability() {
     },
     {
       id: 'chong-truot',
-      title: '1b. Ổn định Chống Trượt Công trình',
+      title: '6.2. Ổn định Chống Trượt Công trình',
       ref: 'TCVN 2737:2023, Mục 7.3',
       limitState: 'TTGH1 (Trạng thái giới hạn cực hạn)',
       badgeClass: 'badge-uls',
@@ -73,7 +73,7 @@ export default function GlobalStability() {
     },
     {
       id: 'chuyen-vi-dinh-tinh',
-      title: '2. Chuyển vị Đỉnh do Gió tĩnh',
+      title: '6.3. Chuyển vị Đỉnh do Gió tĩnh',
       ref: 'TCVN 2737:2023, Phụ lục G',
       limitState: 'TTGH2 (Trạng thái giới hạn sử dụng)',
       badgeClass: 'badge-sls',
@@ -99,7 +99,7 @@ export default function GlobalStability() {
     },
     {
       id: 'chuyen-vi-dinh-dong',
-      title: '3. Chuyển vị Đỉnh do Gió động',
+      title: '6.4. Chuyển vị Đỉnh do Gió động',
       ref: 'TCVN 2737:2023, Phụ lục G & Mục 10.2.7',
       limitState: 'TTGH2 (Trạng thái giới hạn sử dụng)',
       badgeClass: 'badge-sls',
@@ -124,7 +124,7 @@ export default function GlobalStability() {
     },
     {
       id: 'lech-tang-gio',
-      title: '4. Chuyển vị Lệch tầng do Gió',
+      title: '6.5. Chuyển vị Lệch tầng do Gió',
       ref: 'TCVN 2737:2023, Phụ lục G.2.3.5',
       limitState: 'TTGH2 (Trạng thái giới hạn sử dụng)',
       badgeClass: 'badge-sls',
@@ -150,7 +150,7 @@ export default function GlobalStability() {
     },
     {
       id: 'lech-tang-dong-dat',
-      title: '5. Chuyển vị Lệch tầng do Động đất',
+      title: '6.6. Chuyển vị Lệch tầng do Động đất',
       ref: 'TCVN 9386:2012, Mục 4.4.3.2',
       limitState: 'Trạng thái hạn chế hư hỏng (Damage Limitation)',
       badgeClass: 'badge-sls',
@@ -177,7 +177,7 @@ export default function GlobalStability() {
     },
     {
       id: 'gia-toc-dao-dong',
-      title: '6. Gia tốc Dao động do Gió',
+      title: '6.7. Gia tốc Dao động do Gió',
       ref: 'Tham khảo ISO 10137:2007 (TCVN 2737:2023 chưa quy định cụ thể)',
       limitState: 'Trạng thái giới hạn sử dụng (Độ tiện nghi của con người)',
       badgeClass: 'badge-sls',
@@ -203,7 +203,7 @@ export default function GlobalStability() {
     },
     {
       id: 'hieu-ung-p-delta',
-      title: '7. Hiệu ứng P-Delta do Động đất',
+      title: '6.8. Hiệu ứng P-Delta do Động đất',
       ref: 'TCVN 9386:2012, Mục 4.4.2.2',
       limitState: 'TTGH1 (Phân tích phi tuyến bậc 2)',
       badgeClass: 'badge-uls',
@@ -232,7 +232,7 @@ export default function GlobalStability() {
     },
     {
       id: 'dieu-kien-deo',
-      title: '8. Điều kiện dẻo kết cấu (Cột khỏe - Dầm yếu)',
+      title: '6.9. Điều kiện dẻo kết cấu (Cột khỏe - Dầm yếu)',
       ref: 'TCVN 9386:2012, Mục 4.4.2.3',
       limitState: 'Độ dẻo kháng chấn kết cấu',
       badgeClass: 'badge-uls',
@@ -259,7 +259,7 @@ export default function GlobalStability() {
     },
     {
       id: 'ud-column-wall',
-      title: '9. Kiểm tra Khả năng Chịu lực Cột/Vách (ud)',
+      title: '6.10. Kiểm tra Khả năng Chịu lực Cột/Vách (ud)',
       ref: 'TCVN 5574:2018 (BTCT) & TCVN 5575:2024 (Thép)',
       limitState: 'TTGH1 (Sức bền cấu kiện chịu lực chính)',
       badgeClass: 'badge-uls',
@@ -285,83 +285,65 @@ export default function GlobalStability() {
     }
   ];
 
+  
+
   const activeCheck = stabilityChecks[activeTab];
 
   return (
     <div>
       <style>{`
-        .stability-container {
+        .tab-nav {
           display: flex;
-          gap: 24px;
-          margin-top: 24px;
+          gap: 6px;
+          margin-bottom: 24px;
+          border-bottom: 1px solid var(--border-glass);
+          padding-bottom: 12px;
+          flex-wrap: wrap;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
         }
-        .stability-sidebar {
-          width: 320px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          flex-shrink: 0;
+        .tab-nav::-webkit-scrollbar {
+          display: none;
         }
-        .stability-btn {
+        .tab-btn {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          padding: 14px 18px;
-          background: rgba(255, 255, 255, 0.02);
+          gap: 6px;
+          padding: 8px 14px;
+          background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
-          border-radius: var(--radius-sm);
+          border-radius: 8px;
           color: var(--text-secondary);
           cursor: pointer;
-          text-align: left;
-          transition: all var(--transition);
-          font-weight: 500;
+          font-weight: 600;
+          font-size: 0.875rem;
+          white-space: nowrap;
+          flex-shrink: 0;
+          transition: all 0.2s ease;
         }
-        .stability-btn:hover {
-          background: rgba(255, 255, 255, 0.05);
+        .tab-btn:hover {
+          background: var(--overlay-light);
           color: var(--text-primary);
-          border-color: rgba(255, 255, 255, 0.15);
         }
-        .stability-btn.active {
+        .tab-btn.active {
           background: var(--accent-gradient);
-          color: var(--text-primary);
+          color: #fff;
           border-color: transparent;
-          box-shadow: 0 4px 20px rgba(102, 126, 234, 0.25);
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
         }
-        .stability-btn-content {
-          display: flex;
-          align-items: center;
-          gap: 12px;
+        @media (max-width: 768px) {
+          .tab-nav {
+            flex-wrap: nowrap;
+          }
+          .tab-btn {
+            padding: 7px 10px;
+            font-size: 0.85rem;
+          }
         }
-        .stability-content {
-          flex: 1;
-          min-width: 0;
-        }
+
         .check-header {
-          background: var(--bg-card);
-          border: 1px solid var(--border-glass);
-          border-radius: var(--radius);
-          padding: 24px 28px;
           margin-bottom: 24px;
-          position: relative;
-          overflow: hidden;
-          backdrop-filter: blur(var(--glass-blur));
-          -webkit-backdrop-filter: blur(var(--glass-blur));
-        }
-        .check-header::before {
-          content: '';
-          position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 4px;
-          background: var(--accent-gradient);
-        }
-        .check-header-title {
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: var(--text-primary);
-          margin-bottom: 8px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
         }
         .badge {
           display: inline-block;
@@ -389,8 +371,8 @@ export default function GlobalStability() {
           margin-top: 16px;
         }
         .parameter-item {
-          background: rgba(255, 255, 255, 0.01);
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          background: var(--overlay-very-light);
+          border: 1px solid var(--overlay-light);
           border-radius: var(--radius-sm);
           padding: 14px 18px;
         }
@@ -405,19 +387,16 @@ export default function GlobalStability() {
           font-size: 0.95rem;
           line-height: 1.5;
         }
-        @media (max-width: 900px) {
-          .stability-container {
-            flex-direction: column;
-          }
-          .stability-sidebar {
-            width: 100%;
-          }
+        .stability-list {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
         }
       `}</style>
 
       <h1 className="page-title">Ổn định Tổng thể Công trình</h1>
 
-      <div className="card" style={{ marginBottom: '24px', background: 'linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%)', border: '1px solid rgba(102,126,234,0.3)', boxShadow: '0 0 30px rgba(102,126,234,0.15)' }}>
+      <div className="card" style={{ marginBottom: '32px', background: 'linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%)', border: '1px solid rgba(102,126,234,0.3)', boxShadow: '0 0 30px rgba(102,126,234,0.15)' }}>
         <h2 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Activity size={24} color="var(--accent-primary)" />
           <span className="gradient-text">Hệ thống Yêu cầu Kiểm tra Kết cấu theo TCVN & ISO</span>
@@ -427,58 +406,50 @@ export default function GlobalStability() {
         </p>
       </div>
 
-      <div className="stability-container">
-        {/* Left Sidebar Menu */}
-        <div className="stability-sidebar">
-          {stabilityChecks.map((check, idx) => (
-            <button
-              key={check.id}
-              className={`stability-btn ${activeTab === idx ? 'active' : ''}`}
-              onClick={() => setActiveTab(idx)}
-            >
-              <div className="stability-btn-content">
-                <span style={{ color: activeTab === idx ? '#fff' : 'var(--accent-primary)' }}>
-                  {check.icon}
-                </span>
-                <span>{check.title}</span>
-              </div>
-              <ChevronRight size={16} style={{ opacity: activeTab === idx ? 1 : 0.4 }} />
-            </button>
-          ))}
-        </div>
+      <div className="tab-nav" style={{ flexWrap: 'wrap' }}>
+        {stabilityChecks.map((check, idx) => (
+          <button 
+            key={check.id}
+            className={`tab-btn ${activeTab === idx ? 'active' : ''}`} 
+            onClick={() => setActiveTab(idx)}
+          >
+            {check.icon}
+            {check.title}
+          </button>
+        ))}
+      </div>
 
-        {/* Right Details Panel */}
-        <div className="stability-content">
+      <div className="stability-list">
+        <div key={activeCheck.id} className="collapsible-card" style={{ padding: '24px' }}>
           <div className="check-header">
-            <div className="check-header-title">
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '16px', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span>Tiêu chuẩn tham chiếu: <span style={{ color: 'var(--text-primary)' }}>{activeCheck.ref}</span></span>
               <span className={`badge ${activeCheck.badgeClass}`}>
-                {activeCheck.limitState.split(' ')[0]}
+                {activeCheck.limitState}
               </span>
-              <span>{activeCheck.title}</span>
             </div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '16px', fontWeight: 500 }}>
-              Tiêu chuẩn tham chiếu: <span style={{ color: 'var(--text-primary)' }}>{activeCheck.ref}</span>
-            </div>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0, fontSize: '1rem' }}>
               {activeCheck.description}
             </p>
           </div>
 
           <div className="grid-layout">
-            <Card title="Tiêu chí Chấp nhận & Công thức">
+            <div className="card">
+              <h3 style={{ fontSize: '1.1rem', marginBottom: '12px' }}>Tiêu chí Chấp nhận & Công thức</h3>
               <div className="formula-block">
                 {activeCheck.criterionHtml}
               </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.5, margin: 0 }}>
-                Công trình được chứng minh đảm bảo điều kiện làm việc khi trị số tính toán của tác động gây mất ổn định hoặc chuyển vị nhỏ hơn trị số giới hạn kháng cự cho phép.
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.5, margin: 0, marginTop: '12px' }}>
+                Điều kiện: Trị số tính toán &le; Trị số giới hạn cho phép.
               </p>
-            </Card>
+            </div>
 
-            <Card title="Lưu ý Thiết kế & Kỹ thuật">
+            <div className="card">
+              <h3 style={{ fontSize: '1.1rem', marginBottom: '12px' }}>Lưu ý Thiết kế & Kỹ thuật</h3>
               <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>
                 {activeCheck.notes}
               </div>
-            </Card>
+            </div>
           </div>
 
           {activeCheck.tableData && (

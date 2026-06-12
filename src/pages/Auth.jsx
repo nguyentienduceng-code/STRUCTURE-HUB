@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Eye, EyeOff, AlertCircle, CheckCircle2, Shield, ArrowRight } from 'lucide-react';
-import Card from '../components/Card';
+import { useAuth } from '../context/AuthContext';
 
 export default function Auth() {
+  const { login, signup } = useAuth();
   const [activeTab, setActiveTab] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -26,7 +27,7 @@ export default function Auth() {
     return /\S+@\S+\.\S+/.test(email);
   };
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
@@ -43,45 +44,24 @@ export default function Auth() {
 
     setIsLoading(true);
 
-    setTimeout(() => {
-      // Fetch users from localStorage
-      const users = JSON.parse(localStorage.getItem('sh_users') || '[]');
-      const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-
-      if (!user) {
-        // If localStorage is empty, let's create a default admin account
-        if (email.toLowerCase() === 'engineer@structurehub.com' && password === '123456') {
-          const defaultUser = { name: 'Kỹ sư Kết cấu', email: 'engineer@structurehub.com' };
-          localStorage.setItem('sh_user_session', JSON.stringify(defaultUser));
-          setSuccess('Đăng nhập thành công! Đang chuyển hướng...');
-          setIsLoading(false);
-          // Dispatch a custom event to notify App.jsx of login change
-          window.dispatchEvent(new Event('authChange'));
-          setTimeout(() => navigate('/'), 1200);
-          return;
-        }
-        setError('Tài khoản không tồn tại. Vui lòng đăng ký mới.');
-        setIsLoading(false);
-        return;
-      }
-
-      if (user.password !== password) {
-        setError('Mật khẩu không chính xác.');
-        setIsLoading(false);
-        return;
-      }
-
-      // Successful login
-      const sessionUser = { name: user.name, email: user.email };
-      localStorage.setItem('sh_user_session', JSON.stringify(sessionUser));
-      setSuccess(`Chào mừng trở lại, ${user.name}!`);
-      setIsLoading(false);
-      window.dispatchEvent(new Event('authChange'));
+    try {
+      await login(email, password);
+      setSuccess('Đăng nhập thành công! Đang chuyển hướng...');
       setTimeout(() => navigate('/'), 1200);
-    }, 800);
+    } catch (err) {
+      let message = 'Đăng nhập thất bại. Vui lòng thử lại.';
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        message = 'Email hoặc mật khẩu không chính xác.';
+      } else if (err.code === 'auth/too-many-requests') {
+        message = 'Tài khoản tạm thời bị khóa do thử sai quá nhiều lần. Vui lòng thử lại sau.';
+      }
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRegisterSubmit = (e) => {
+  const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
@@ -108,30 +88,21 @@ export default function Auth() {
 
     setIsLoading(true);
 
-    setTimeout(() => {
-      const users = JSON.parse(localStorage.getItem('sh_users') || '[]');
-      const userExists = users.some(u => u.email.toLowerCase() === email.toLowerCase());
-
-      if (userExists || email.toLowerCase() === 'engineer@structurehub.com') {
-        setError('Email này đã được sử dụng.');
-        setIsLoading(false);
-        return;
-      }
-
-      // Add user
-      const newUser = { name, email, password };
-      users.push(newUser);
-      localStorage.setItem('sh_users', JSON.stringify(users));
-
-      // Auto login after registration
-      const sessionUser = { name, email };
-      localStorage.setItem('sh_user_session', JSON.stringify(sessionUser));
-
-      setSuccess('Đăng ký tài khoản thành công!');
-      setIsLoading(false);
-      window.dispatchEvent(new Event('authChange'));
+    try {
+      await signup(email, password, name);
+      setSuccess('Đăng ký tài khoản thành công! Đang chuyển hướng...');
       setTimeout(() => navigate('/'), 1200);
-    }, 1000);
+    } catch (err) {
+      let message = 'Đăng ký thất bại. Vui lòng thử lại.';
+      if (err.code === 'auth/email-already-in-use') {
+        message = 'Email này đã được sử dụng.';
+      } else if (err.code === 'auth/weak-password') {
+        message = 'Mật khẩu quá yếu.';
+      }
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

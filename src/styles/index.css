@@ -2,8 +2,8 @@
   /* LIGHT MODE (Default) */
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
-  --bg-card: rgba(255, 255, 255, 0.9);
-  --bg-glass: rgba(255, 255, 255, 0.6);
+  --bg-card: var(--overlay-heavy);
+  --bg-glass: var(--overlay-heavy);
   --border-glass: rgba(0, 0, 0, 0.08);
   --text-primary: #0f172a;
   --text-secondary: #475569;
@@ -28,6 +28,13 @@
   --border-formula: rgba(79, 70, 229, 0.12);
   --text-formula: #0f172a;
   --shadow-formula: 0 4px 12px rgba(79, 70, 229, 0.03);
+
+  /* OVERLAYS */
+  --overlay-very-light: rgba(0, 0, 0, 0.02);
+  --overlay-light: rgba(0, 0, 0, 0.04);
+  --overlay-hover: rgba(0, 0, 0, 0.08);
+  --overlay-active: rgba(0, 0, 0, 0.12);
+  --overlay-heavy: rgba(0, 0, 0, 0.15);
 }
 
 [data-theme="dark"] {
@@ -35,8 +42,8 @@
   --bg-primary: #1e1e1e;
   --bg-secondary: #252526;
   --bg-card: rgba(37, 37, 38, 0.95);
-  --bg-glass: rgba(255, 255, 255, 0.04);
-  --border-glass: rgba(255, 255, 255, 0.08);
+  --bg-glass: var(--overlay-light);
+  --border-glass: var(--overlay-hover);
   --text-primary: #e2e8f0;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
@@ -48,9 +55,16 @@
   
   /* Formula Variables (Dark Mode) */
   --bg-formula: rgba(0, 0, 0, 0.3);
-  --border-formula: rgba(255, 255, 255, 0.04);
+  --border-formula: var(--overlay-light);
   --text-formula: #f8fafc;
   --shadow-formula: inset 0 0 10px rgba(0, 0, 0, 0.5);
+
+  /* OVERLAYS */
+  --overlay-very-light: var(--overlay-very-light);
+  --overlay-light: var(--overlay-light);
+  --overlay-hover: var(--overlay-hover);
+  --overlay-active: var(--overlay-active);
+  --overlay-heavy: var(--overlay-active);
 }
 
 body {
@@ -92,7 +106,7 @@ a:hover {
   background: var(--bg-primary);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.1);
+  background: var(--overlay-active);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {

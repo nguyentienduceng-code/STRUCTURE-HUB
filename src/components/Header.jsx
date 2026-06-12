@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Bell, Menu, Sun, Moon, LogIn, LogOut, User as UserIcon, ChevronDown } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
-export default function Header({ toggleSidebar, theme, toggleTheme, currentUser, onLogout }) {
+export default function Header({ toggleSidebar, theme, toggleTheme }) {
+  const { currentUser, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -23,15 +25,105 @@ export default function Header({ toggleSidebar, theme, toggleTheme, currentUser,
     return name ? name.charAt(0).toUpperCase() : 'U';
   };
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearch, setShowSearch] = useState(false);
+  const searchRef = useRef(null);
+
+  const searchIndex = [
+    { title: 'Nền tảng Sức bền vật liệu', path: '/engineering-foundations' },
+    { title: 'Mô men quán tính & tiết diện', path: '/engineering-foundations' },
+    { title: 'Vòng tròn Mohr & Ứng suất', path: '/engineering-foundations' },
+    { title: 'Tải trọng & Tổ hợp (TCVN 2737)', path: '/loads-combinations' },
+    { title: 'Cấu kiện Bê tông cốt thép', path: '/rc-components' },
+    { title: 'Cấu kiện Thép', path: '/steel-components' },
+    { title: 'Ổn định tổng thể', path: '/global-stability' },
+    { title: 'Nền móng & Địa kỹ thuật', path: '/geotechnical-foundations' },
+    { title: 'Thông số Vật liệu', path: '/parameters' },
+  ];
+
+  useEffect(() => {
+    function handleSearchOutside(event) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearch(false);
+      }
+    }
+    document.addEventListener('mousedown', handleSearchOutside);
+    return () => document.removeEventListener('mousedown', handleSearchOutside);
+  }, []);
+
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    if (query.trim()) {
+      const results = searchIndex.filter(item => 
+        item.title.toLowerCase().includes(query.toLowerCase())
+      );
+      setSearchResults(results);
+      setShowSearch(true);
+    } else {
+      setShowSearch(false);
+    }
+  };
+
   return (
     <header className="header">
       <button className="menu-toggle" onClick={toggleSidebar} aria-label="Toggle Navigation">
         <Menu size={24} color="var(--text-primary)" />
       </button>
 
-      <div className="search-bar">
+      <div className="search-bar" ref={searchRef} style={{ position: 'relative' }}>
         <Search size={18} color="var(--text-secondary)" />
-        <input type="text" placeholder="Tìm kiếm tiêu chuẩn, công thức..." />
+        <input 
+          type="text" 
+          placeholder="Tìm kiếm tiêu chuẩn, công thức..." 
+          value={searchQuery}
+          onChange={handleSearch}
+          onFocus={() => { if(searchQuery.trim()) setShowSearch(true); }}
+        />
+        
+        {showSearch && searchResults.length > 0 && (
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: '8px',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-glass)',
+            borderRadius: '12px',
+            boxShadow: 'var(--shadow-glow)',
+            backdropFilter: 'blur(var(--glass-blur))',
+            padding: '8px',
+            zIndex: 1000,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '4px'
+          }}>
+            {searchResults.map((result, index) => (
+              <Link 
+                key={index}
+                to={result.path}
+                onClick={() => {
+                  setShowSearch(false);
+                  setSearchQuery('');
+                }}
+                style={{
+                  padding: '10px 12px',
+                  borderRadius: '8px',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.9rem',
+                  textDecoration: 'none',
+                  display: 'block',
+                  transition: 'background 0.2s'
+                }}
+                className="search-result-item"
+              >
+                {result.title}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
       
       <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
@@ -68,7 +160,7 @@ export default function Header({ toggleSidebar, theme, toggleTheme, currentUser,
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                background: 'rgba(255, 255, 255, 0.04)',
+                background: 'var(--overlay-light)',
                 border: '1px solid var(--border-glass)',
                 padding: '4px 8px',
                 borderRadius: '20px',
@@ -151,10 +243,14 @@ export default function Header({ toggleSidebar, theme, toggleTheme, currentUser,
                 </Link>
 
                 <button 
-                  onClick={() => {
+                  onClick={async () => {
                     setDropdownOpen(false);
-                    onLogout();
-                    navigate('/');
+                    try {
+                      await logout();
+                      navigate('/');
+                    } catch (error) {
+                      console.error("Lỗi đăng xuất:", error);
+                    }
                   }}
                   style={{
                     display: 'flex',
@@ -208,7 +304,7 @@ export default function Header({ toggleSidebar, theme, toggleTheme, currentUser,
       
       <style>{`
         .dropdown-item:hover {
-          background: rgba(255, 255, 255, 0.05);
+          background: var(--overlay-light);
           color: var(--text-primary) !important;
         }
         .dropdown-item-logout:hover {

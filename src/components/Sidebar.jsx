@@ -1,7 +1,9 @@
 import { NavLink } from 'react-router-dom';
 import { Home, Box, Calculator, Building2, AlignVerticalSpaceAround, Settings, Layers, User as UserIcon } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
-export default function Sidebar({ isOpen, setIsOpen, currentUser }) {
+export default function Sidebar({ isOpen, setIsOpen }) {
+  const { currentUser } = useAuth();
   const navItems = [
     { path: '/', label: 'Trang chủ', icon: <Home size={20} /> },
     { path: '/engineering-foundations', label: '1. Nền tảng Kỹ thuật', icon: <Box size={20} /> },
@@ -106,7 +108,7 @@ export default function Sidebar({ isOpen, setIsOpen, currentUser }) {
                 width: '32px', 
                 height: '32px', 
                 borderRadius: '50%', 
-                background: 'rgba(255,255,255,0.03)', 
+                background: 'var(--overlay-very-light)', 
                 border: '1px dashed var(--border-glass)',
                 display: 'flex', 
                 alignItems: 'center', 

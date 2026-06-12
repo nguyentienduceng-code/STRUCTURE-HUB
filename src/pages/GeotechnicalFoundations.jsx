@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import Card from '../components/Card';
+import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   BookOpen, 
-  ShieldAlert, 
   Layers, 
   Activity, 
-  FileText, 
+  FileText,
+  ShieldAlert,
   Calculator, 
   HelpCircle,
   TrendingUp,
@@ -52,9 +52,9 @@ export default function GeotechnicalFoundations() {
   const [totalPiles, setTotalPiles] = useState(120);
   const [consequenceClass, setConsequenceClass] = useState('C2');
 
-  let consequenceFactor = 1.0;
-  let minTests = 1;
-  let testNote = '';
+  let consequenceFactor;
+  let minTests;
+  let testNote;
 
   if (consequenceClass === 'C1') {
     consequenceFactor = 1.0;
@@ -92,7 +92,7 @@ export default function GeotechnicalFoundations() {
           align-items: center;
           gap: 6px;
           padding: 8px 14px;
-          background: rgba(255, 255, 255, 0.02);
+          background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
@@ -104,7 +104,7 @@ export default function GeotechnicalFoundations() {
           transition: all 0.2s ease;
         }
         .tab-btn:hover {
-          background: rgba(255, 255, 255, 0.05);
+          background: var(--overlay-light);
           color: var(--text-primary);
         }
         .tab-btn.active {
@@ -204,23 +204,23 @@ export default function GeotechnicalFoundations() {
       <div className="tab-nav">
         <button className={`tab-btn ${activeTab === 'uls' ? 'active' : ''}`} onClick={() => setActiveTab('uls')}>
           <Activity size={18} />
-          1. Triết lý Sức chịu tải (ULS)
+          7.1. Triết lý Sức chịu tải (ULS)
         </button>
         <button className={`tab-btn ${activeTab === 'shallow' ? 'active' : ''}`} onClick={() => setActiveTab('shallow')}>
           <Layers size={18} />
-          2. Móng nông thực hành (9362)
+          7.2. Móng nông thực hành (9362)
         </button>
         <button className={`tab-btn ${activeTab === 'deep' ? 'active' : ''}`} onClick={() => setActiveTab('deep')}>
           <FileText size={18} />
-          3. Móng cọc sâu (10304:2025)
+          7.3. Móng cọc sâu (10304:2025)
         </button>
         <button className={`tab-btn ${activeTab === 'sls' ? 'active' : ''}`} onClick={() => setActiveTab('sls')}>
           <TrendingUp size={18} />
-          4. Lý thuyết Biến dạng (SLS)
+          7.4. Lý thuyết Biến dạng (SLS)
         </button>
         <button className={`tab-btn ${activeTab === 'calcs' ? 'active' : ''}`} onClick={() => setActiveTab('calcs')}>
           <Calculator size={18} />
-          5. Bộ tính toán Địa kỹ thuật
+          7.5. Bộ tính toán Địa kỹ thuật
         </button>
       </div>
 
@@ -228,7 +228,7 @@ export default function GeotechnicalFoundations() {
       {activeTab === 'uls' && (
         <div className="geo-section">
           <div className="grid-half">
-            <Card title="Phân loại & Định nghĩa các loại Sức chịu tải">
+            <CollapsibleSection defaultOpen={false} title="1.1. Phân loại & Định nghĩa các loại Sức chịu tải">
               <p style={{ lineHeight: 1.6 }}>
                 Trong thiết kế móng theo trạng thái giới hạn cường độ (ULS), ta cần phân biệt rõ ràng 5 định nghĩa sức chịu tải nền đất để tránh nhầm lẫn nghiêm trọng trong việc áp dụng hệ số an toàn:
               </p>
@@ -262,9 +262,9 @@ export default function GeotechnicalFoundations() {
                   </div>
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="So sánh 4 Lý thuyết Sức chịu tải Kinh điển">
+            <CollapsibleSection title="1.2. So sánh 4 Lý thuyết Sức chịu tải Kinh điển">
               <p style={{ lineHeight: 1.6, marginBottom: '12px' }}>
                 Lịch sử cơ học đất ghi nhận 4 thuyết tính toán sức chịu tải cực hạn móng nông phổ biến, phát triển từ mô hình đơn giản đến các mô hình thực hành sát thực tế:
               </p>
@@ -313,7 +313,7 @@ export default function GeotechnicalFoundations() {
                   </tbody>
                 </table>
               </div>
-            </Card>
+            </CollapsibleSection>
           </div>
         </div>
       )}
@@ -322,7 +322,7 @@ export default function GeotechnicalFoundations() {
       {activeTab === 'shallow' && (
         <div className="geo-section">
           <div className="grid-half">
-            <Card title="Sức chịu tải tính toán của Đất nền R (TCVN 9362:2012)">
+            <CollapsibleSection defaultOpen={false} title="2.1. Sức chịu tải tính toán của Đất nền R (TCVN 9362:2012)">
               <p style={{ lineHeight: 1.6 }}>
                 Theo tiêu chuẩn thiết kế nền nhà và công trình <strong>TCVN 9362:2012</strong>, cường độ tính toán của đất nền dưới đáy móng <var>R</var> (kPa) được xác định bằng công thức nửa thực nghiệm:
               </p>
@@ -342,9 +342,9 @@ export default function GeotechnicalFoundations() {
                 <li><span className="bullet-purple">»</span> <strong><var>&gamma;</var>, <var>&gamma;'</var>:</strong> Trọng lượng riêng của đất nằm dưới đáy móng và trên đáy móng (kN/m³).</li>
                 <li><span className="bullet-purple">»</span> <strong><var>c</var>:</strong> Lực dính đơn vị tính toán của lớp đất nằm trực tiếp dưới đáy móng (kPa).</li>
               </ul>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="Ảnh hưởng của Nước ngầm & Kiểm tra chọc thủng đài móng">
+            <CollapsibleSection title="2.2. Ảnh hưởng của Nước ngầm & Kiểm tra chọc thủng đài móng">
               <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>1. Sự suy giảm sức chịu tải do mực nước ngầm:</h4>
               <p style={{ fontSize: '0.92rem', lineHeight: 1.6 }}>
                 Khi mực nước ngầm dâng cao lên trên đáy móng, lực đẩy nổi Archimedes làm giảm trọng lượng riêng hữu hiệu của đất (<var>&gamma;</var><sub>sub</sub> &asymp; <var>&gamma;</var><sub>sat</sub> - 10 kN/m³). Trọng lượng riêng giảm gần 50% sẽ trực tiếp làm giảm sức chịu tải của nền đất tới 30% - 50%. Do đó, thiết kế bắt buộc phải dùng trị số <var>&gamma;</var><sub>nổi</sub> cho phần đất ngập nước dưới đáy móng.
@@ -365,7 +365,7 @@ export default function GeotechnicalFoundations() {
               <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
                 Nếu chiều dày đài móng <var>h</var><sub>0</sub> không đủ chịu chọc thủng, ta phải chủ động gia tăng chiều dày đài móng hoặc bố trí cốt thép đai, cốt thép xiên chống chọc thủng bên trong đài.
               </p>
-            </Card>
+            </CollapsibleSection>
           </div>
         </div>
       )}
@@ -373,7 +373,7 @@ export default function GeotechnicalFoundations() {
       {/* Tab 3: Móng cọc sâu (TCVN 10304:2025) */}
       {activeTab === 'deep' && (
         <div className="geo-section">
-          <Card title="Cập nhật quan trọng theo Tiêu chuẩn Mới TCVN 10304:2025">
+          <CollapsibleSection defaultOpen={false} title="3.1. Cập nhật quan trọng theo Tiêu chuẩn Mới TCVN 10304:2025">
             <div className="grid-half">
               <div>
                 <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>1. Phân cấp hậu quả công trình & Hệ số tầm quan trọng (<var>&gamma;</var><sub>n</sub>):</h4>
@@ -416,7 +416,7 @@ export default function GeotechnicalFoundations() {
                 </ul>
               </div>
             </div>
-          </Card>
+          </CollapsibleSection>
         </div>
       )}
 
@@ -424,7 +424,7 @@ export default function GeotechnicalFoundations() {
       {activeTab === 'sls' && (
         <div className="geo-section">
           <div className="grid-half">
-            <Card title="Khống chế Lún giới hạn & Mô hình Bán không gian đàn hồi">
+            <CollapsibleSection defaultOpen={false} title="4.1. Khống chế Lún giới hạn & Mô hình Bán không gian đàn hồi">
               <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>1. Ràng buộc lún của TCVN 9362:2012:</h4>
               <p style={{ fontSize: '0.92rem', lineHeight: 1.6 }}>
                 Để đảm bảo công trình vận hành bình thường, không gây nứt toác tường xây hoặc nghiêng lệch kết cấu, độ lún tuyệt đối và lún lệch phải thỏa mãn:
@@ -444,9 +444,9 @@ export default function GeotechnicalFoundations() {
                 </div>
                 Với <var>E</var><sub>s</sub> là mô-đun đàn hồi của vật liệu cọc, <var>G</var><sub>s</sub> là mô-đun biến dạng trượt của đất nền.
               </div>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="Hiệu ứng Nhóm cọc & Độ lún do xây chen">
+            <CollapsibleSection title="4.2. Hiệu ứng Nhóm cọc & Độ lún do xây chen">
               <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>1. Hiệu ứng nhóm cọc (Group interaction effect):</h4>
               <p style={{ fontSize: '0.92rem', lineHeight: 1.6 }}>
                 Khi các cọc bố trí gần nhau (khoảng cách &lt; 6<var>d</var>), bầu ứng suất dưới mũi cọc sẽ giao thoa và cộng dồn. Độ lún của cọc thứ <var>i</var> trong nhóm tăng lên do ảnh hưởng của các cọc <var>j</var> lân cận:
@@ -467,7 +467,7 @@ export default function GeotechnicalFoundations() {
                 <li><strong>Độ lún co ngắn đàn hồi thân cọc (<var>s</var><sub>el</sub>):</strong> Biến dạng co ngắn bản thân vật liệu bê tông cọc dưới tải trọng dọc cực lớn (thường chiếm 5-15% tổng độ lún).</li>
                 <li><strong>Ảnh hưởng ép cọc làm trồi đất (<var>s</var><sub>constr</sub>):</strong> Việc đóng/ép hàng loạt cọc đặc chiếm chỗ trong sét dẻo chảy tạo ra áp lực nước lỗ rỗng thặng dư cực lớn, đẩy trồi đất nền và gây lún nứt nghiêm trọng cho công trình lân cận khi áp lực này tiêu tán. Bắt buộc phải khoan dẫn giảm áp hoặc ép tốc độ chậm.</li>
               </ul>
-            </Card>
+            </CollapsibleSection>
           </div>
         </div>
       )}
@@ -477,7 +477,7 @@ export default function GeotechnicalFoundations() {
         <div className="geo-section">
           <div className="grid-half">
             {/* Widget 1: Bearing Capacity Converter */}
-            <Card title="1. Quy đổi Đại lượng Sức chịu tải Móng nông">
+            <CollapsibleSection defaultOpen={false} title="5.1. Quy đổi Đại lượng Sức chịu tải Móng nông">
               <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
                 Nhập áp lực cực hạn gộp để tự động tính ra các thành phần áp lực tịnh và an toàn theo lý thuyết ULS:
               </p>
@@ -540,15 +540,15 @@ export default function GeotechnicalFoundations() {
                     <strong style={{ display: 'block', color: '#fff', fontSize: '1.05rem' }}>{qNetSafe} kPa</strong>
                   </div>
                 </div>
-                <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
+                <div style={{ marginTop: '8px', borderTop: '1px solid var(--overlay-light)', paddingTop: '8px' }}>
                   <span style={{ color: 'var(--accent-secondary)' }}>Sức chịu tải an toàn gộp <var>q</var><sub>safe</sub>:</span>
                   <strong style={{ display: 'block', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>{qSafe} kPa</strong>
                 </div>
               </div>
-            </Card>
+            </CollapsibleSection>
 
             {/* Widget 2: Pile capacity estimator from SPT */}
-            <Card title="2. Ước lượng Sức chịu tải Cọc đơn từ SPT">
+            <CollapsibleSection title="5.2. Ước lượng Sức chịu tải Cọc đơn từ SPT">
               <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
                 Ước tính sơ bộ sức chịu tải dọc trục thiết kế dựa trên chỉ số SPT trung bình dọc thân cọc và tại mũi cọc:
               </p>
@@ -618,7 +618,7 @@ export default function GeotechnicalFoundations() {
                     <strong style={{ display: 'block', color: '#fff' }}>{Qb} kN</strong>
                   </div>
                 </div>
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
+                <div style={{ borderTop: '1px solid var(--overlay-light)', paddingTop: '8px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Cực hạn <var>R</var><sub>u</sub>: <strong>{Ru} kN</strong></span>
                     <span style={{ fontSize: '0.88rem', color: 'var(--accent-secondary)' }}>Thiết kế sơ bộ <var>R</var><sub>design</sub>:</span>
@@ -628,11 +628,11 @@ export default function GeotechnicalFoundations() {
                   </strong>
                 </div>
               </div>
-            </Card>
+            </CollapsibleSection>
           </div>
 
           {/* Widget 3: Testing specifications checker */}
-          <Card title="3. Tra cứu Quy chuẩn Thí nghiệm Nén tĩnh & Khoảng cách cọc" style={{ marginTop: '24px' }}>
+          <CollapsibleSection title="5.3. Tra cứu Quy chuẩn Thí nghiệm Nén tĩnh & Khoảng cách cọc" style={{ marginTop: '24px' }}>
             <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
               Nhập tổng số lượng cọc thiết kế đại trà trên mặt bằng và chọn cấp hậu quả công trình để xác định số lượng cọc phải thí nghiệm nén tĩnh bắt buộc theo quy định tiêu chuẩn:
             </p>
@@ -662,7 +662,7 @@ export default function GeotechnicalFoundations() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+              <div style={{ background: 'var(--overlay-very-light)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <h4 style={{ color: 'var(--accent-primary)', fontSize: '0.92rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <CheckCircle size={16} />
                   <span>Quy định Nén tĩnh bắt buộc</span>
@@ -675,7 +675,7 @@ export default function GeotechnicalFoundations() {
                 </p>
               </div>
 
-              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+              <div style={{ background: 'var(--overlay-very-light)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <h4 style={{ color: 'var(--accent-primary)', fontSize: '0.92rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <HelpCircle size={16} />
                   <span>Hệ số tầm quan trọng & Cấu tạo cọc</span>
@@ -694,7 +694,7 @@ export default function GeotechnicalFoundations() {
                 </ul>
               </div>
             </div>
-          </Card>
+          </CollapsibleSection>
         </div>
       )}
 

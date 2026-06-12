@@ -11,6 +11,7 @@ import GlobalStability from './pages/GlobalStability';
 import GeotechnicalFoundations from './pages/GeotechnicalFoundations';
 import ParametersDefinitions from './pages/ParametersDefinitions';
 import Auth from './pages/Auth';
+import { AuthProvider } from './context/AuthContext';
 
 import './styles/index.css';
 import './styles/layout.css';
@@ -24,41 +25,19 @@ function App() {
     return savedTheme ? savedTheme : 'dark';
   });
 
-  // Current User state
-  const [currentUser, setCurrentUser] = useState(() => {
-    const session = localStorage.getItem('sh_user_session');
-    return session ? JSON.parse(session) : null;
-  });
-
   // Apply theme to document body and save to localStorage
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  // Sync auth state across components via custom event
-  useEffect(() => {
-    const handleAuthChange = () => {
-      const session = localStorage.getItem('sh_user_session');
-      setCurrentUser(session ? JSON.parse(session) : null);
-    };
-
-    window.addEventListener('authChange', handleAuthChange);
-    return () => window.removeEventListener('authChange', handleAuthChange);
-  }, []);
-
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('sh_user_session');
-    setCurrentUser(null);
-    window.dispatchEvent(new Event('authChange'));
-  };
-
   return (
-    <Router>
+    <AuthProvider>
+      <Router>
       {theme === 'light' && (
         <div className="bg-animation">
           <div className="bg-orb bg-orb-1"></div>
@@ -67,7 +46,7 @@ function App() {
         </div>
       )}
       <div className="app-container">
-        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} currentUser={currentUser} />
+        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
         {isSidebarOpen && (
           <div className="sidebar-backdrop" onClick={() => setIsSidebarOpen(false)}></div>
         )}
@@ -76,8 +55,6 @@ function App() {
             toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
             theme={theme}
             toggleTheme={toggleTheme}
-            currentUser={currentUser}
-            onLogout={handleLogout}
           />
           <div className="page-content">
             <Routes>
@@ -95,6 +72,7 @@ function App() {
         </main>
       </div>
     </Router>
+  </AuthProvider>
   );
 }
 

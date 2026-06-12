@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import '../styles/skeleton.css'; // Let's put progress bar css here too, or inline
 
 const ProgressBar = ({ progress, height = 4, color = 'var(--accent-primary)', isLoading = true }) => {
@@ -6,7 +6,7 @@ const ProgressBar = ({ progress, height = 4, color = 'var(--accent-primary)', is
 
   useEffect(() => {
     if (progress !== undefined) {
-      setInternalProgress(progress);
+      setTimeout(() => setInternalProgress(progress), 0);
     } else if (isLoading) {
       // Simulate progress if none provided
       const interval = setInterval(() => {
@@ -17,7 +17,7 @@ const ProgressBar = ({ progress, height = 4, color = 'var(--accent-primary)', is
       }, 500);
       return () => clearInterval(interval);
     } else {
-      setInternalProgress(100);
+      setTimeout(() => setInternalProgress(100), 0);
     }
   }, [progress, isLoading]);
 

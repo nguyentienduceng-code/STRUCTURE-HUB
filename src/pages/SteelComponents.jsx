@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import Card from '../components/Card';
+import CollapsibleSection from '../components/CollapsibleSection';
 import Skeleton from '../components/Skeleton';
 import ProgressBar from '../components/ProgressBar';
 import { 
   BookOpen, 
   ShieldAlert, 
-  Layers, 
   Crosshair, 
   Sliders, 
   Calculator, 
@@ -20,11 +19,11 @@ export default function SteelComponents() {
 
   // Simulate loading data when tab changes
   useEffect(() => {
-    setIsLoading(true);
+    const t1 = setTimeout(() => setIsLoading(true), 0);
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1200);
-    return () => clearTimeout(timer);
+    return () => { clearTimeout(t1); clearTimeout(timer); };
   }, [activeTab]);
 
   const renderSkeletons = () => (
@@ -59,7 +58,7 @@ export default function SteelComponents() {
           align-items: center;
           gap: 8px;
           padding: 10px 18px;
-          background: rgba(255, 255, 255, 0.02);
+          background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: var(--radius-sm);
           color: var(--text-secondary);
@@ -71,7 +70,7 @@ export default function SteelComponents() {
           transition: all var(--transition);
         }
         .tab-btn:hover {
-          background: rgba(255, 255, 255, 0.05);
+          background: var(--overlay-light);
           color: var(--text-primary);
         }
         .tab-btn.active {
@@ -129,21 +128,21 @@ export default function SteelComponents() {
           onClick={() => setActiveTab('tcvn')}
         >
           <Calculator size={18} />
-          <span>4.1. Tiêu chuẩn Việt Nam TCVN 5575:2024</span>
+          <span>5.1. Tiêu chuẩn Việt Nam TCVN 5575:2024</span>
         </button>
         <button 
           className={`tab-btn ${activeTab === 'aisc' ? 'active' : ''}`}
           onClick={() => setActiveTab('aisc')}
         >
           <Crosshair size={18} />
-          <span>4.2. Tiêu chuẩn Mỹ AISC 360-10</span>
+          <span>5.2. Tiêu chuẩn Mỹ AISC 360-10</span>
         </button>
         <button 
           className={`tab-btn ${activeTab === 'compare' ? 'active' : ''}`}
           onClick={() => setActiveTab('compare')}
         >
           <Shuffle size={18} />
-          <span>So Sánh Triết Lý TCVN vs AISC</span>
+          <span>5.3. So Sánh Triết Lý & Chuyển Vị</span>
         </button>
       </div>
 
@@ -154,7 +153,7 @@ export default function SteelComponents() {
           {activeTab === 'tcvn' && (
         <div className="steel-section">
           <div className="sub-grid" style={{ marginBottom: '24px' }}>
-            <Card title="Phân nhóm Kết cấu & Chọn Vật liệu (Mục 4.3.1)">
+            <CollapsibleSection defaultOpen={false} title="Phân nhóm Kết cấu & Chọn Vật liệu (Mục 4.3.1)">
               <ul className="bullet-list">
                 <li>
                   <strong>Nhóm 1 (Tải trọng động cực nặng):</strong> Kết cấu chịu tác dụng trực tiếp của tải trọng động lực liên tục (dầm cầu trục chế độ công tác nặng, giàn khẩu độ lớn). Sử dụng thép dẻo dai cao mác <strong>S235, S275, S355</strong> (không dùng S450).
@@ -169,9 +168,9 @@ export default function SteelComponents() {
                   <strong>Nhóm 4 (Cấu kiện phụ):</strong> Xà gồ, thanh giằng, sàn thao tác, cầu thang phụ. Chỉ sử dụng thép mác thấp <strong>S235</strong> để tối ưu kinh tế.
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="Phân cấp Tiết diện theo Biến dạng Dẻo (Mục 4.2.7)">
+            <CollapsibleSection title="Phân cấp Tiết diện theo Biến dạng Dẻo (Mục 4.2.7)">
               <ul className="bullet-list">
                 <li>
                   <strong>Cấp 1 (Đàn hồi hoàn toàn):</strong> Tiết diện làm việc hoàn toàn trong giới hạn đàn hồi (<var>&sigma;</var> &le; <var>f<sub>yd</sub></var>). Bắt buộc áp dụng cho dầm cầu trục chế độ làm việc nặng, dầm tổ hợp từ hai loại thép khác nhau, cấu kiện chịu mỏi cao.
@@ -183,7 +182,7 @@ export default function SteelComponents() {
                   <strong>Cấp 3 (Dẻo hoàn toàn / Khớp dẻo):</strong> Cho phép hình thành khớp dẻo hoàn toàn trên toàn bộ tiết diện. Áp dụng cho dầm liên tục chịu tải tĩnh khi tính toán phân bổ lại nội lực nhằm tối ưu hóa kết cấu dầm.
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
           </div>
 
           <div className="card" style={{ marginBottom: '24px' }}>
@@ -363,7 +362,7 @@ export default function SteelComponents() {
                 AISC 360-10 cho phép kỹ sư lựa chọn độc lập một trong hai phương pháp luận thiết kế chính:
               </p>
               <div className="sub-grid" style={{ marginTop: '16px' }}>
-                <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-glass)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ background: 'var(--overlay-very-light)', border: '1px solid var(--border-glass)', padding: '16px', borderRadius: '8px' }}>
                   <strong style={{ color: 'var(--accent-primary)' }}>LRFD (Load & Resistance Factor Design):</strong>
                   <p style={{ marginTop: '8px' }}>Thiết kế theo hệ số tải trọng và sức kháng. Sức kháng thiết kế lớn hơn nội lực yêu cầu do tổ hợp tải trọng có hệ số.</p>
                   <div className="formula-block">
@@ -371,7 +370,7 @@ export default function SteelComponents() {
                   </div>
                   <p style={{ fontSize: '0.9rem' }}>Với &phi; là hệ số sức kháng (giảm sức bền để an toàn, &phi; &lt; 1.0).</p>
                 </div>
-                <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-glass)', padding: '16px', borderRadius: '8px' }}>
+                <div style={{ background: 'var(--overlay-very-light)', border: '1px solid var(--border-glass)', padding: '16px', borderRadius: '8px' }}>
                   <strong style={{ color: 'var(--amber)' }}>ASD (Allowable Strength Design):</strong>
                   <p style={{ marginTop: '8px' }}>Thiết kế theo sức kháng cho phép. Sức kháng cho phép bằng sức kháng danh định chia cho hệ số an toàn lớn hơn 1.</p>
                   <div className="formula-block">
@@ -384,7 +383,7 @@ export default function SteelComponents() {
           </div>
 
           <div className="grid-layout">
-            <Card title="Cấu kiện Chịu Kéo (Chương D)">
+            <CollapsibleSection defaultOpen={false} title="Cấu kiện Chịu Kéo (Chương D)">
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '12px' }}>
                 Sức kháng kéo thiết kế <var>P<sub>n</sub></var> được xác định dựa trên hai trạng thái giới hạn phá hoại:
               </p>
@@ -405,9 +404,9 @@ export default function SteelComponents() {
                   Trong đó diện tích hiệu dụng <var>A<sub>e</sub></var> = <var>U</var> &bull; <var>A<sub>n</sub></var> (với <var>U</var> là hệ số trượt trễ shear lag, phản ánh hiệu ứng truyền lực không đều qua mối nối).
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="Cấu kiện Chịu Nén (Chương E)">
+            <CollapsibleSection title="Cấu kiện Chịu Nén (Chương E)">
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '12px' }}>
                 Sức kháng nén danh định chống uốn dọc uốn xoắn: <var>P<sub>n</sub></var> = <var>F<sub>cr</sub></var> &bull; <var>A<sub>g</sub></var>. Ứng suất uốn dọc giới hạn <var>F<sub>cr</sub></var> tính theo độ mảnh dọc trục <var>KL</var>/<var>r</var>:
               </p>
@@ -431,11 +430,11 @@ export default function SteelComponents() {
                   LRFD: &phi;<sub>c</sub> = 0.90 | ASD: &Omega;<sub>c</sub> = 1.67.
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
           </div>
 
           <div className="sub-grid" style={{ marginTop: '24px' }}>
-            <Card title="Cấu kiện Chịu Uốn (Chương F)">
+            <CollapsibleSection title="Cấu kiện Chịu Uốn (Chương F)">
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '12px' }}>
                 Khác biệt lớn nhất với TCVN là việc AISC phân loại độ mảnh của tiết diện làm 3 nhóm để tính sức kháng uốn <var>M<sub>n</sub></var>:
               </p>
@@ -458,9 +457,9 @@ export default function SteelComponents() {
                   </ul>
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="Cấu kiện Chịu uốn nén đồng thời (Chương H)">
+            <CollapsibleSection title="Cấu kiện Chịu uốn nén đồng thời (Chương H)">
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '12px' }}>
                 Sự làm việc đồng thời của lực dọc yêu cầu <var>P<sub>r</sub></var> và mô-men yêu cầu <var>M<sub>rx</sub></var>, <var>M<sub>ry</sub></var> (Beam-Columns) được kiểm tra qua hai phương trình tương tác liên tục:
               </p>
@@ -481,7 +480,7 @@ export default function SteelComponents() {
                   *Lưu ý:* <var>P<sub>c</sub></var> và <var>M<sub>c</sub></var> lần lượt là sức kháng thiết kế kéo/nén và uốn theo LRFD (&phi;&bull;<var>R<sub>n</sub></var>) hoặc ASD (<span className="fraction"><span className="numerator"><var>R<sub>n</sub></var></span><span className="denominator">&Omega;</span></span>).
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
           </div>
         </div>
       )}
@@ -536,6 +535,198 @@ export default function SteelComponents() {
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          <div className="card" style={{ marginBottom: '24px' }}>
+            <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Activity size={20} color="var(--accent-primary)" />
+              <span>Bảng 1: So sánh giới hạn Độ võng đứng cho kết cấu chịu uốn</span>
+            </h2>
+            <div className="spec-table-container">
+              <table className="spec-table">
+                <thead>
+                  <tr>
+                    <th>Cấu Kiện Kết Cấu Thép</th>
+                    <th>TCVN 2737:2023 & TCVN 5575:2025</th>
+                    <th>Tiêu Chuẩn Mỹ (MBMA 2012 / IBC)</th>
+                    <th>Phân Tích Cơ Sở Chênh Lệch</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Kèo/Dầm chính (Không đỡ trần, để lộ kết cấu)</strong></td>
+                    <td>
+                      <div><var>L</var> &le; 3m : <var>L</var>/150</div>
+                      <div><var>L</var> = 6m : <var>L</var>/200</div>
+                      <div><var>L</var> = 24m : <var>L</var>/250</div>
+                      <div><var>L</var> &ge; 36m : <var>L</var>/300</div>
+                    </td>
+                    <td>
+                      <div><var>L</var>/180 (Hoạt tải)</div>
+                      <div><var>L</var>/120 (Tĩnh + Hoạt tải)</div>
+                    </td>
+                    <td>TCVN chú trọng hiệu ứng thị giác và tâm lý (nhịp lớn, tỷ lệ giới hạn càng gắt). MBMA giữ nguyên tỷ lệ, chấp nhận độ võng tuyệt đối lớn nếu không làm hỏng vật liệu che phủ.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Kèo/Dầm chính (Đỡ trần thạch cao / Vật liệu giòn)</strong></td>
+                    <td>
+                      <div><var>L</var> &le; 6m : <var>L</var>/500</div>
+                      <div><var>L</var> &ge; 12m : <var>L</var>/750</div>
+                      <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>(Yêu cầu cấu tạo tránh nứt)</div>
+                    </td>
+                    <td>
+                      <div><var>L</var>/360 (Hoạt tải)</div>
+                      <div><var>L</var>/240 (Tĩnh + Hoạt tải)</div>
+                    </td>
+                    <td>TCVN cực đoan trong việc bảo vệ vật liệu giòn. Giới hạn <var>L</var>/750 khiến kết cấu thép gần như không biến dạng.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Kèo/Dầm mái chỉ đỡ tôn lợp kim loại</strong></td>
+                    <td><var>L</var>/150 đến <var>L</var>/300 (tùy nhịp)</td>
+                    <td><var>L</var>/150 (Hoạt tải mái)</td>
+                    <td>Cả hai đều cho phép tôn kim loại biến dạng theo kết cấu.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Cấu kiện Hệ Sàn (Dầm chính, Dầm phụ, Tấm Decking)</strong></td>
+                    <td>
+                      <div><var>L</var> &le; 3m : <var>L</var>/150</div>
+                      <div><var>L</var> &ge; 24m : <var>L</var>/250</div>
+                    </td>
+                    <td>
+                      <div><var>L</var>/360 (Hoạt tải)</div>
+                      <div><var>L</var>/240 (Tĩnh + Hoạt tải)</div>
+                    </td>
+                    <td>Tại khoảng nhịp trung bình 6-10m, cả hai tiêu chuẩn có sự hội tụ quanh mức <var>L</var>/240 đến <var>L</var>/250 nhằm ngăn chặn độ rung của sàn đi bộ.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Xà gồ mái (Roof Purlins)</strong></td>
+                    <td>Áp dụng tương tự dầm mái (<var>L</var>/150 đến <var>L</var>/300 tùy nhịp)</td>
+                    <td><var>L</var>/150 (Tĩnh + Hoạt tải) hoặc (Tĩnh + Gió 10 năm)</td>
+                    <td>MBMA tối ưu hóa xà gồ mái thép cán nguội tốt hơn bằng cách dùng gió 10 năm.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Dầm đường cẩu (Cầu trục chạy trên)</strong></td>
+                    <td>
+                      <div>Nhóm A1-A6: <var>L</var>/400</div>
+                      <div>Nhóm A7: <var>L</var>/500</div>
+                      <div>Nhóm A8: <var>L</var>/600</div>
+                    </td>
+                    <td>Luôn lấy <var>L</var>/600</td>
+                    <td>TCVN giúp hạ chi phí cho các phân xưởng có cầu trục làm việc cường độ thấp (nhóm A1-A3). MBMA áp dụng mức <var>L</var>/600 đồng loạt để ngăn chặn mọi rủi ro về cơ khí.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="card" style={{ marginBottom: '24px' }}>
+            <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Shuffle size={20} color="var(--accent-primary)" />
+              <span>Bảng 2: So sánh giới hạn Chuyển vị ngang cho Khung và Cột</span>
+            </h2>
+            <div className="spec-table-container">
+              <table className="spec-table">
+                <thead>
+                  <tr>
+                    <th>Hạng Mục Kiểm Tra</th>
+                    <th>TCVN 2737:2023 & TCVN 5575:2025</th>
+                    <th>Tiêu Chuẩn Mỹ (MBMA 2012)</th>
+                    <th>Phân Tích Cơ Sở Chênh Lệch</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Khung nhà một tầng, bọc tôn kim loại (Tường mềm)</strong></td>
+                    <td>
+                      <div>Chuyển vị đỉnh cột: <var>h<sub>s</sub></var>/300</div>
+                      <div style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px'}}>(Dùng áp lực gió tiêu chuẩn)</div>
+                    </td>
+                    <td>
+                      <div>Chuyển vị khung hở: <var>H</var>/60 đến <var>H</var>/100</div>
+                      <div style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px'}}>(Dùng gió chu kỳ 10 năm)</div>
+                    </td>
+                    <td>Mức chênh lệch khổng lồ (gấp 3-5 lần). Đây là lý do chính khiến nhà thép Mỹ luôn rẻ và nhẹ hơn nhà thiết kế theo tiêu chuẩn Việt Nam.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Khung nhà một tầng, tường xây gạch / bê tông (Tường cứng)</strong></td>
+                    <td>
+                      <div>Tường gạch/bê tông: <var>h<sub>s</sub></var>/500</div>
+                      <div>Tường ốp đá tự nhiên: <var>h<sub>s</sub></var>/700</div>
+                    </td>
+                    <td>
+                      <div>Tường gạch không cốt thép: <var>H</var>/200</div>
+                      <div>Tường Precast: <var>H</var>/100</div>
+                    </td>
+                    <td>Dù đã siết chặt, MBMA vẫn cho phép chuyển vị <var>H</var>/100 cho bê tông đúc sẵn, giả định các mối ghép trượt (slotted holes) sẽ hấp thụ biến dạng.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Khung nhà nhiều tầng (Drift)</strong></td>
+                    <td>
+                      <div>Chuyển vị đỉnh: <var>H</var>/500</div>
+                      <div style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px'}}>(Xét lún nghiêng móng nếu nhà cao &gt; 40m)</div>
+                    </td>
+                    <td>
+                      <div>Chuyển vị đỉnh: <var>H</var>/400 đến <var>H</var>/500</div>
+                      <div style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px'}}>(Căn cứ theo mặt đứng cladding)</div>
+                    </td>
+                    <td>Hai tiêu chuẩn đều đồng thuận mức &sim; <var>H</var>/500 do yêu cầu chống lật P-Delta và các rung động lan truyền ở cao tầng.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Xà gồ vách (Girts - Chịu áp lực gió)</strong></td>
+                    <td>Không quy định riêng, sử dụng chuẩn độ võng dầm chung.</td>
+                    <td>
+                      <div>Độ võng ngang (vào trong nhà): <var>L</var>/120</div>
+                      <div style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px'}}>(Gió 10 năm)</div>
+                    </td>
+                    <td>Giới hạn <var>L</var>/120 của MBMA giúp các thanh xà gồ chữ C, Z có thể giảm chiều dày xuống dưới 2.0mm.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Chuyển vị ngang đỉnh cột cầu trục (do lực hãm xe con)</strong></td>
+                    <td>
+                      <div>Nhóm A1-A3: <var>h<sub>s</sub></var>/500</div>
+                      <div>Nhóm A4-A6: <var>h<sub>s</sub></var>/1000</div>
+                      <div>Nhóm A7-A8: <var>h<sub>s</sub></var>/2000</div>
+                      <div style={{fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px'}}>(tối thiểu 6mm)</div>
+                    </td>
+                    <td>
+                      <div>Cầu trục Cabin: <var>H</var>/240 hoặc &le; 5.08cm</div>
+                      <div>Cầu trục Pendant: <var>H</var>/100</div>
+                    </td>
+                    <td>TCVN nghiêm cấm hiện tượng lắc ngang để bảo vệ bánh xe cầu trục khỏi hao mòn và trật khỏi đường ray thép. MBMA cho phép lắc ở biên độ <var>H</var>/100 đối với cầu trục điều khiển từ mặt đất.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="card">
+            <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Crosshair size={20} color="var(--accent-primary)" />
+              <span>Phân Tích Ứng Dụng Thực Tiễn Từ Các Dự Án Tiêu Biểu</span>
+            </h2>
+            <div className="sub-grid">
+              <div style={{ background: 'rgba(239, 68, 68, 0.05)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                <h4 style={{ color: 'var(--red)', marginBottom: '12px', fontSize: '1.05rem' }}>Trường hợp 1: Dự Án A</h4>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}><strong>Hệ thống:</strong> TCVN 2737:2023 & TCVN 5574/5575</p>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}><strong>Công trình:</strong> Khối Cao Tầng CT1 (25 tòa nhà cao 20 - 30 tầng)</p>
+                <ul style={{ paddingLeft: '20px', color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0, lineHeight: 1.6 }}>
+                  <li>Chuyển vị đỉnh tổng thể do gió bị khóa cứng ở mức <strong><var>H<sub>building</sub></var>/500</strong>.</li>
+                  <li>Chuyển vị ngang liên tầng (Inter-story drift) giới hạn cực đoan <strong><var>h<sub>floor</sub></var>/500</strong>.</li>
+                  <li><strong>Hệ quả:</strong> Buộc hệ thống kết cấu phải sử dụng lõi cứng vách bê tông dày đặc (corewall) và cột có độ cứng hữu hiệu (Effective section stiffness) lớn, làm tăng đáng kể khối lượng vật liệu.</li>
+                </ul>
+              </div>
+
+              <div style={{ background: 'rgba(16, 185, 129, 0.05)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                <h4 style={{ color: '#10b981', marginBottom: '12px', fontSize: '1.05rem' }}>Trường hợp 2: Dự Án B</h4>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}><strong>Hệ thống:</strong> MBMA 2012 / Mỹ</p>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}><strong>Công trình:</strong> Nhà xưởng công nghiệp (144m, cột cao 10.355m)</p>
+                <ul style={{ paddingLeft: '20px', color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0, lineHeight: 1.6 }}>
+                  <li>Áp dụng trọn vẹn giới hạn MBMA: Kèo mái võng <strong><var>L</var>/180</strong>, Xà gồ vách <strong><var>L</var>/120</strong>, Cột khung chính trôi ngang <strong><var>H</var>/60</strong>.</li>
+                  <li>Tổ hợp tải trọng gió được chiết giảm (hệ số 0.6W).</li>
+                  <li><strong>Hệ quả:</strong> Thoát khỏi sự kìm kẹp của độ cứng (từ <var>H</var>/300 sang <var>H</var>/60), kỹ sư tối ưu hóa tiết diện cột cực kỳ mỏng. Toàn bộ trọng tâm chuyển sang việc giải quyết bài toán chống cắt dẻo (web yielding, web crippling) ở các nách khung thép thay vì loay hoay thỏa mãn độ cứng hình học.</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>

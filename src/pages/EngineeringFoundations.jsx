@@ -1,14 +1,12 @@
 import { useState } from 'react';
-import Card from '../components/Card';
+import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   BookOpen, 
   Activity, 
-  Layers, 
-  ShieldAlert, 
-  HelpCircle,
   Cpu,
   CornerRightDown,
-  Maximize2
+  Maximize2,
+  Layers
 } from 'lucide-react';
 
 export default function EngineeringFoundations() {
@@ -36,7 +34,7 @@ export default function EngineeringFoundations() {
           align-items: center;
           gap: 6px;
           padding: 8px 14px;
-          background: rgba(255, 255, 255, 0.02);
+          background: var(--overlay-very-light);
           border: 1px solid var(--border-glass);
           border-radius: 8px;
           color: var(--text-secondary);
@@ -48,7 +46,7 @@ export default function EngineeringFoundations() {
           transition: all 0.2s ease;
         }
         .tab-btn:hover {
-          background: rgba(255, 255, 255, 0.05);
+          background: var(--overlay-light);
           color: var(--text-primary);
         }
         .tab-btn.active {
@@ -133,27 +131,27 @@ export default function EngineeringFoundations() {
       <div className="tab-nav">
         <button className={`tab-btn ${activeTab === 'properties' ? 'active' : ''}`} onClick={() => setActiveTab('properties')}>
           <Cpu size={18} />
-          1. Đặc trưng Vật liệu
+          1.1. Đặc trưng Vật liệu
         </button>
         <button className={`tab-btn ${activeTab === 'basics' ? 'active' : ''}`} onClick={() => setActiveTab('basics')}>
           <BookOpen size={18} />
-          2. Cơ sở & Tải trọng
+          1.2. Cơ sở & Tải trọng
         </button>
         <button className={`tab-btn ${activeTab === 'internal' ? 'active' : ''}`} onClick={() => setActiveTab('internal')}>
           <CornerRightDown size={18} />
-          3. Nội lực & Biểu đồ
+          1.3. Nội lực & Biểu đồ
         </button>
         <button className={`tab-btn ${activeTab === 'stress' ? 'active' : ''}`} onClick={() => setActiveTab('stress')}>
           <Maximize2 size={18} />
-          4. Ứng suất & Vòng tròn Mohr
+          1.4. Ứng suất & Vòng tròn Mohr
         </button>
         <button className={`tab-btn ${activeTab === 'strain' ? 'active' : ''}`} onClick={() => setActiveTab('strain')}>
           <Activity size={18} />
-          5. Biến dạng & Hooke
+          1.5. Biến dạng & Hooke
         </button>
         <button className={`tab-btn ${activeTab === 'buckling' ? 'active' : ''}`} onClick={() => setActiveTab('buckling')}>
           <Layers size={18} />
-          6. Ổn định dọc (Buckling)
+          1.6. Ổn định dọc (Buckling)
         </button>
       </div>
 
@@ -161,7 +159,7 @@ export default function EngineeringFoundations() {
       {activeTab === 'properties' && (
         <div className="theory-section">
           <div className="grid-layout">
-            <Card title="1. Đặc trưng Hình học Tiết diện (Sức bền Vật liệu)">
+            <CollapsibleSection defaultOpen={false} title="1. Đặc trưng Hình học Tiết diện (Sức bền Vật liệu)">
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Khả năng chịu lực của cấu kiện phụ thuộc lớn vào hình dạng và kích thước hình học của mặt cắt ngang:
               </p>
@@ -209,9 +207,9 @@ export default function EngineeringFoundations() {
                   </ul>
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="2. Đặc trưng Vật lý Bê tông (TCVN 5574:2018)">
+            <CollapsibleSection title="2. Đặc trưng Vật lý Bê tông (TCVN 5574:2018)">
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Bê tông là vật liệu đàn dẻo chịu nén tốt, chịu kéo yếu, biến dạng phức tạp theo thời gian:
               </p>
@@ -242,9 +240,9 @@ export default function EngineeringFoundations() {
                   <strong>Giãn nở nhiệt (&alpha;<sub>bt</sub>):</strong> Hệ số dãn nở nhiệt tuyến tính đối với bê tông nặng lấy bằng &alpha;<sub>bt</sub> = 1&times;10<sup>-5</sup> / &deg;C.
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="3. Đặc trưng Vật lý Thép (TCVN 5575:2024 & TCVN 5574:2018)">
+            <CollapsibleSection title="3. Đặc trưng Vật lý Thép (TCVN 5575:2024 & TCVN 5574:2018)">
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Thép là vật liệu đẳng hướng, có tính dẻo cao giúp phân phối lại nội lực và chịu lực rất tốt:
               </p>
@@ -274,7 +272,7 @@ export default function EngineeringFoundations() {
                   <strong>Hệ số Poisson (&nu;<sub>s</sub>):</strong> Lấy cố định &nu;<sub>s</sub> = 0.3 đối với thép trong giới hạn đàn hồi.
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
           </div>
           
           <div className="app-box" style={{ marginTop: '24px' }}>
@@ -295,7 +293,7 @@ export default function EngineeringFoundations() {
       {activeTab === 'basics' && (
         <div className="theory-section">
           <div className="grid-layout">
-            <Card title="3 Trụ cột của Sức bền Vật liệu">
+            <CollapsibleSection defaultOpen={false} title="3 Trụ cột của Sức bền Vật liệu">
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Mục tiêu cốt lõi của SBVL là thiết kế cấu kiện thỏa mãn 3 tiêu chuẩn cơ bản dưới tác động của các điều kiện tải trọng bất lợi nhất:
               </p>
@@ -313,9 +311,9 @@ export default function EngineeringFoundations() {
                   <strong>Độ ổn định (Stability):</strong> Khả năng duy trì hình học cân bằng ban đầu. Cấu kiện chịu nén không được bị oằn hoặc mất ổn định đột ngột (buckling).
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="Các Giả thuyết Kinh điển">
+            <CollapsibleSection title="Các Giả thuyết Kinh điển">
               <ul style={{ paddingLeft: '16px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 <li style={{ marginBottom: '8px' }}>
                   <strong>Liên tục, đồng chất, đẳng hướng:</strong> Vật liệu chiếm đầy không gian, không có lỗ rỗng vĩ mô và có đặc tính cơ lý giống nhau tại mọi điểm theo mọi hướng. Cho phép dùng vi tích phân để giải bài toán.
@@ -327,7 +325,7 @@ export default function EngineeringFoundations() {
                   <strong>Biến dạng bé:</strong> Chuyển vị rất nhỏ so với kích thước ban đầu. Cho phép thiết lập phương trình cân bằng trên hình dạng chưa biến dạng và áp dụng <em>Nguyên lý cộng tác dụng</em>.
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
           </div>
 
           <div className="card" style={{ marginTop: '24px' }}>
@@ -395,7 +393,7 @@ export default function EngineeringFoundations() {
       {activeTab === 'internal' && (
         <div className="theory-section">
           <div className="grid-layout">
-            <Card title="Phương pháp Mặt cắt & Bộc lộ Nội lực">
+            <CollapsibleSection defaultOpen={false} title="Phương pháp Mặt cắt & Bộc lộ Nội lực">
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Nội lực là các lực tương tác nội tại phát sinh giữa các phần tử vật chất để chống lại xu hướng biến dạng do ngoại lực. Để xác định nội lực tại một tiết diện:
               </p>
@@ -405,9 +403,9 @@ export default function EngineeringFoundations() {
                 <li><strong>Thay:</strong> Thay thế tác dụng của phần đã bỏ bằng các thành phần nội lực đặt tại trọng tâm mặt cắt.</li>
                 <li><strong>Cân bằng:</strong> Viết phương trình cân bằng tĩnh học cho phần được giữ lại để tìm trị số nội lực.</li>
               </ol>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="6 Thành phần Nội lực Không gian">
+            <CollapsibleSection title="6 Thành phần Nội lực Không gian">
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Trên một mặt cắt ngang của thanh trong không gian 3 chiều, nội lực quy đổi về trọng tâm tiết diện gồm:
               </p>
@@ -418,7 +416,7 @@ export default function EngineeringFoundations() {
                 <li><strong>Mô-men xoắn (M<sub>z</sub> / T):</strong> Quay quanh trục z của thanh, gây xoắn các thớ dọc.</li>
                 <li><em>Bài toán phẳng:</em> Thường chỉ xét 3 thành phần chính: Lực dọc N<sub>z</sub>, Lực cắt Q<sub>y</sub>, Mô-men uốn M<sub>x</sub>.</li>
               </ul>
-            </Card>
+            </CollapsibleSection>
           </div>
 
           <div className="card" style={{ marginTop: '24px' }}>
@@ -470,7 +468,7 @@ export default function EngineeringFoundations() {
       {activeTab === 'stress' && (
         <div className="theory-section">
           <div className="grid-layout">
-            <Card title="Ứng suất Pháp (σ) & Ứng suất Tiếp (τ)">
+            <CollapsibleSection defaultOpen={false} title="Ứng suất Pháp (σ) & Ứng suất Tiếp (τ)">
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Ứng suất là cường độ nội lực phân bố trên một đơn vị diện tích tiết diện tại một điểm cụ thể. Đơn vị: N/m² (Pa) hoặc MPa (1 MPa = 1 N/mm²).
               </p>
@@ -485,9 +483,9 @@ export default function EngineeringFoundations() {
                 </li>
                 <li>Mối liên hệ ứng suất toàn phần <var>p</var>: <var>p</var><sup>2</sup> = <var>&sigma;</var><sup>2</sup> + <var>&tau;</var><sup>2</sup>.</li>
               </ul>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="Ứng suất Chính & Phương chính">
+            <CollapsibleSection title="Ứng suất Chính & Phương chính">
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Tại mỗi điểm bên trong cấu kiện, khi ta xoay mặt cắt theo các góc khác nhau, trị số ứng suất pháp và tiếp sẽ thay đổi.
               </p>
@@ -504,7 +502,7 @@ export default function EngineeringFoundations() {
                   &sigma;<sub>1</sub> là ứng suất kéo chính cực đại, &sigma;<sub>3</sub> là ứng suất nén chính cực đại.
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
           </div>
 
           <div className="card" style={{ marginTop: '24px' }}>
@@ -557,7 +555,7 @@ export default function EngineeringFoundations() {
       {activeTab === 'strain' && (
         <div className="theory-section">
           <div className="grid-layout">
-            <Card title="Biến dạng dài (ε) & Biến dạng trượt (γ)">
+            <CollapsibleSection defaultOpen={false} title="Biến dạng dài (ε) & Biến dạng trượt (γ)">
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Biến dạng mô tả sự thay đổi hình học của cấu kiện dưới tác dụng của lực hoặc nhiệt độ.
               </p>
@@ -570,9 +568,9 @@ export default function EngineeringFoundations() {
                   <strong>Biến dạng trượt (&gamma;):</strong> Sự thay đổi góc vuông ban đầu giữa hai thớ trực giao (đo bằng radian). Thể hiện mức độ méo hình học do ứng suất tiếp gây ra.
                 </li>
               </ul>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="Định luật Hooke & Hằng số Đàn hồi">
+            <CollapsibleSection title="Định luật Hooke & Hằng số Đàn hồi">
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Trong miền đàn hồi tuyến tính, ứng suất tỷ lệ thuận với biến dạng thông qua các đặc trưng vật lý:
               </p>
@@ -591,7 +589,7 @@ export default function EngineeringFoundations() {
                 </li>
                 <li><strong>Mối liên hệ vật liệu đẳng hướng:</strong> <var>G</var> = <var>E</var> / [2(1 + &nu;)].</li>
               </ul>
-            </Card>
+            </CollapsibleSection>
           </div>
 
           <div className="card" style={{ marginTop: '24px' }}>
@@ -630,7 +628,7 @@ export default function EngineeringFoundations() {
       {activeTab === 'buckling' && (
         <div className="theory-section">
           <div className="grid-layout">
-            <Card title="Hiện tượng Uốn dọc & Lực tới hạn Euler">
+            <CollapsibleSection defaultOpen={false} title="Hiện tượng Uốn dọc & Lực tới hạn Euler">
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Khi một cột mảnh chịu lực nén đúng tâm dọc trục tăng dần, đến một giá trị lực cụ thể gọi là <strong>Lực tới hạn P<sub>cr</sub> (Euler)</strong>, cột sẽ bị oằn cong sang bên và mất khả năng chịu tải một cách đột ngột.
               </p>
@@ -641,9 +639,9 @@ export default function EngineeringFoundations() {
                   Trong đó: E là mô-đun đàn hồi; I là mô-men quán tính nhỏ nhất của mặt cắt ngang; l<sub>0</sub> là chiều dài tính toán của cột.
                 </div>
               </div>
-            </Card>
+            </CollapsibleSection>
 
-            <Card title="Hệ số Chiều dài tính toán (μ)">
+            <CollapsibleSection title="Hệ số Chiều dài tính toán (μ)">
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Chiều dài tính toán l<sub>0</sub> = &mu; &middot; l. Hệ số &mu; phụ thuộc vào điều kiện liên kết biên ở hai đầu cột, phản ánh hình dạng oằn cong thực tế:
               </p>
@@ -678,7 +676,7 @@ export default function EngineeringFoundations() {
                   </tr>
                 </tbody>
               </table>
-            </Card>
+            </CollapsibleSection>
           </div>
 
           <div className="card" style={{ marginTop: '24px' }}>
