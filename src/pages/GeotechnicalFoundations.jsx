@@ -489,7 +489,7 @@ export default function GeotechnicalFoundations() {
                     type="number" 
                     value={qUlt} 
                     onChange={(e) => setQUlt(parseFloat(e.target.value) || 0)} 
-                    style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                    style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                   />
                 </div>
                 <div>
@@ -499,7 +499,7 @@ export default function GeotechnicalFoundations() {
                     step="0.1"
                     value={df} 
                     onChange={(e) => setDf(parseFloat(e.target.value) || 0)} 
-                    style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                    style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                   />
                 </div>
               </div>
@@ -512,7 +512,7 @@ export default function GeotechnicalFoundations() {
                     step="0.5"
                     value={gamma} 
                     onChange={(e) => setGamma(parseFloat(e.target.value) || 0)} 
-                    style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                    style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                   />
                 </div>
                 <div>
@@ -523,7 +523,7 @@ export default function GeotechnicalFoundations() {
                     min="1.0"
                     value={fs} 
                     onChange={(e) => setFs(parseFloat(e.target.value) || 2.5)} 
-                    style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                    style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                   />
                 </div>
               </div>
@@ -533,11 +533,11 @@ export default function GeotechnicalFoundations() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.9rem' }}>
                   <div>
                     <span style={{ color: 'var(--text-secondary)' }}>Cực hạn tịnh <var>q</var><sub>net(u)</sub>:</span>
-                    <strong style={{ display: 'block', color: '#fff', fontSize: '1.05rem' }}>{qNetU} kPa</strong>
+                    <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: '1.05rem' }}>{qNetU} kPa</strong>
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-secondary)' }}>An toàn tịnh <var>q</var><sub>net(safe)</sub>:</span>
-                    <strong style={{ display: 'block', color: '#fff', fontSize: '1.05rem' }}>{qNetSafe} kPa</strong>
+                    <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: '1.05rem' }}>{qNetSafe} kPa</strong>
                   </div>
                 </div>
                 <div style={{ marginTop: '8px', borderTop: '1px solid var(--overlay-light)', paddingTop: '8px' }}>
@@ -559,7 +559,7 @@ export default function GeotechnicalFoundations() {
                   <select 
                     value={pileType} 
                     onChange={(e) => setPileType(e.target.value)}
-                    style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                    style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                   >
                     <option value="bored">Cọc khoan nhồi (Bored)</option>
                     <option value="driven">Cọc đóng/ép vuông (Driven)</option>
@@ -571,7 +571,7 @@ export default function GeotechnicalFoundations() {
                     type="number" 
                     value={pileD} 
                     onChange={(e) => setPileD(parseInt(e.target.value) || 0)} 
-                    style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                    style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                   />
                 </div>
               </div>
@@ -583,7 +583,7 @@ export default function GeotechnicalFoundations() {
                     type="number" 
                     value={pileL} 
                     onChange={(e) => setPileL(parseInt(e.target.value) || 0)} 
-                    style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                    style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                   />
                 </div>
                 <div>
@@ -592,7 +592,7 @@ export default function GeotechnicalFoundations() {
                     type="number" 
                     value={nShaft} 
                     onChange={(e) => setNShaft(parseInt(e.target.value) || 0)} 
-                    style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                    style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                   />
                 </div>
               </div>
@@ -603,7 +603,7 @@ export default function GeotechnicalFoundations() {
                   type="number" 
                   value={nTip} 
                   onChange={(e) => setNTip(parseInt(e.target.value) || 0)} 
-                  style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                  style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                 />
               </div>
 
@@ -611,11 +611,11 @@ export default function GeotechnicalFoundations() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.82rem', marginBottom: '8px' }}>
                   <div>
                     <span style={{ color: 'var(--text-secondary)' }}>Sức kháng bên <var>Q</var><sub>s</sub>:</span>
-                    <strong style={{ display: 'block', color: '#fff' }}>{Qs} kN</strong>
+                    <strong style={{ display: 'block', color: 'var(--text-primary)' }}>{Qs} kN</strong>
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-secondary)' }}>Sức kháng mũi <var>Q</var><sub>b</sub>:</span>
-                    <strong style={{ display: 'block', color: '#fff' }}>{Qb} kN</strong>
+                    <strong style={{ display: 'block', color: 'var(--text-primary)' }}>{Qb} kN</strong>
                   </div>
                 </div>
                 <div style={{ borderTop: '1px solid var(--overlay-light)', paddingTop: '8px' }}>
@@ -644,7 +644,7 @@ export default function GeotechnicalFoundations() {
                   type="number" 
                   value={totalPiles} 
                   onChange={(e) => setTotalPiles(parseInt(e.target.value) || 0)} 
-                  style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '8px 12px', borderRadius: '6px', fontSize: '0.92rem' }}
+                  style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '8px 12px', borderRadius: '6px', fontSize: '0.92rem' }}
                 />
               </div>
               <div>
@@ -652,7 +652,7 @@ export default function GeotechnicalFoundations() {
                 <select 
                   value={consequenceClass} 
                   onChange={(e) => setConsequenceClass(e.target.value)}
-                  style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '8px 12px', borderRadius: '6px', fontSize: '0.92rem' }}
+                  style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '8px 12px', borderRadius: '6px', fontSize: '0.92rem' }}
                 >
                   <option value="C1">Cấp C1 (Hậu quả thấp - Nhà &lt; 7 tầng)</option>
                   <option value="C2">Cấp C2 (Hậu quả trung bình - Nhà từ 7 - 25 tầng)</option>
@@ -667,7 +667,7 @@ export default function GeotechnicalFoundations() {
                   <CheckCircle size={16} />
                   <span>Quy định Nén tĩnh bắt buộc</span>
                 </h4>
-                <div style={{ fontSize: '1.35rem', fontWeight: 'bold', color: '#fff', marginBottom: '4px' }}>
+                <div style={{ fontSize: '1.35rem', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '4px' }}>
                   Tối thiểu {minTests} cọc
                 </div>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
@@ -687,7 +687,7 @@ export default function GeotechnicalFoundations() {
                   </li>
                   <li style={{ marginTop: '6px' }}>
                     <span style={{ color: 'var(--text-secondary)' }}>Khoảng cách tim cọc tối thiểu:</span>
-                    <strong style={{ color: '#fff' }}>
+                    <strong style={{ color: 'var(--text-primary)' }}>
                       {pileType === 'bored' ? '2.5d = ' + (2.5 * pileD) + ' mm' : '3d = ' + (3 * pileD) + ' mm'}
                     </strong>
                   </li>

@@ -689,7 +689,7 @@ export default function RCComponents() {
                       min="0"
                       value={agr} 
                       onChange={(e) => setAgr(parseFloat(e.target.value) || 0)} 
-                      style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                      style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                     />
                   </div>
                   <div>
@@ -697,7 +697,7 @@ export default function RCComponents() {
                     <select 
                       value={importance} 
                       onChange={(e) => setImportance(parseFloat(e.target.value) || 1.0)}
-                      style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                      style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                     >
                       <option value="1.25">Cấp đặc biệt (γ_I = 1.25)</option>
                       <option value="1.15">Cấp I (γ_I = 1.15)</option>
@@ -709,7 +709,7 @@ export default function RCComponents() {
                 
                 <div style={{ background: 'rgba(102,126,234,0.12)', padding: '12px', borderRadius: '6px', border: '1px solid rgba(102,126,234,0.2)' }}>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Gia tốc thiết kế tính toán:</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#fff', margin: '4px 0', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '4px 0', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
                     <var>a<sub>g</sub></var> = {calculatedAg}<var>g</var>
                   </div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--accent-secondary)', fontWeight: '600', lineHeight: 1.4 }}>
@@ -732,7 +732,7 @@ export default function RCComponents() {
                     <select 
                       value={calcElement} 
                       onChange={(e) => setCalcElement(e.target.value)}
-                      style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                      style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                     >
                       <option value="beam">Dầm (Beam)</option>
                       <option value="column">Cột (Column)</option>
@@ -744,7 +744,7 @@ export default function RCComponents() {
                       type="number" 
                       value={calcDimension} 
                       onChange={(e) => setCalcDimension(parseInt(e.target.value) || 0)} 
-                      style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                      style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                     />
                   </div>
                 </div>
@@ -756,7 +756,7 @@ export default function RCComponents() {
                       type="number" 
                       value={calcDbl} 
                       onChange={(e) => setCalcDbl(parseInt(e.target.value) || 0)} 
-                      style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                      style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                     />
                   </div>
                   <div>
@@ -764,7 +764,7 @@ export default function RCComponents() {
                     <select 
                       value={calcDuctility} 
                       onChange={(e) => setCalcDuctility(e.target.value)}
-                      style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-glass)', color: '#fff', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
+                      style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.9rem' }}
                     >
                       <option value="DCM">DCM (Dẻo trung bình)</option>
                       <option value="DCH">DCH (Dẻo cao)</option>
@@ -774,7 +774,7 @@ export default function RCComponents() {
 
                 <div style={{ background: 'rgba(118,75,162,0.12)', padding: '12px', borderRadius: '6px', border: '1px solid rgba(118,75,162,0.2)' }}>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Khoảng cách cốt đai tối đa cho phép (s<sub>max</sub>):</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#fff', margin: '4px 0', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '4px 0', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
                     <var>s</var> &le; {calculatedSpacing} mm
                   </div>
                   <div style={{ fontSize: '0.78rem', color: 'var(--accent-secondary)' }}>
