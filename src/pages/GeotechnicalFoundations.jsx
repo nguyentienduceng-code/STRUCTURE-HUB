@@ -548,7 +548,7 @@ export default function GeotechnicalFoundations() {
                 </div>
                 <div style={{ marginTop: '8px', borderTop: '1px solid var(--overlay-light)', paddingTop: '8px' }}>
                   <span style={{ color: 'var(--accent-secondary)' }}>Sức chịu tải an toàn gộp <var>q</var><sub>safe</sub>:</span>
-                  <strong style={{ display: 'block', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>{qSafe} kPa</strong>
+                  <strong style={{ display: 'block', color: 'var(--accent-primary)', fontSize: '1.15rem' }}>{qSafe} kPa</strong>
                 </div>
               </div>
             </CollapsibleSection>
@@ -673,7 +673,7 @@ export default function GeotechnicalFoundations() {
                   <CheckCircle size={16} />
                   <span>Quy định Nén tĩnh bắt buộc</span>
                 </h4>
-                <div style={{ fontSize: '1.35rem', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '4px' }}>
+                <div style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '4px' }}>
                   Tối thiểu {minTests} cọc
                 </div>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>

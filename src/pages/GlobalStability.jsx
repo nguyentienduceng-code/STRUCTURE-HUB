@@ -441,7 +441,7 @@ export default function GlobalStability() {
 
           <div className="grid-layout">
             <div className="card">
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '12px' }}>Tiêu chí Chấp nhận & Công thức</h3>
+              <h3 style={{ fontSize: '1.15rem', marginBottom: '12px' }}>Tiêu chí Chấp nhận & Công thức</h3>
               <div className="formula-block">
                 {activeCheck.criterionHtml}
               </div>
@@ -451,7 +451,7 @@ export default function GlobalStability() {
             </div>
 
             <div className="card">
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '12px' }}>Lưu ý Thiết kế & Kỹ thuật</h3>
+              <h3 style={{ fontSize: '1.15rem', marginBottom: '12px' }}>Lưu ý Thiết kế & Kỹ thuật</h3>
               <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>
                 {activeCheck.notes}
               </div>

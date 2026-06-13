@@ -317,7 +317,7 @@ export default function RCComponents() {
               <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)' }}>
                 Để mô tả chính xác biểu đồ ứng suất phi tuyến, hệ số α (diện tích khối ứng suất) và β (tọa độ điểm đặt hợp lực nén) được tích phân trực tiếp từ biến dạng thớ biên ε_b:
               </p>
-              <div className="formula-card" style={{ fontSize: '1.1rem', padding: '16px' }}>
+              <div className="formula-card" style={{ fontSize: '1.15rem', padding: '16px' }}>
                 <div className="formula-line">
                   &alpha; = <span className="fraction">
                     <span className="numerator">&int;<sub>0</sub><sup>&epsilon;<sub>b</sub></sup> &sigma;<sub>b</sub>(&epsilon;) d&epsilon;</span>
@@ -508,7 +508,7 @@ export default function RCComponents() {
                 </div>
                 <div className="alert-box-content" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                   Nghiên cứu chỉ ra nếu cốt thép đai quá dày, bê tông vùng nén chéo quanh cột sẽ bị nghiền nát trước khi thép đai đạt giới hạn chảy. Do đó TCVN 5574:2018 quy định giới hạn nghiêm ngặt:
-                  <div style={{ color: '#ef4444', fontWeight: 'bold', margin: '8px 0', textAlign: 'center', fontSize: '1.2rem', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
+                  <div style={{ color: '#ef4444', fontWeight: 'bold', margin: '8px 0', textAlign: 'center', fontSize: '1.15rem', fontFamily: '\'Cambria Math\', \'Times New Roman\', Times, serif' }}>
                     <var>F<sub>sw</sub></var> &le; 1.0 &bull; <var>F<sub>b</sub></var> &nbsp; | &nbsp; <var>F</var> &le; 2.0 &bull; <var>F<sub>b</sub></var>
                   </div>
                   (Giảm đáng kể so với mức F_sw ≤ 1.5 * F_b ở tiêu chuẩn 2012 cũ để chống phá hoại giòn nén vỡ chéo).
