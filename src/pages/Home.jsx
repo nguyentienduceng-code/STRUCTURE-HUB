@@ -250,7 +250,7 @@ export default function Home() {
         </div>
 
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          <a href="mailto:contact@example.com" style={{ 
+          <a href="mailto:nguyentienduc.e@gmail.com" style={{ 
             display: 'flex', alignItems: 'center', gap: '8px', 
             background: 'var(--bg-glass)', border: '1px solid var(--border-glass)',
             padding: '10px 20px', borderRadius: '30px', color: 'var(--text-primary)',
@@ -258,7 +258,7 @@ export default function Home() {
           }} className="author-link">
             <Mail size={18} color="var(--accent-primary)" /> Email
           </a>
-          <a href="tel:0988665315" style={{ 
+          <a href="tel:0981019694" style={{ 
             display: 'flex', alignItems: 'center', gap: '8px', 
             background: 'var(--bg-glass)', border: '1px solid var(--border-glass)',
             padding: '10px 20px', borderRadius: '30px', color: 'var(--text-primary)',
@@ -266,7 +266,7 @@ export default function Home() {
           }} className="author-link">
             <Phone size={18} color="var(--accent-primary)" /> Hotline
           </a>
-          <a href="https://zalo.me/0988665315" target="_blank" rel="noopener noreferrer" style={{ 
+          <a href="https://zalo.me/0981019694" target="_blank" rel="noopener noreferrer" style={{ 
             display: 'flex', alignItems: 'center', gap: '8px', 
             background: 'rgba(0, 104, 255, 0.1)', border: '1px solid rgba(0, 104, 255, 0.3)',
             padding: '10px 20px', borderRadius: '30px', color: '#0068ff',
@@ -278,6 +278,17 @@ export default function Home() {
             </svg>
             Zalo
           </a>
+          <a href="https://www.facebook.com/nguyen.tien.uc.749949" target="_blank" rel="noopener noreferrer" style={{ 
+            display: 'flex', alignItems: 'center', gap: '8px', 
+            background: 'rgba(24, 119, 242, 0.1)', border: '1px solid rgba(24, 119, 242, 0.3)',
+            padding: '10px 20px', borderRadius: '30px', color: '#1877F2',
+            textDecoration: 'none', fontSize: '0.95rem', fontWeight: '600', transition: 'all 0.3s ease'
+          }} className="author-link-fb">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg> Facebook
+          </a>
+
         </div>
       </section>
     </div>
