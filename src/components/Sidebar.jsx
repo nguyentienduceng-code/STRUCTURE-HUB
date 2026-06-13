@@ -1,26 +1,26 @@
 import { NavLink } from 'react-router-dom';
-import { Home, Box, Calculator, Building2, AlignVerticalSpaceAround, Settings, Layers, User as UserIcon } from 'lucide-react';
+import { Home, Sliders, Calculator, Map, Layers } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import IBeamIcon from './icons/IBeamIcon';
+import ConcreteIcon from './icons/ConcreteIcon';
+import CompassRulerIcon from './icons/CompassRulerIcon';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const { currentUser } = useAuth();
   const navItems = [
     { path: '/', label: 'Trang chủ', icon: <Home size={20} /> },
-    { path: '/engineering-foundations', label: '1. Nền tảng Kỹ thuật', icon: <Box size={20} /> },
-    { path: '/parameters', label: '2. Thông số Vật liệu', icon: <Box size={20} /> },
+    { path: '/engineering-foundations', label: '1. Nền tảng Kỹ thuật', icon: <CompassRulerIcon size={20} /> },
+    { path: '/parameters', label: '2. Thông số Vật liệu', icon: <Sliders size={20} /> },
     { path: '/loads-combinations', label: '3. Tải trọng & Tổ hợp', icon: <Calculator size={20} /> },
-    { path: '/rc-components', label: '4. BTCT Cấu kiện', icon: <Building2 size={20} /> },
-    { path: '/steel-components', label: '5. Cấu kiện Thép', icon: <AlignVerticalSpaceAround size={20} /> },
-    { path: '/global-stability', label: '6. Ổn định Tổng thể', icon: <Settings size={20} /> },
-    { path: '/geotechnical-foundations', label: '7. Nền móng', icon: <Layers size={20} /> },
+    { path: '/rc-components', label: '4. BTCT Cấu kiện', icon: <ConcreteIcon size={20} /> },
+    { path: '/steel-components', label: '5. Cấu kiện Thép', icon: <IBeamIcon size={20} /> },
+    { path: '/global-stability', label: '6. Ổn định Tổng thể', icon: <Layers size={20} /> },
+    { path: '/geotechnical-foundations', label: '7. Nền móng', icon: <Map size={20} /> },
   ];
 
   return (
     <aside className={`sidebar ${isOpen ? 'open' : ''}`} style={{ display: 'flex', flexDirection: 'column' }}>
-      <div>
-        <div className="sidebar-header gradient-text" style={{ padding: '24px', fontSize: '1.25rem', fontWeight: '700', borderBottom: '1px solid var(--border-glass)' }}>
-          Structural Hub
-        </div>
+      <div style={{ flex: 1, overflowY: 'auto', paddingTop: '20px' }}>
         <nav className="sidebar-nav">
           {navItems.map((item) => (
             <NavLink
@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       >
         {currentUser ? (
           <NavLink 
-            to="/parameters" 
+            to="/auth" 
             style={{ 
               display: 'flex', 
               alignItems: 'center', 
@@ -76,7 +76,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 flexShrink: 0
               }}
             >
-              {currentUser.name.charAt(0).toUpperCase()}
+              {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               <span style={{ fontSize: '0.85rem', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -98,27 +98,11 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               color: 'var(--text-secondary)',
               fontSize: '0.88rem',
               fontWeight: '600',
-              padding: '6px 0',
-              width: '100%'
+              transition: 'color var(--transition)'
             }}
             onClick={() => setIsOpen(false)}
           >
-            <div 
-              style={{ 
-                width: '32px', 
-                height: '32px', 
-                borderRadius: '50%', 
-                background: 'var(--overlay-very-light)', 
-                border: '1px dashed var(--border-glass)',
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                flexShrink: 0
-              }}
-            >
-              <UserIcon size={16} />
-            </div>
-            <span>Đăng nhập hệ thống</span>
+            Đăng nhập hệ thống
           </NavLink>
         )}
       </div>

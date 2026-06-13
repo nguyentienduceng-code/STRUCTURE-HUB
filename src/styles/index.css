@@ -19,6 +19,7 @@
   --radius: 16px;
   --radius-sm: 10px;
   --shadow-glow: 0 4px 20px rgba(0,0,0,0.05);
+  --shadow-soft: 0 8px 30px rgba(0,0,0,0.08);
   --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --font-main: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
@@ -39,9 +40,9 @@
 
 [data-theme="dark"] {
   /* PROFESSIONAL CAD DARK MODE */
-  --bg-primary: #1e1e1e;
-  --bg-secondary: #252526;
-  --bg-card: rgba(37, 37, 38, 0.95);
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-card: rgba(30, 30, 30, 0.95);
   --bg-glass: var(--overlay-light);
   --border-glass: var(--overlay-hover);
   --text-primary: #e2e8f0;
@@ -52,6 +53,7 @@
   --accent-secondary: #a78bfa;
   --accent-gradient: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
   --shadow-glow: 0 0 40px rgba(0,0,0,0.3);
+  --shadow-soft: 0 8px 30px rgba(0,0,0,0.15);
   
   /* Formula Variables (Dark Mode) */
   --bg-formula: rgba(0, 0, 0, 0.3);
@@ -89,7 +91,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   letter-spacing: -0.02em;
 }
-h1 { font-size: 2.5rem; }
+h1 { font-size: 2.5rem; line-height: 1.2; }
 h2 { font-size: 1.8rem; }
 h3 { font-size: 1.25rem; }
 h4 { font-size: 1.05rem; }

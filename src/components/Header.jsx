@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Bell, Menu, Sun, Moon, LogIn, LogOut, User as UserIcon, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Logo from './icons/Logo';
 
 export default function Header({ toggleSidebar, theme, toggleTheme }) {
   const { currentUser, logout } = useAuth();
@@ -20,10 +21,7 @@ export default function Header({ toggleSidebar, theme, toggleTheme }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Get user initial for avatar
-  const getInitial = (name) => {
-    return name ? name.charAt(0).toUpperCase() : 'U';
-  };
+  const getInitial = (name) => name ? name.charAt(0).toUpperCase() : 'U';
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -67,263 +65,159 @@ export default function Header({ toggleSidebar, theme, toggleTheme }) {
   };
 
   return (
-    <header className="header">
-      <button className="menu-toggle" onClick={toggleSidebar} aria-label="Toggle Navigation">
-        <Menu size={24} color="var(--text-primary)" />
-      </button>
-
-      <div className="search-bar" ref={searchRef} style={{ position: 'relative' }}>
-        <Search size={18} color="var(--text-secondary)" />
-        <input 
-          type="text" 
-          placeholder="Tìm kiếm tiêu chuẩn, công thức..." 
-          value={searchQuery}
-          onChange={handleSearch}
-          onFocus={() => { if(searchQuery.trim()) setShowSearch(true); }}
-        />
-        
-        {showSearch && searchResults.length > 0 && (
-          <div style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            marginTop: '8px',
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border-glass)',
-            borderRadius: '12px',
-            boxShadow: 'var(--shadow-glow)',
-            backdropFilter: 'blur(var(--glass-blur))',
-            padding: '8px',
-            zIndex: 1000,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px'
-          }}>
-            {searchResults.map((result, index) => (
-              <Link 
-                key={index}
-                to={result.path}
-                onClick={() => {
-                  setShowSearch(false);
-                  setSearchQuery('');
-                }}
-                style={{
-                  padding: '10px 12px',
-                  borderRadius: '8px',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.9rem',
-                  textDecoration: 'none',
-                  display: 'block',
-                  transition: 'background 0.2s'
-                }}
-                className="search-result-item"
-              >
-                {result.title}
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+    <header className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 24px' }}>
       
-      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-        <button 
-          onClick={toggleTheme}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
+      {/* Left: Mobile Toggle & Brand Logo */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <button className="menu-toggle" onClick={toggleSidebar} aria-label="Toggle Navigation">
+          <Menu size={24} color="var(--text-primary)" />
+        </button>
+        
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+          <div style={{ 
+            background: 'var(--accent-gradient)', 
+            padding: '6px', 
+            borderRadius: '10px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '8px',
-            borderRadius: '50%',
-            color: 'var(--text-secondary)',
-            transition: 'background var(--transition)'
-          }}
-          aria-label="Toggle Theme"
-        >
+            boxShadow: 'var(--shadow-glow)'
+          }}>
+            <Logo size={24} color="#fff" />
+          </div>
+          <span style={{ 
+            fontWeight: '800', 
+            fontSize: '1.25rem',
+            background: 'linear-gradient(to right, var(--text-primary), var(--text-muted))',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            letterSpacing: '-0.02em',
+            display: 'none' /* hidden on very small screens, visible otherwise via css, handled inline for now */
+          }} className="hide-on-mobile">Structural Hub</span>
+        </Link>
+      </div>
+
+      {/* Center: Global Navbar Links */}
+      <nav className="global-navbar" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+        <Link to="/" style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'var(--text-secondary)'}>Trang chủ</Link>
+        <Link to="/engineering-foundations" style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'var(--text-secondary)'}>Danh mục</Link>
+        <a href="#author" style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'var(--text-secondary)'}>Tác giả</a>
+      </nav>
+
+      {/* Right: Search, Theme, Notifications, Auth */}
+      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+        
+        {/* Compact Search */}
+        <div className="search-bar compact-search" ref={searchRef} style={{ position: 'relative' }}>
+          <Search size={18} color="var(--text-secondary)" />
+          <input 
+            type="text" 
+            placeholder="Tìm kiếm..." 
+            value={searchQuery}
+            onChange={handleSearch}
+            onFocus={() => { if(searchQuery.trim()) setShowSearch(true); }}
+            style={{ width: '180px' }}
+          />
+          {showSearch && searchResults.length > 0 && (
+            <div style={{
+              position: 'absolute', top: '100%', left: '-100px', width: '300px', marginTop: '8px',
+              background: 'var(--bg-card)', border: '1px solid var(--border-glass)', borderRadius: '12px',
+              boxShadow: 'var(--shadow-soft)', backdropFilter: 'blur(var(--glass-blur))', padding: '8px',
+              zIndex: 1000, display: 'flex', flexDirection: 'column', gap: '4px'
+            }}>
+              {searchResults.map((result, index) => (
+                <Link 
+                  key={index} to={result.path}
+                  onClick={() => { setShowSearch(false); setSearchQuery(''); }}
+                  style={{
+                    padding: '10px 12px', borderRadius: '8px', color: 'var(--text-primary)',
+                    fontSize: '0.9rem', textDecoration: 'none', display: 'block', transition: 'background 0.2s'
+                  }}
+                  className="search-result-item"
+                >
+                  {result.title}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <button onClick={toggleTheme} style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '50%', color: 'var(--text-secondary)', transition: 'background var(--transition)' }} aria-label="Toggle Theme">
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
         
         <div style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '8px', borderRadius: '50%' }}>
           <Bell size={20} color="var(--text-secondary)" />
-          <span style={{ position: 'absolute', top: '6px', right: '6px', width: '8px', height: '8px', backgroundColor: 'var(--accent-primary)', borderRadius: '50%', boxShadow: '0 0 10px var(--accent-primary)' }}></span>
+          <span style={{ position: 'absolute', top: '6px', right: '6px', width: '8px', height: '8px', background: 'var(--red)', borderRadius: '50%', border: '2px solid var(--bg-secondary)' }}></span>
         </div>
 
-        {/* Auth profile avatar or login button */}
         {currentUser ? (
-          <div style={{ position: 'relative' }} ref={dropdownRef}>
+          <div className="user-dropdown-container" ref={dropdownRef} style={{ position: 'relative' }}>
             <button 
+              className="user-avatar-btn"
               onClick={() => setDropdownOpen(!dropdownOpen)}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                background: 'var(--overlay-light)',
-                border: '1px solid var(--border-glass)',
-                padding: '4px 8px',
-                borderRadius: '20px',
-                cursor: 'pointer',
-                color: 'var(--text-primary)',
-                transition: 'all 0.2s ease'
+                display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-glass)',
+                border: '1px solid var(--border-glass)', padding: '4px 12px 4px 4px',
+                borderRadius: '30px', cursor: 'pointer', transition: 'all var(--transition)'
               }}
-              className="user-profile-toggle"
             >
-              <div 
-                style={{ 
-                  width: '28px', 
-                  height: '28px', 
-                  borderRadius: '50%', 
-                  background: 'var(--accent-gradient)', 
-                  boxShadow: '0 0 10px rgba(102,126,234,0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#ffffff',
-                  fontWeight: '700',
-                  fontSize: '0.85rem'
-                }}
-              >
+              <div style={{
+                width: '32px', height: '32px', borderRadius: '50%', background: 'var(--accent-gradient)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: '#fff', fontWeight: 'bold', fontSize: '14px'
+              }}>
                 {getInitial(currentUser.name)}
               </div>
-              <span style={{ fontSize: '0.88rem', fontWeight: '600', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} className="header-username">
-                {currentUser.name.split(' ').pop()}
+              <span style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-primary)', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} className="hide-on-mobile">
+                {currentUser.name.split(' ')[0]}
               </span>
-              <ChevronDown size={14} color="var(--text-secondary)" style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+              <ChevronDown size={16} color="var(--text-secondary)" style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
             </button>
 
             {dropdownOpen && (
-              <div 
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: 0,
-                  marginTop: '8px',
-                  width: '220px',
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border-glass)',
-                  borderRadius: '12px',
-                  boxShadow: 'var(--shadow-glow)',
-                  backdropFilter: 'blur(var(--glass-blur))',
-                  padding: '12px 8px',
-                  zIndex: 1000,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '4px'
-                }}
-              >
-                <div style={{ padding: '8px 12px 10px 12px', borderBottom: '1px solid var(--border-glass)' }}>
-                  <div style={{ fontWeight: '700', fontSize: '0.92rem', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {currentUser.name}
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '2px' }}>
-                    {currentUser.email}
-                  </div>
+              <div className="user-dropdown-menu" style={{
+                position: 'absolute', top: '100%', right: '0', marginTop: '10px',
+                width: '240px', background: 'var(--bg-card)', border: '1px solid var(--border-glass)',
+                borderRadius: '16px', boxShadow: 'var(--shadow-soft)', backdropFilter: 'blur(var(--glass-blur))',
+                padding: '8px', zIndex: 100, animation: 'fadeIn 0.2s ease-out'
+              }}>
+                <div style={{ padding: '12px', borderBottom: '1px solid var(--border-glass)', marginBottom: '8px' }}>
+                  <div style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{currentUser.name}</div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '2px', wordBreak: 'break-all' }}>{currentUser.email}</div>
                 </div>
-
-                <Link 
-                  to="/parameters" 
-                  onClick={() => setDropdownOpen(false)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '10px 12px',
-                    borderRadius: '8px',
-                    color: 'var(--text-secondary)',
-                    fontSize: '0.88rem',
-                    transition: 'all 0.2s ease',
-                    marginTop: '6px'
-                  }}
+                <button 
+                  onClick={() => { setDropdownOpen(false); navigate('/auth'); }}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: '8px', color: 'var(--text-primary)', cursor: 'pointer', fontSize: '0.9rem', textAlign: 'left', transition: 'background 0.2s' }}
                   className="dropdown-item"
                 >
-                  <UserIcon size={16} />
-                  <span>Trang cá nhân</span>
-                </Link>
-
+                  <UserIcon size={18} /> Hồ sơ của tôi
+                </button>
                 <button 
-                  onClick={async () => {
-                    setDropdownOpen(false);
-                    try {
-                      await logout();
-                      navigate('/');
-                    } catch (error) {
-                      console.error("Lỗi đăng xuất:", error);
-                    }
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '10px 12px',
-                    borderRadius: '8px',
-                    color: 'var(--red)',
-                    background: 'transparent',
-                    border: 'none',
-                    textAlign: 'left',
-                    fontSize: '0.88rem',
-                    cursor: 'pointer',
-                    width: '100%',
-                    transition: 'all 0.2s ease'
-                  }}
-                  className="dropdown-item-logout"
+                  onClick={() => { setDropdownOpen(false); logout(); navigate('/'); }}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: '8px', color: 'var(--red)', cursor: 'pointer', fontSize: '0.9rem', textAlign: 'left', transition: 'background 0.2s' }}
+                  className="dropdown-item"
                 >
-                  <LogOut size={16} />
-                  <span>Đăng xuất</span>
+                  <LogOut size={18} /> Đăng xuất
                 </button>
               </div>
             )}
           </div>
         ) : (
           <Link 
-            to="/auth"
+            to="/auth" 
             style={{
-              background: 'var(--accent-gradient)',
-              color: '#ffffff',
-              border: 'none',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              fontWeight: '600',
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              boxShadow: '0 4px 10px rgba(79, 70, 229, 0.2)',
-              transition: 'all 0.2s ease',
-              whiteSpace: 'nowrap'
+              display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--accent-primary)',
+              color: '#fff', textDecoration: 'none', padding: '8px 16px', borderRadius: '8px',
+              fontWeight: '600', fontSize: '0.9rem', transition: 'background var(--transition)',
+              border: 'none', cursor: 'pointer'
             }}
-            className="header-login-btn"
           >
-            <LogIn size={16} />
-            <span>Đăng nhập</span>
+            <LogIn size={18} />
+            <span className="hide-on-mobile">Đăng nhập</span>
           </Link>
         )}
       </div>
-      
-      <style>{`
-        .dropdown-item:hover {
-          background: var(--overlay-light);
-          color: var(--text-primary) !important;
-        }
-        .dropdown-item-logout:hover {
-          background: rgba(239, 68, 68, 0.08);
-        }
-        .header-login-btn:hover {
-          opacity: 0.95;
-          transform: translateY(-1px);
-          box-shadow: 0 6px 15px rgba(79, 70, 229, 0.35);
-        }
-        @media (max-width: 480px) {
-          .header-username {
-            display: none;
-          }
-          .user-profile-toggle {
-            padding: 4px;
-          }
-        }
-      `}</style>
     </header>
   );
 }
