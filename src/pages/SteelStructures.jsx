@@ -4,6 +4,12 @@ export default function SteelStructures() {
   return (
     <div>
       <h1 className="page-title">Kết cấu Thép</h1>
+      <div className="breadcrumb" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '-16px', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = 'var(--text-primary)'} onMouseOut={(e) => e.target.style.color = 'var(--text-secondary)'}>Trang chủ</a>
+        <span>/</span>
+        <span style={{ color: 'var(--text-primary)' }}>Kết cấu Thép</span>
+      </div>
+
       
       <div className="card" style={{ marginBottom: '32px' }}>
         <h2 style={{ color: 'var(--accent-primary)', marginBottom: '16px' }}>Phân loại Tiết diện (Section Classification)</h2>

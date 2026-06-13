@@ -189,6 +189,12 @@ export default function GeotechnicalFoundations() {
       `}</style>
 
       <h1 className="page-title">Cơ sở Địa kỹ thuật & Thiết kế Nền móng</h1>
+      <div className="breadcrumb" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '-16px', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = 'var(--text-primary)'} onMouseOut={(e) => e.target.style.color = 'var(--text-secondary)'}>Trang chủ</a>
+        <span>/</span>
+        <span style={{ color: 'var(--text-primary)' }}>Cơ sở Địa kỹ thuật & Thiết kế Nền móng</span>
+      </div>
+
 
       <div className="card" style={{ marginBottom: '32px', background: 'linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(102,126,234,0.1) 100%)', border: '1px solid rgba(139,92,246,0.3)', boxShadow: '0 0 30px rgba(139,92,246,0.15)' }}>
         <h2 style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
