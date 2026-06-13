@@ -213,39 +213,70 @@ export default function Home() {
       {/* Author Section */}
       <section id="author" style={{ 
         marginTop: '60px', 
-        padding: '30px', 
+        padding: '24px 40px', 
         background: 'var(--bg-card)', 
         borderRadius: '24px', 
         border: '1px solid var(--border-glass)',
         boxShadow: 'var(--shadow-soft)',
         display: 'flex',
-        flexDirection: 'column',
+        flexWrap: 'wrap',
         alignItems: 'center',
-        textAlign: 'center'
+        justifyContent: 'space-between',
+        gap: '20px'
       }}>
-        <h2 style={{ margin: '0 0 4px 0', fontSize: '1.5rem', fontWeight: '800', color: 'var(--text-primary)' }}>
-          Nguyễn Tiến Đức
-        </h2>
-        <p style={{ margin: '0 0 20px 0', fontSize: '1rem', fontWeight: '600', color: 'var(--accent-primary)' }}>
-          Engineer Manager - Structural
-        </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div style={{
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            background: 'var(--accent-gradient)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+            border: '2px solid var(--bg-primary)',
+            flexShrink: 0
+          }}>
+            <User size={28} color="#fff" />
+          </div>
+          <div style={{ textAlign: 'left' }}>
+            <h2 style={{ margin: '0 0 4px 0', fontSize: '1.4rem', fontWeight: '800', color: 'var(--text-primary)' }}>
+              Nguyễn Tiến Đức
+            </h2>
+            <p style={{ margin: '0', fontSize: '0.95rem', fontWeight: '600', color: 'var(--accent-primary)', letterSpacing: '0.02em' }}>
+              Engineer Manager - Structural
+            </p>
+          </div>
+        </div>
 
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
           <a href="mailto:contact@example.com" style={{ 
-            display: 'flex', alignItems: 'center', gap: '6px', 
+            display: 'flex', alignItems: 'center', gap: '8px', 
             background: 'var(--bg-glass)', border: '1px solid var(--border-glass)',
-            padding: '8px 16px', borderRadius: '20px', color: 'var(--text-secondary)',
-            textDecoration: 'none', fontSize: '0.95rem', fontWeight: '500', transition: 'all 0.2s ease'
+            padding: '10px 20px', borderRadius: '30px', color: 'var(--text-primary)',
+            textDecoration: 'none', fontSize: '0.95rem', fontWeight: '600', transition: 'all 0.3s ease'
           }} className="author-link">
-            <Mail size={16} /> Email Góp ý
+            <Mail size={18} color="var(--accent-primary)" /> Email
           </a>
-          <a href="#" style={{ 
-            display: 'flex', alignItems: 'center', gap: '6px', 
+          <a href="tel:0988665315" style={{ 
+            display: 'flex', alignItems: 'center', gap: '8px', 
             background: 'var(--bg-glass)', border: '1px solid var(--border-glass)',
-            padding: '8px 16px', borderRadius: '20px', color: 'var(--text-secondary)',
-            textDecoration: 'none', fontSize: '0.95rem', fontWeight: '500', transition: 'all 0.2s ease'
+            padding: '10px 20px', borderRadius: '30px', color: 'var(--text-primary)',
+            textDecoration: 'none', fontSize: '0.95rem', fontWeight: '600', transition: 'all 0.3s ease'
           }} className="author-link">
-            <Phone size={16} /> Liên hệ (SĐT)
+            <Phone size={18} color="var(--accent-primary)" /> Hotline
+          </a>
+          <a href="https://zalo.me/0988665315" target="_blank" rel="noopener noreferrer" style={{ 
+            display: 'flex', alignItems: 'center', gap: '8px', 
+            background: 'rgba(0, 104, 255, 0.1)', border: '1px solid rgba(0, 104, 255, 0.3)',
+            padding: '10px 20px', borderRadius: '30px', color: '#0068ff',
+            textDecoration: 'none', fontSize: '0.95rem', fontWeight: '600', transition: 'all 0.3s ease'
+          }} className="author-link-zalo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21.384 10.32c-.084-5.268-4.344-9.396-9.66-9.396-5.46 0-9.84 4.164-9.84 9.396 0 2.58.984 4.908 2.628 6.648L3.3 22.032c-.156.348-.024.78.3.936.12.06.252.084.384.084.216 0 .432-.084.588-.228l4.332-3.888c1.032.288 2.136.444 3.276.444 1.404 0 2.748-.288 3.96-.804l.144-.06.144.06c1.212.516 2.556.804 3.96.804 5.46 0 9.84-4.164 9.84-9.396 0-5.232-4.38-9.396-9.84-9.396zM11.724 17.52c-4.488 0-8.16-3.444-8.16-7.716 0-4.272 3.672-7.716 8.16-7.716 4.488 0 8.16 3.444 8.16 7.716 0 4.272-3.672 7.716-8.16 7.716z" />
+              <path d="M14.652 8.76H8.784c-.468 0-.84.372-.84.84s.372.84.84.84h4.152l-4.752 4.092c-.228.192-.36.48-.36.78 0 .468.372.84.84.84h5.868c.468 0 .84-.372.84-.84s-.372-.84-.84-.84H10.536l4.752-4.092c.228-.192.36-.48.36-.78 0-.468-.372-.84-.84-.84z" />
+            </svg>
+            Zalo
           </a>
         </div>
       </section>
