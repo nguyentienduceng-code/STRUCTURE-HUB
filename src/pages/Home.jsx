@@ -211,16 +211,67 @@ export default function Home() {
       </section>
 
       {/* Author Section */}
-      <section id="author" style={{ marginTop: '40px', textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)' }}>
-        <div style={{ display: 'inline-block', padding: '4px 16px', background: 'var(--bg-glass)', borderRadius: '20px', border: '1px solid var(--border-glass)', fontSize: '0.9rem', marginBottom: '16px' }}>
-          Built by <strong style={{ color: 'var(--text-primary)' }}>Nguyen Tien Duc</strong>
+      <section id="author" style={{ 
+        marginTop: '60px', 
+        padding: '40px', 
+        background: 'var(--bg-card)', 
+        borderRadius: '24px', 
+        border: '1px solid var(--border-glass)',
+        boxShadow: 'var(--shadow-soft)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center'
+      }}>
+        <div style={{
+          width: '100px',
+          height: '100px',
+          borderRadius: '50%',
+          background: 'var(--accent-gradient)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '20px',
+          boxShadow: '0 8px 24px rgba(99, 102, 241, 0.3)',
+          border: '4px solid var(--bg-primary)'
+        }}>
+          <User size={48} color="#fff" />
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '24px' }}>
-          <a href="mailto:contact@example.com" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--accent-primary)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>
-            <Mail size={18} /> Email
+        
+        <h2 style={{ margin: '0 0 8px 0', fontSize: '2rem', fontWeight: '800', color: 'var(--text-primary)' }}>
+          Nguyễn Tiến Đức
+        </h2>
+        <p style={{ margin: '0 0 24px 0', fontSize: '1.1rem', fontWeight: '600', color: 'var(--accent-primary)', letterSpacing: '0.05em' }}>
+          Engineer Manager - Structural
+        </p>
+
+        <p style={{ 
+          maxWidth: '600px', 
+          color: 'var(--text-secondary)', 
+          lineHeight: '1.7', 
+          fontSize: '1.05rem',
+          marginBottom: '32px'
+        }}>
+          Với hơn 10 năm kinh nghiệm trong thiết kế và quản lý dự án kết cấu phức tạp. 
+          Người xây dựng hệ thống <strong>Structural Knowledge Hub</strong> với mục tiêu chuẩn hóa và số hóa tri thức kỹ thuật cho cộng đồng kỹ sư xây dựng.
+        </p>
+
+        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <a href="mailto:contact@example.com" style={{ 
+            display: 'flex', alignItems: 'center', gap: '8px', 
+            background: 'var(--bg-glass)', border: '1px solid var(--border-glass)',
+            padding: '10px 24px', borderRadius: '30px', color: 'var(--text-primary)',
+            textDecoration: 'none', fontWeight: '600', transition: 'all 0.3s ease'
+          }} className="author-link">
+            <Mail size={18} color="var(--accent-primary)" /> Email Liên Hệ
           </a>
-          <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--accent-primary)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>
-            <Phone size={18} /> Liên hệ
+          <a href="#" style={{ 
+            display: 'flex', alignItems: 'center', gap: '8px', 
+            background: 'var(--bg-glass)', border: '1px solid var(--border-glass)',
+            padding: '10px 24px', borderRadius: '30px', color: 'var(--text-primary)',
+            textDecoration: 'none', fontWeight: '600', transition: 'all 0.3s ease'
+          }} className="author-link">
+            <Phone size={18} color="var(--accent-primary)" /> Đặt Lịch Tư Vấn
           </a>
         </div>
       </section>
