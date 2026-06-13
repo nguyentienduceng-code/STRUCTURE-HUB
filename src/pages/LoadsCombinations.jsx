@@ -203,6 +203,7 @@ export default function LoadsCombinations() {
           background: var(--overlay-very-light);
         }
         .alert-yellow {
+          overflow-x: auto;
           background: rgba(245, 158, 11, 0.05);
           border: 1px solid rgba(245, 158, 11, 0.2);
           border-radius: 8px;
@@ -458,7 +459,7 @@ export default function LoadsCombinations() {
       {/* Tab 3: Tổ hợp TCVN 2737:2023 */}
       {activeTab === 'tcvn_combinations' && (
         <div className="loads-section">
-          <div className="grid-half">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <CollapsibleSection defaultOpen={false} title="3.1. Phương trình tổ hợp cơ bản (ULS - Trạng thái giới hạn 1)">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Xác suất xảy ra đồng thời của tất cả các hoạt tải cực đại cùng một thời điểm là rất bé. TCVN 2737:2023 định lượng sự không đồng thời này bằng hệ số tổ hợp <span className="highlight-text">&psi;</span>:

@@ -284,6 +284,7 @@
   .formula-card {
     padding: 12px;
     margin: 10px 0;
+  overflow-x: auto;
   }
 
   .page-title {
@@ -376,6 +377,7 @@
   padding: 16px 20px;
   border-radius: 6px 12px 12px 6px;
   margin: 16px 0;
+  overflow-x: auto;
   box-shadow: var(--shadow-formula);
   transition: all 0.3s ease;
 }
@@ -398,7 +400,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow-x: auto;
   gap: 6px;
 }
 
