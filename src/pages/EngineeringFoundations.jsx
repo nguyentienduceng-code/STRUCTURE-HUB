@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PageHeader from '../components/PageHeader';
 import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   BookOpen, 
@@ -15,55 +16,14 @@ export default function EngineeringFoundations() {
   return (
     <div>
       <style>{`
-        .tab-nav {
-          display: flex;
-          gap: 6px;
-          margin-bottom: 24px;
-          border-bottom: 1px solid var(--border-glass);
-          padding-bottom: 12px;
-          flex-wrap: wrap;
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: none;
-        }
-        .tab-nav::-webkit-scrollbar {
-          display: none;
-        }
-        .tab-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 12px 20px;
-          background: var(--overlay-very-light);
-          border: 1px solid var(--border-glass);
-          border-radius: 8px;
-          color: var(--text-secondary);
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 1.15rem;
-          white-space: nowrap;
-          flex-shrink: 0;
-          transition: all 0.2s ease;
-        }
-        .tab-btn:hover {
-          background: var(--overlay-light);
-          color: var(--text-primary);
-        }
-        .tab-btn.active {
-          background: var(--accent-gradient);
-          color: #fff;
-          border-color: transparent;
-          box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
-        }
+        
+        
+        
+        
+        
         @media (max-width: 768px) {
-          .tab-nav {
-            flex-wrap: nowrap;
-          }
-          .tab-btn {
-            padding: 12px 20px;
-            font-size: 1.15rem;
-            gap: 4px;
-          }
+          
+          
         }
         .theory-section {
           animation: fadeIn 0.4s ease-out;
@@ -115,48 +75,32 @@ export default function EngineeringFoundations() {
         }
       `}</style>
 
-      <h1 className="page-title">1. Nền tảng Kỹ thuật & Sức bền Vật liệu</h1>
-      <div className="breadcrumb" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '-16px', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = 'var(--text-primary)'} onMouseOut={(e) => e.target.style.color = 'var(--text-secondary)'}>Trang chủ</a>
-        <span>/</span>
-        <span style={{ color: 'var(--text-primary)' }}>1. Nền tảng Kỹ thuật & Sức bền Vật liệu</span>
-      </div>
-
-
-      <div className="card" style={{ marginBottom: '32px', background: 'linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(102,126,234,0.1) 100%)', border: '1px solid rgba(139,92,246,0.3)', boxShadow: '0 0 30px rgba(139,92,246,0.15)' }}>
-        <h2 style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <BookOpen size={24} color="var(--accent-primary)" />
-          <span className="gradient-text">Hệ thống Lý thuyết Sức bền & Ứng dụng Thực hành Kết cấu</span>
-        </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.6, margin: 0 }}>
-          Tổng hợp kiến thức nền tảng về Sức bền Vật liệu (SBVL), cơ lý vật chất và ngoại lực. Bản tra cứu giải thích chi tiết ý nghĩa của các đại lượng vật lý, ký hiệu toán học và vai trò quyết định của chúng trong các quy trình tính toán kết cấu thực tế sau này.
-        </p>
-      </div>
+      <PageHeader 
+        title="1. Nền tảng Kỹ thuật & Sức bền Vật liệu"
+        breadcrumbText="1. Nền tảng Kỹ thuật & Sức bền Vật liệu"
+        descriptionTitle="Hệ thống Lý thuyết Sức bền & Ứng dụng Thực hành Kết cấu"
+        descriptionIcon={BookOpen}
+        description={<>Tổng hợp kiến thức nền tảng về Sức bền Vật liệu (SBVL), cơ lý vật chất và ngoại lực. Bản tra cứu giải thích chi tiết ý nghĩa của các đại lượng vật lý, ký hiệu toán học và vai trò quyết định của chúng trong các quy trình tính toán kết cấu thực tế sau này.</>}
+      />
 
       {/* Tabs Navigation */}
       <div className="tab-nav">
         <button className={`tab-btn ${activeTab === 'properties' ? 'active' : ''}`} onClick={() => setActiveTab('properties')}>
-          <Cpu size={18} />
           1.1. Đặc trưng Vật liệu
         </button>
         <button className={`tab-btn ${activeTab === 'basics' ? 'active' : ''}`} onClick={() => setActiveTab('basics')}>
-          <BookOpen size={18} />
           1.2. Cơ sở & Tải trọng
         </button>
         <button className={`tab-btn ${activeTab === 'internal' ? 'active' : ''}`} onClick={() => setActiveTab('internal')}>
-          <CornerRightDown size={18} />
           1.3. Nội lực & Biểu đồ
         </button>
         <button className={`tab-btn ${activeTab === 'stress' ? 'active' : ''}`} onClick={() => setActiveTab('stress')}>
-          <Maximize2 size={18} />
           1.4. Ứng suất & Vòng tròn Mohr
         </button>
         <button className={`tab-btn ${activeTab === 'strain' ? 'active' : ''}`} onClick={() => setActiveTab('strain')}>
-          <Activity size={18} />
           1.5. Biến dạng & Hooke
         </button>
         <button className={`tab-btn ${activeTab === 'buckling' ? 'active' : ''}`} onClick={() => setActiveTab('buckling')}>
-          <Layers size={18} />
           1.6. Ổn định dọc (Buckling)
         </button>
       </div>

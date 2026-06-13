@@ -1,4 +1,4 @@
-import { BookOpen, Map, Mail, Phone, User, Award } from 'lucide-react';
+import { BookOpen, Map, Mail, Phone, User, Award, Sliders, Activity, Box, Cpu, Layers } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -41,7 +41,37 @@ export default function Home() {
         </p>
       </section>
 
+      
+      {/* Chapters Grid Section */}
+      <section className="chapters-grid" style={{ marginBottom: '40px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+        {[
+          { title: "1. Nền tảng Kỹ thuật", path: "/engineering-foundations", icon: BookOpen, desc: "Cơ sở sức bền và đặc trưng vật liệu." },
+          { title: "2. Khai báo Tham số", path: "/parameters", icon: Sliders, desc: "Hệ tọa độ, bậc tự do và thuộc tính." },
+          { title: "3. Tải trọng & Tổ hợp", path: "/loads", icon: Activity, desc: "TCVN 2737:2023, ASCE 7-10." },
+          { title: "4. BTCT Cấu kiện", path: "/rc-components", icon: Box, desc: "Thiết kế Dầm, Cột, Sàn, Vách." },
+          { title: "5. Cấu kiện Thép", path: "/steel-components", icon: Cpu, desc: "Thiết kế cấu kiện Thép cơ bản." },
+          { title: "6. Ổn định Tổng thể", path: "/global-stability", icon: Layers, desc: "P-Delta, Chống lật, Chuyển vị." },
+          { title: "7. Cơ sở Địa kỹ thuật", path: "/geotechnical", icon: Map, desc: "Thiết kế Móng, Cọc và Sức chịu tải." }
+        ].map((chapter, idx) => (
+          <a key={idx} href={chapter.path} style={{ textDecoration: 'none' }}>
+            <div className="card chapter-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', transition: 'all 0.3s ease', border: '1px solid var(--border-glass)' }}
+              onMouseOver={(e) => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(139,92,246,0.15)' }}
+              onMouseOut={(e) => { e.currentTarget.style.borderColor = 'var(--border-glass)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none' }}
+            >
+              <div style={{ background: 'rgba(139,92,246,0.1)', padding: '12px', borderRadius: '12px' }}>
+                <chapter.icon size={24} color="var(--accent-primary)" />
+              </div>
+              <div>
+                <h3 style={{ margin: '0 0 4px 0', fontSize: '1.1rem', color: 'var(--text-primary)' }}>{chapter.title}</h3>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{chapter.desc}</p>
+              </div>
+            </div>
+          </a>
+        ))}
+      </section>
+
       {/* Overview Section */}
+
       <section className="overview-section" style={{ marginBottom: '40px' }}>
         <div className="card" style={{ padding: '32px' }}>
           <h2 style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px', fontSize: '1.5rem' }}>

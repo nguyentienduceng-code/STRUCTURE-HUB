@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PageHeader from '../components/PageHeader';
 import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   Building2, 
@@ -16,55 +17,14 @@ export default function ParametersDefinitions() {
   return (
     <div>
       <style>{`
-        .tab-nav {
-          display: flex;
-          gap: 6px;
-          margin-bottom: 24px;
-          border-bottom: 1px solid var(--border-glass);
-          padding-bottom: 12px;
-          flex-wrap: wrap;
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: none;
-        }
-        .tab-nav::-webkit-scrollbar {
-          display: none;
-        }
-        .tab-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 12px 20px;
-          background: var(--overlay-very-light);
-          border: 1px solid var(--border-glass);
-          border-radius: 8px;
-          color: var(--text-secondary);
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 1.15rem;
-          white-space: nowrap;
-          flex-shrink: 0;
-          transition: all 0.2s ease;
-        }
-        .tab-btn:hover {
-          background: var(--overlay-light);
-          color: var(--text-primary);
-        }
-        .tab-btn.active {
-          background: var(--accent-gradient);
-          color: #fff;
-          border-color: transparent;
-          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
-        }
+        
+        
+        
+        
+        
         @media (max-width: 768px) {
-          .tab-nav {
-            flex-wrap: nowrap;
-          }
-          .tab-btn {
-            padding: 12px 20px;
-            font-size: 1.15rem;
-            gap: 4px;
-          }
+          
+          
         }
         .material-section {
           animation: fadeIn 0.4s ease-out;
@@ -116,40 +76,26 @@ export default function ParametersDefinitions() {
         }
       `}</style>
 
-      <h1 className="page-title">2. Định nghĩa Thông số & Đối chiếu Tiêu chuẩn</h1>
-      <div className="breadcrumb" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '-16px', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = 'var(--text-primary)'} onMouseOut={(e) => e.target.style.color = 'var(--text-secondary)'}>Trang chủ</a>
-        <span>/</span>
-        <span style={{ color: 'var(--text-primary)' }}>2. Định nghĩa Thông số & Đối chiếu Tiêu chuẩn</span>
-      </div>
-
-
-      <div className="card" style={{ marginBottom: '32px', background: 'linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%)', border: '1px solid rgba(102,126,234,0.3)', boxShadow: '0 0 30px rgba(102,126,234,0.15)' }}>
-        <h2 style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Calculator size={24} color="var(--accent-primary)" />
-          <span className="gradient-text">Bảng tra cứu Hòa giải Tiêu chuẩn Việt Nam (TCVN) và Hoa Kỳ (ACI/ASTM/AISC/AWS)</span>
-        </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.6, margin: 0 }}>
-          Hòa giải sự khác biệt kỹ thuật về triết lý tính toán, phương pháp thử nghiệm cơ lý vật liệu, và thiết lập công thức quy đổi thực hành đối với Bê tông, Cốt thép, Thép hình, Bu lông, Hàn, và Địa kỹ thuật Nền móng.
-        </p>
-      </div>
+      <PageHeader 
+        title="2. Định nghĩa Thông số & Đối chiếu Tiêu chuẩn"
+        breadcrumbText="2. Định nghĩa Thông số & Đối chiếu Tiêu chuẩn"
+        descriptionTitle="Bảng tra cứu Hòa giải Tiêu chuẩn Việt Nam (TCVN) và Hoa Kỳ (ACI/ASTM/AISC/AWS)"
+        descriptionIcon={Calculator}
+        description={<>Hòa giải sự khác biệt kỹ thuật về triết lý tính toán, phương pháp thử nghiệm cơ lý vật liệu, và thiết lập công thức quy đổi thực hành đối với Bê tông, Cốt thép, Thép hình, Bu lông, Hàn, và Địa kỹ thuật Nền móng.</>}
+      />
 
       {/* Tabs Navigation */}
       <div className="tab-nav">
         <button className={`tab-btn ${activeTab === 'concrete' ? 'active' : ''}`} onClick={() => setActiveTab('concrete')}>
-          <Building2 size={18} />
           2.1. Bê tông (TCVN vs ACI)
         </button>
         <button className={`tab-btn ${activeTab === 'steel' ? 'active' : ''}`} onClick={() => setActiveTab('steel')}>
-          <Activity size={18} />
           2.2. Cốt thép & Thép hình
         </button>
         <button className={`tab-btn ${activeTab === 'bolts_welding' ? 'active' : ''}`} onClick={() => setActiveTab('bolts_welding')}>
-          <Settings size={18} />
           2.3. Bu lông & Hàn kết cấu
         </button>
         <button className={`tab-btn ${activeTab === 'geotechnical' ? 'active' : ''}`} onClick={() => setActiveTab('geotechnical')}>
-          <Layers size={18} />
           2.4. Đất nền & Móng cọc
         </button>
       </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PageHeader from '../components/PageHeader';
 import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   ShieldAlert, 
@@ -292,54 +293,14 @@ export default function GlobalStability() {
   return (
     <div>
       <style>{`
-        .tab-nav {
-          display: flex;
-          gap: 6px;
-          margin-bottom: 24px;
-          border-bottom: 1px solid var(--border-glass);
-          padding-bottom: 12px;
-          flex-wrap: wrap;
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: none;
-        }
-        .tab-nav::-webkit-scrollbar {
-          display: none;
-        }
-        .tab-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 12px 20px;
-          background: var(--overlay-very-light);
-          border: 1px solid var(--border-glass);
-          border-radius: 8px;
-          color: var(--text-secondary);
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 1.15rem;
-          white-space: nowrap;
-          flex-shrink: 0;
-          transition: all 0.2s ease;
-        }
-        .tab-btn:hover {
-          background: var(--overlay-light);
-          color: var(--text-primary);
-        }
-        .tab-btn.active {
-          background: var(--accent-gradient);
-          color: #fff;
-          border-color: transparent;
-          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
-        }
+        
+        
+        
+        
+        
         @media (max-width: 768px) {
-          .tab-nav {
-            flex-wrap: nowrap;
-          }
-          .tab-btn {
-            padding: 12px 20px;
-            font-size: 1.15rem;
-          }
+          
+          
         }
 
         .check-header {
@@ -394,23 +355,13 @@ export default function GlobalStability() {
         }
       `}</style>
 
-      <h1 className="page-title">Ổn định Tổng thể Công trình</h1>
-      <div className="breadcrumb" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '-16px', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = 'var(--text-primary)'} onMouseOut={(e) => e.target.style.color = 'var(--text-secondary)'}>Trang chủ</a>
-        <span>/</span>
-        <span style={{ color: 'var(--text-primary)' }}>Ổn định Tổng thể Công trình</span>
-      </div>
-
-
-      <div className="card" style={{ marginBottom: '32px', background: 'linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%)', border: '1px solid rgba(102,126,234,0.3)', boxShadow: '0 0 30px rgba(102,126,234,0.15)' }}>
-        <h2 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Activity size={24} color="var(--accent-primary)" />
-          <span className="gradient-text">Hệ thống Yêu cầu Kiểm tra Kết cấu theo TCVN & ISO</span>
-        </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.6, margin: 0 }}>
-          Tổng hợp chi tiết 09 hạng mục kiểm tra ổn định tổng thể, chuyển vị lệch tầng, hiệu ứng bậc hai và sức bền cấu kiện cốt lõi của công trình dựa trên <strong>TCVN 2737:2023</strong>, <strong>TCVN 9386:2012</strong>, <strong>TCVN 5574:2018</strong>, <strong>TCVN 5575:2024</strong> và <strong>ISO 10137:2007</strong>.
-        </p>
-      </div>
+      <PageHeader 
+        title="Ổn định Tổng thể Công trình"
+        breadcrumbText="Ổn định Tổng thể Công trình"
+        descriptionTitle="Hệ thống Yêu cầu Kiểm tra Kết cấu theo TCVN & ISO"
+        descriptionIcon={Activity}
+        description={<>Tổng hợp chi tiết 09 hạng mục kiểm tra ổn định tổng thể, chuyển vị lệch tầng, hiệu ứng bậc hai và sức bền cấu kiện cốt lõi của công trình dựa trên <strong>TCVN 2737:2023</strong>, <strong>TCVN 9386:2012</strong>, <strong>TCVN 5574:2018</strong>, <strong>TCVN 5575:2024</strong> và <strong>ISO 10137:2007</strong>.</>}
+      />
 
       <div className="tab-nav" style={{ flexWrap: 'wrap' }}>
         {stabilityChecks.map((check, idx) => (

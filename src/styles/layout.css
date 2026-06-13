@@ -622,3 +622,55 @@ sub sub, sup sup, sub sup, sup sub {
 .collapsible-content-inner {
   overflow: hidden;
 }
+
+
+.tab-nav {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-glass);
+  padding-bottom: 12px;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tab-nav::-webkit-scrollbar {
+  display: none;
+}
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 20px;
+  background: var(--overlay-very-light);
+  border: 1px solid var(--border-glass);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.15rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+.tab-btn:hover {
+  background: var(--overlay-light);
+  color: var(--text-primary);
+}
+.tab-btn.active {
+  background: #7F77DD;
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(127, 119, 221, 0.3);
+}
+@media (max-width: 768px) {
+  .tab-nav {
+    flex-wrap: nowrap;
+  }
+  .tab-btn {
+    padding: 12px 20px;
+    font-size: 1.15rem;
+    gap: 4px;
+  }
+}

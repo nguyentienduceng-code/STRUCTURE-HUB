@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PageHeader from '../components/PageHeader';
 import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   BookOpen, 
@@ -56,58 +57,14 @@ export default function RCComponents() {
   return (
     <div>
       <style>{`
-        .tab-nav {
-          display: flex;
-          gap: 6px;
-          margin-bottom: 24px;
-          border-bottom: 1px solid var(--border-glass);
-          padding-bottom: 12px;
-          flex-wrap: wrap;
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: none;
-        }
-        .tab-nav::-webkit-scrollbar {
-          display: none;
-        }
-        .tab-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 12px 20px;
-          background: var(--overlay-very-light);
-          border: 1px solid var(--border-glass);
-          border-radius: 8px;
-          color: var(--text-secondary);
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 1.15rem;
-          transition: all 0.2s ease;
-          white-space: nowrap;
-          flex-shrink: 0;
-        }
-        .tab-btn:hover {
-          background: var(--overlay-light);
-          color: var(--text-primary);
-        }
-        .tab-btn.active {
-          background: var(--accent-gradient);
-          color: #fff;
-          border-color: transparent;
-          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
-        }
+        
+        
+        
+        
+        
         @media (max-width: 768px) {
-          .tab-nav {
-            flex-wrap: nowrap;
-            gap: 6px;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-          }
-          .tab-btn {
-            padding: 12px 20px;
-            font-size: 1.15rem;
-            gap: 4px;
-          }
+          
+          
         }
         .rc-section {
           animation: fadeIn 0.4s ease-out;
@@ -160,48 +117,32 @@ export default function RCComponents() {
         }
       `}</style>
 
-      <h1 className="page-title">BTCT Cấu kiện (TCVN 5574:2018)</h1>
-      <div className="breadcrumb" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '-16px', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = 'var(--text-primary)'} onMouseOut={(e) => e.target.style.color = 'var(--text-secondary)'}>Trang chủ</a>
-        <span>/</span>
-        <span style={{ color: 'var(--text-primary)' }}>BTCT Cấu kiện (TCVN 5574:2018)</span>
-      </div>
-
-
-      <div className="card" style={{ marginBottom: '32px', background: 'linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%)', border: '1px solid rgba(102,126,234,0.3)', boxShadow: '0 0 30px rgba(102,126,234,0.15)' }}>
-        <h2 style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <BookOpen size={24} color="var(--accent-primary)" />
-          <span className="gradient-text">Tính toán Kết cấu Bê tông Cốt thép</span>
-        </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.6, margin: 0 }}>
-          Báo cáo chuyên sâu và công cụ tra cứu cơ sở tính toán cấu kiện bê tông cốt thép (Dầm, Cột, Sàn, Vách, Móng) theo Tiêu chuẩn Quốc gia <strong>TCVN 5574:2018</strong> và Thiết kế kháng chấn theo <strong>TCVN 9386:2012</strong>.
-        </p>
-      </div>
+      <PageHeader 
+        title="BTCT Cấu kiện (TCVN 5574:2018)"
+        breadcrumbText="BTCT Cấu kiện (TCVN 5574:2018)"
+        descriptionTitle="Tính toán Kết cấu Bê tông Cốt thép"
+        descriptionIcon={BookOpen}
+        description={<>Báo cáo chuyên sâu và công cụ tra cứu cơ sở tính toán cấu kiện bê tông cốt thép (Dầm, Cột, Sàn, Vách, Móng) theo Tiêu chuẩn Quốc gia <strong>TCVN 5574:2018</strong> và Thiết kế kháng chấn theo <strong>TCVN 9386:2012</strong>.</>}
+      />
 
       {/* Tabs Navigation */}
       <div className="tab-nav">
         <button className={`tab-btn ${activeTab === 'theory' ? 'active' : ''}`} onClick={() => setActiveTab('theory')}>
-          <Activity size={18} />
           4.1. Triết lý & Phi tuyến
         </button>
         <button className={`tab-btn ${activeTab === 'beam' ? 'active' : ''}`} onClick={() => setActiveTab('beam')}>
-          <Calculator size={18} />
           4.2. Dầm (Uốn - Cắt - Xoắn)
         </button>
         <button className={`tab-btn ${activeTab === 'column' ? 'active' : ''}`} onClick={() => setActiveTab('column')}>
-          <Layers size={18} />
           4.3. Cột & Uốn dọc P-Δ
         </button>
         <button className={`tab-btn ${activeTab === 'slab' ? 'active' : ''}`} onClick={() => setActiveTab('slab')}>
-          <ShieldAlert size={18} />
           4.4. Sàn phẳng (Chọc thủng)
         </button>
         <button className={`tab-btn ${activeTab === 'wall' ? 'active' : ''}`} onClick={() => setActiveTab('wall')}>
-          <FileText size={18} />
           4.5. Vách cứng chịu cắt
         </button>
         <button className={`tab-btn ${activeTab === 'seismic' ? 'active' : ''}`} onClick={() => setActiveTab('seismic')}>
-          <TrendingUp size={18} />
           4.6. Thiết kế Kháng chấn (9386)
         </button>
       </div>
@@ -210,7 +151,7 @@ export default function RCComponents() {
       {activeTab === 'theory' && (
         <div className="rc-section">
           <div className="grid-half">
-            <CollapsibleSection defaultOpen={false} title="1.1. Triết lý cốt lõi & Giả thiết nền tảng">
+            <CollapsibleSection defaultOpen={false} title="4.1.1. Triết lý cốt lõi & Giả thiết nền tảng">
               <p style={{ lineHeight: 1.6 }}>
                 Thay đổi mang tính triết lý sâu sắc nhất của <strong>TCVN 5574:2018</strong> so với phiên bản 2012 là việc chuyển giao từ các công thức giải tích bán thực nghiệm dựa trên biểu đồ ứng suất hình chữ nhật tương đương sang việc áp dụng toàn diện <strong>Mô hình biến dạng phi tuyến (Non-linear Strain Model)</strong>.
               </p>
@@ -222,7 +163,7 @@ export default function RCComponents() {
               </ul>
             </CollapsibleSection>
 
-            <CollapsibleSection title="1.2. Đặc trưng Vật liệu & Hệ số An toàn">
+            <CollapsibleSection title="4.1.2. Đặc trưng Vật liệu & Hệ số An toàn">
               <p style={{ lineHeight: 1.6 }}>
                 Cường độ tính toán của vật liệu được chuyển đổi từ cường độ tiêu chuẩn thông qua các hệ số độ tin cậy vật liệu:
               </p>
@@ -243,7 +184,7 @@ export default function RCComponents() {
             </CollapsibleSection>
           </div>
 
-          <CollapsibleSection title="1.3. Hệ số điều kiện làm việc của Bê tông (γ_bi)" style={{ marginTop: '24px' }}>
+          <CollapsibleSection title="4.1.3. Hệ số điều kiện làm việc của Bê tông (γ_bi)" style={{ marginTop: '24px' }}>
             <p style={{ lineHeight: 1.6, marginBottom: '16px' }}>
               Ứng xử thực tế của bê tông trong cấu kiện chịu ảnh hưởng của điều kiện thi công và thời gian tác dụng tải trọng. Cường độ tính toán thực tế được nhân với các hệ số điều kiện làm việc:
             </p>
@@ -293,7 +234,7 @@ export default function RCComponents() {
       {activeTab === 'beam' && (
         <div className="rc-section">
           <div className="grid-half">
-            <CollapsibleSection defaultOpen={false} title="2.1. Khả năng chịu Uốn (TTGH1)">
+            <CollapsibleSection defaultOpen={false} title="4.2.1. Khả năng chịu Uốn (TTGH1)">
               <p style={{ lineHeight: 1.6 }}>
                 Khả năng chịu lực giới hạn của dầm chịu uốn dựa trên việc cân bằng ngẫu lực trên mặt cắt ngang. Với tiết diện chữ nhật đặt cốt thép đơn, momen kháng uốn giới hạn M_ult được tính như sau:
               </p>
@@ -333,7 +274,7 @@ export default function RCComponents() {
               </div>
             </CollapsibleSection>
 
-            <CollapsibleSection title="2.2. Kiểm tra Vết nứt & Biến dạng (TTGH2)">
+            <CollapsibleSection title="4.2.2. Kiểm tra Vết nứt & Biến dạng (TTGH2)">
               <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>1. Mô-men kháng nứt (M_crc):</h4>
               <p style={{ fontSize: '0.92rem' }}>
                 Vết nứt hình thành khi momen uốn do tải trọng tiêu chuẩn vượt quá momen kháng nứt của tiết diện:
@@ -375,7 +316,7 @@ export default function RCComponents() {
             </CollapsibleSection>
           </div>
 
-          <CollapsibleSection title="2.3. Khả năng chống Xoắn & Cắt phối hợp" style={{ marginTop: '24px' }}>
+          <CollapsibleSection title="4.2.3. Khả năng chống Xoắn & Cắt phối hợp" style={{ marginTop: '24px' }}>
             <div className="grid-half">
               <div>
                 <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Mô hình dàn không gian (Space Truss Analogy):</h4>
@@ -420,7 +361,7 @@ export default function RCComponents() {
       {activeTab === 'column' && (
         <div className="rc-section">
           <div className="grid-half">
-            <CollapsibleSection defaultOpen={false} title="3.1. Nén lệch tâm & Tích phân Không gian">
+            <CollapsibleSection defaultOpen={false} title="4.3.1. Nén lệch tâm & Tích phân Không gian">
               <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>1. Độ lệch tâm ngẫu nhiên (e_0):</h4>
               <p style={{ fontSize: '0.92rem', lineHeight: 1.6 }}>
                 Không tồn tại cột nén đúng tâm tuyệt đối. TCVN quy định mọi bài toán cột phải xét độ lệch tâm ban đầu ngẫu nhiên:
@@ -447,7 +388,7 @@ export default function RCComponents() {
               </ul>
             </CollapsibleSection>
 
-            <CollapsibleSection title="3.2. Uốn dọc cục bộ & Mô-men cấp 2 (Hiệu ứng P-Δ)">
+            <CollapsibleSection title="4.3.2. Uốn dọc cục bộ & Mô-men cấp 2 (Hiệu ứng P-Δ)">
               <p style={{ lineHeight: 1.6 }}>
                 Cột thanh mảnh chịu lực dọc nén lớn N sẽ sinh ra mô-men thứ cấp do uốn dọc ngang. Mô-men uốn tính toán được khuếch đại thông qua hệ số uốn dọc η (eta):
               </p>
@@ -482,7 +423,7 @@ export default function RCComponents() {
       {activeTab === 'slab' && (
         <div className="rc-section">
           <div className="grid-half">
-            <CollapsibleSection defaultOpen={false} title="4.1. Kháng Chọc Thủng (Punching Shear)">
+            <CollapsibleSection defaultOpen={false} title="4.4.1. Kháng Chọc Thủng (Punching Shear)">
               <p style={{ lineHeight: 1.6 }}>
                 Tại nút giao sàn phẳng không dầm và cột, toàn bộ lực cắt dồn nén cục bộ dễ gây phá hoại chọc thủng giòn theo hình tháp cụt nghiêng góc 45°. Sức kháng chọc thủng giới hạn:
               </p>
@@ -516,7 +457,7 @@ export default function RCComponents() {
               </div>
             </CollapsibleSection>
 
-            <CollapsibleSection title="4.2. Cấu tạo vùng biên mép sàn phẳng">
+            <CollapsibleSection title="4.4.2. Cấu tạo vùng biên mép sàn phẳng">
               <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Xử lý xoắn và neo ở biên bản phẳng:</h4>
               <p style={{ lineHeight: 1.6, fontSize: '0.95rem' }}>
                 Mép biên sàn không dầm chịu ứng suất xoắn và uốn cục bộ rất phức tạp. Tiêu chuẩn bắt buộc bố trí các thanh thép cấu tạo dạng <strong>chữ U (U-bars)</strong> gài chặt mép bản biên.
@@ -549,7 +490,7 @@ export default function RCComponents() {
               <span>Thiết kế Tiện nghi (SLS): Kiểm soát Rung động Sàn</span>
             </h3>
             <div className="grid-half">
-              <CollapsibleSection title="4.3. Nghịch lý Kết cấu & Sinh lý học Rung động">
+              <CollapsibleSection title="4.4.3. Nghịch lý Kết cấu & Sinh lý học Rung động">
                 <p style={{ lineHeight: 1.6, fontSize: '0.95rem' }}>
                   Xu hướng thiết kế sàn nhịp lớn, siêu nhẹ và bê tông cường độ cao dễ dàng thỏa mãn Trạng thái giới hạn chịu lực (ULS), nhưng lại dẫn đến <strong>Tần số tự nhiên (<var>f</var><sub><var>n</var></sub>) thấp</strong> và <strong>Độ cản (&zeta;) kém</strong>. Hệ quả là sàn cực kỳ nhạy cảm với tải trọng động học từ bước chân người.
                 </p>
@@ -594,7 +535,7 @@ export default function RCComponents() {
                 </div>
               </CollapsibleSection>
 
-              <CollapsibleSection title="4.4. Cạm bẫy ETABS & Nguyên tắc Can thiệp">
+              <CollapsibleSection title="4.4.4. Cạm bẫy ETABS & Nguyên tắc Can thiệp">
                 <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>Cạm bẫy Khai báo Khối lượng (Mass Source):</h4>
                 <p style={{ lineHeight: 1.6, fontSize: '0.92rem', color: 'var(--text-secondary)' }}>
                   Khác với động đất, mô phỏng rung động sàn đòi hỏi nắm bắt các dao động cục bộ ngoài mặt phẳng dọc trục Z.
@@ -629,7 +570,7 @@ export default function RCComponents() {
       {activeTab === 'wall' && (
         <div className="rc-section">
           <div className="grid-half">
-            <CollapsibleSection defaultOpen={false} title="5.1. Phương pháp Vùng biên chịu Mô-men (Boundary Elements)">
+            <CollapsibleSection defaultOpen={false} title="4.5.1. Phương pháp Vùng biên chịu Mô-men (Boundary Elements)">
               <p style={{ lineHeight: 1.6 }}>
                 Vách cứng chịu tải ngang gió động và động đất làm việc như một console khổng lồ chịu momen uốn lật rất lớn. Tiêu chuẩn áp dụng phương pháp vùng biên:
               </p>
@@ -647,7 +588,7 @@ export default function RCComponents() {
               </p>
             </CollapsibleSection>
 
-            <CollapsibleSection title="5.2. Cốt thép thân vách & Lanh tô liên kết">
+            <CollapsibleSection title="4.5.2. Cốt thép thân vách & Lanh tô liên kết">
               <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>1. Hàm lượng cốt thép thân vách tối thiểu:</h4>
               <p style={{ fontSize: '0.92rem', lineHeight: 1.5 }}>
                 Đan 2 lớp cốt thép đứng và ngang ở thân vách để chống nứt xiên và phân phối ứng suất cắt:
@@ -670,7 +611,7 @@ export default function RCComponents() {
       {activeTab === 'seismic' && (
         <div className="rc-section">
           <div className="grid-half">
-            <CollapsibleSection defaultOpen={false} title="6.1. Gia tốc nền thiết kế (a_g) & Ngưỡng Kháng chấn">
+            <CollapsibleSection defaultOpen={false} title="4.6.1. Gia tốc nền thiết kế (a_g) & Ngưỡng Kháng chấn">
               <p style={{ lineHeight: 1.6, marginBottom: '16px' }}>
                 Gia tốc nền thiết kế <strong>a<sub>g</sub></strong> tại địa điểm xây dựng là căn cứ quyết định việc bắt buộc áp dụng thiết kế kháng chấn (theo <strong>TCVN 9386:2012</strong> và <strong>QCVN 02:2022/BXD</strong>):
               </p>
@@ -725,7 +666,7 @@ export default function RCComponents() {
               </div>
             </CollapsibleSection>
 
-            <CollapsibleSection title="6.2. Bộ tính toán khoảng cách cốt đai s_max trong vùng tới hạn">
+            <CollapsibleSection title="4.6.2. Bộ tính toán khoảng cách cốt đai s_max trong vùng tới hạn">
               <p style={{ lineHeight: 1.6, marginBottom: '16px' }}>
                 Bố trí đai dày trong vùng khớp dẻo (vùng tới hạn) có vai trò kẹp chặt bê tông lõi, chống phình cốt dọc chịu nén và đảm bảo tính dẻo:
               </p>
@@ -795,7 +736,7 @@ export default function RCComponents() {
 
           {/* Triết lý thiết kế & Khớp dẻo */}
           <div className="grid-half" style={{ marginTop: '24px' }}>
-            <CollapsibleSection title="6.3. Triết lý Thiết kế theo Khả năng (Capacity Design)">
+            <CollapsibleSection title="4.6.3. Triết lý Thiết kế theo Khả năng (Capacity Design)">
               <p style={{ lineHeight: 1.6, fontSize: '0.92rem' }}>
                 Đảm bảo cơ chế phá hoại dẻo uốn xuất hiện trước phá hoại giòn cắt. Lực cắt tính toán thiết kế dầm/cột được khuếch đại dựa trên khả năng chịu uốn giới hạn của khớp dẻo ở hai đầu cấu kiện kể đến sự vượt cường độ vật liệu:
               </p>
@@ -809,7 +750,7 @@ export default function RCComponents() {
               </ul>
             </CollapsibleSection>
 
-            <CollapsibleSection title="6.4. Ứng ứng xử phi tuyến & Chiết giảm độ cứng">
+            <CollapsibleSection title="4.6.4. Ứng ứng xử phi tuyến & Chiết giảm độ cứng">
               <p style={{ lineHeight: 1.6, fontSize: '0.92rem' }}>
                 Dưới tác động của động đất mạnh, kết cấu bê tông cốt thép bị nứt và biến dạng dẻo lớn. Để mô phỏng đúng chu kỳ dao động thực tế khi phân tích lực ngang, độ cứng chống uốn của cấu kiện phải chiết giảm:
               </p>
@@ -824,7 +765,7 @@ export default function RCComponents() {
             </CollapsibleSection>
           </div>
 
-          <CollapsibleSection title="6.5. So sánh chi tiết yêu cầu cấu tạo cốt thép TCVN 5574:2018 và TCVN 9386:2012 / Giáo trình" style={{ marginTop: '24px' }}>
+          <CollapsibleSection title="4.6.5. So sánh chi tiết yêu cầu cấu tạo cốt thép TCVN 5574:2018 và TCVN 9386:2012 / Giáo trình" style={{ marginTop: '24px' }}>
             <p style={{ lineHeight: 1.6, marginBottom: '16px', fontSize: '0.95rem' }}>
               Bảng so sánh trực quan các thông số cấu tạo thép giữa kết cấu thông thường chịu tải trọng tĩnh (TCVN 5574:2018) và kết cấu kháng chấn (TCVN 9386:2012) đối với cấp dẻo trung bình (DCM) và khuyến nghị giáo trình:
             </p>

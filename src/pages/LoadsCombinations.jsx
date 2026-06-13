@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PageHeader from '../components/PageHeader';
 import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   Scale, 
@@ -22,55 +23,14 @@ export default function LoadsCombinations() {
   return (
     <div>
       <style>{`
-        .tab-nav {
-          display: flex;
-          gap: 6px;
-          margin-bottom: 24px;
-          border-bottom: 1px solid var(--border-glass);
-          padding-bottom: 12px;
-          flex-wrap: wrap;
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: none;
-        }
-        .tab-nav::-webkit-scrollbar {
-          display: none;
-        }
-        .tab-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 12px 20px;
-          background: var(--overlay-very-light);
-          border: 1px solid var(--border-glass);
-          border-radius: 8px;
-          color: var(--text-secondary);
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 1.15rem;
-          white-space: nowrap;
-          flex-shrink: 0;
-          transition: all 0.2s ease;
-        }
-        .tab-btn:hover {
-          background: var(--overlay-light);
-          color: var(--text-primary);
-        }
-        .tab-btn.active {
-          background: var(--accent-gradient);
-          color: #fff;
-          border-color: transparent;
-          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
-        }
+        
+        
+        
+        
+        
         @media (max-width: 768px) {
-          .tab-nav {
-            flex-wrap: nowrap;
-          }
-          .tab-btn {
-            padding: 12px 20px;
-            font-size: 1.15rem;
-            gap: 4px;
-          }
+          
+          
         }
         .loads-section {
           animation: fadeIn 0.4s ease-out;
@@ -221,52 +181,35 @@ export default function LoadsCombinations() {
         }
       `}</style>
 
-      <h1 className="page-title">3. Tải trọng & Tổ hợp tải trọng (TCVN 2737:2023)</h1>
-      <div className="breadcrumb" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '-16px', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = 'var(--text-primary)'} onMouseOut={(e) => e.target.style.color = 'var(--text-secondary)'}>Trang chủ</a>
-        <span>/</span>
-        <span style={{ color: 'var(--text-primary)' }}>3. Tải trọng & Tổ hợp tải trọng (TCVN 2737:2023)</span>
-      </div>
-
-
-      <div className="card" style={{ marginBottom: '32px', background: 'linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%)', border: '1px solid rgba(102,126,234,0.3)', boxShadow: '0 0 30px rgba(102,126,234,0.15)' }}>
-        <h2 style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Calculator size={24} color="var(--accent-primary)" />
-          <span className="gradient-text">Nghiên cứu chuyên sâu về triết lý tải trọng và tổ hợp theo TCVN 2737:2023 & ASCE 7-10</span>
-        </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.6, margin: 0 }}>
-          Hòa giải sự khác biệt kỹ thuật về mô hình tính toán tải trọng, hệ số độ tin cậy tải trọng, các hệ số tổ hợp xác suất, và phương án thiết lập các tổ hợp kiểm tra ULS/SLS tối ưu trên phần mềm giải tích kết cấu.
-        </p>
-      </div>
+      <PageHeader 
+        title="3. Tải trọng & Tổ hợp tải trọng (TCVN 2737:2023)"
+        breadcrumbText="3. Tải trọng & Tổ hợp tải trọng (TCVN 2737:2023)"
+        descriptionTitle="Nghiên cứu chuyên sâu về triết lý tải trọng và tổ hợp theo TCVN 2737:2023 & ASCE 7-10"
+        descriptionIcon={Calculator}
+        description={<>Hòa giải sự khác biệt kỹ thuật về mô hình tính toán tải trọng, hệ số độ tin cậy tải trọng, các hệ số tổ hợp xác suất, và phương án thiết lập các tổ hợp kiểm tra ULS/SLS tối ưu trên phần mềm giải tích kết cấu.</>}
+      />
 
       {/* Tabs Navigation */}
       <div className="tab-nav">
         <button className={`tab-btn ${activeTab === 'tcvn_philosophy' ? 'active' : ''}`} onClick={() => setActiveTab('tcvn_philosophy')}>
-          <Scale size={18} />
           3.1. Triết lý & Tĩnh tải TCVN
         </button>
         <button className={`tab-btn ${activeTab === 'wind_aerodynamics' ? 'active' : ''}`} onClick={() => setActiveTab('wind_aerodynamics')}>
-          <Wind size={18} />
           3.2. Khí động học Tải gió
         </button>
         <button className={`tab-btn ${activeTab === 'tcvn_combinations' ? 'active' : ''}`} onClick={() => setActiveTab('tcvn_combinations')}>
-          <Layers size={18} />
           3.3. Tổ hợp TCVN 2737:2023
         </button>
         <button className={`tab-btn ${activeTab === 'asce_combinations' ? 'active' : ''}`} onClick={() => setActiveTab('asce_combinations')}>
-          <BookOpen size={18} />
           3.4. Tổ hợp ASCE 7-10 (Mỹ)
         </button>
         <button className={`tab-btn ${activeTab === 'fea_modeling' ? 'active' : ''}`} onClick={() => setActiveTab('fea_modeling')}>
-          <Cpu size={18} />
           3.5. Mô hình hóa & Giải tích FEA
         </button>
         <button className={`tab-btn ${activeTab === 'live_load_reduction' ? 'active' : ''}`} onClick={() => setActiveTab('live_load_reduction')}>
-          <BarChart3 size={18} />
           3.6. Hoạt tải & Giảm tải XS
         </button>
         <button className={`tab-btn ${activeTab === 'earthquake_tcvn' ? 'active' : ''}`} onClick={() => setActiveTab('earthquake_tcvn')}>
-          <Zap size={18} />
           3.7. Động đất TCVN 9386:2025
         </button>
       </div>
@@ -275,7 +218,7 @@ export default function LoadsCombinations() {
       {activeTab === 'tcvn_philosophy' && (
         <div className="loads-section">
           <div className="grid-half">
-            <CollapsibleSection defaultOpen={false} title="1.1. Phân loại hai Trạng thái giới hạn (Limit States)">
+            <CollapsibleSection defaultOpen={false} title="3.1.1. Phân loại hai Trạng thái giới hạn (Limit States)">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Triết lý cốt lõi của <span className="highlight-text">TCVN 2737:2023</span> được xây dựng dựa trên phương pháp thiết kế bán xác suất (Semi-Probabilistic Design) thông qua hai nhóm trạng thái giới hạn:
               </p>
@@ -289,7 +232,7 @@ export default function LoadsCombinations() {
               </ul>
             </CollapsibleSection>
 
-            <CollapsibleSection title="1.2. Hệ số độ tin cậy tĩnh tải G (TCVN 2737:2023)">
+            <CollapsibleSection title="3.1.2. Hệ số độ tin cậy tĩnh tải G (TCVN 2737:2023)">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Thay vì áp dụng một hệ số chung chung, TCVN 2737:2023 quy định chi tiết hệ số độ tin cậy tải trọng (<span className="highlight-text">&gamma;<sub><var>f</var></sub></span>) cho tĩnh tải tùy thuộc vào đặc thù chế tạo và thi công vật liệu:
               </p>
@@ -375,7 +318,7 @@ export default function LoadsCombinations() {
       {activeTab === 'wind_aerodynamics' && (
         <div className="loads-section">
           <div className="grid-half">
-            <CollapsibleSection defaultOpen={false} title="2.1. Dịch chuyển định chuẩn vận tốc gió">
+            <CollapsibleSection defaultOpen={false} title="3.2.1. Dịch chuyển định chuẩn vận tốc gió">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Bước chuyển mình lịch sử của <span className="highlight-text">TCVN 2737:2023</span> là việc thay thế mô hình vận tốc gió trung bình dài hạn (10 phút hoặc 2 phút) của bản cũ bằng mô hình <span className="highlight-text">gió giật 3 giây (3-second gust)</span> ở cao độ 10m trên bề mặt địa hình chuẩn, với chu kỳ lặp 20 năm.
               </p>
@@ -418,7 +361,7 @@ export default function LoadsCombinations() {
               </div>
             </CollapsibleSection>
 
-            <CollapsibleSection title="2.2. Hệ số độ tin cậy gió cực hạn 2.1 vs SLS 1.0">
+            <CollapsibleSection title="3.2.2. Hệ số độ tin cậy gió cực hạn 2.1 vs SLS 1.0">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Sự khác biệt cốt lõi trong việc quản lý rủi ro bão lũ giữa Việt Nam và Mỹ:
               </p>
@@ -460,7 +403,7 @@ export default function LoadsCombinations() {
       {activeTab === 'tcvn_combinations' && (
         <div className="loads-section">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <CollapsibleSection defaultOpen={false} title="3.1. Phương trình tổ hợp cơ bản (ULS - Trạng thái giới hạn 1)">
+            <CollapsibleSection defaultOpen={false} title="3.3.1. Phương trình tổ hợp cơ bản (ULS - Trạng thái giới hạn 1)">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Xác suất xảy ra đồng thời của tất cả các hoạt tải cực đại cùng một thời điểm là rất bé. TCVN 2737:2023 định lượng sự không đồng thời này bằng hệ số tổ hợp <span className="highlight-text">&psi;</span>:
               </p>
@@ -490,12 +433,12 @@ export default function LoadsCombinations() {
               </p>
             </CollapsibleSection>
 
-            <CollapsibleSection title="3.2. Phương trình tổ hợp đặc biệt (Accidental Combinations)">
+            <CollapsibleSection title="3.3.2. Phương trình tổ hợp đặc biệt (Accidental Combinations)">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Khi xuất hiện tải trọng đặc biệt <span className="highlight-text"><var>A</var><sub><var>d</var></sub></span> (như động đất, nổ, cháy, hoặc va chạm cầu trục), khả năng xuất hiện đồng thời với các hoạt tải cực đại khác là cực kỳ thấp. Phương trình được thiết lập:
               </p>
               <div className="formula-card" style={{ borderLeftColor: '#f59e0b' }}>
-                <div className="formula-line" style={{ color: '#f59e0b' }}>
+                <div className="formula-line">
                   <var>E</var><sub><var>d</var></sub> = &gamma;<sub><var>f</var>,<var>G</var></sub><var>G</var><sub><var>k</var></sub> + <var>A</var><sub><var>d</var></sub> + &sum;&thinsp;&psi;<sub><var>L</var>,<var>i</var></sub>(&gamma;<sub><var>f</var>,<var>Q</var><sub><var>L</var></sub></sub><var>Q</var><sub><var>L</var>,<var>i</var>,<var>k</var></sub>) + &sum;&thinsp;&psi;<sub><var>t</var>,<var>j</var></sub>(&gamma;<sub><var>f</var>,<var>Q</var><sub><var>t</var></sub></sub><var>Q</var><sub><var>t</var>,<var>j</var>,<var>k</var></sub>)
                 </div>
                 <div className="formula-desc">
@@ -549,7 +492,7 @@ export default function LoadsCombinations() {
       {activeTab === 'asce_combinations' && (
         <div className="loads-section">
           <div className="grid-half">
-            <CollapsibleSection defaultOpen={false} title="4.1. Phương pháp LRFD (Load & Resistance Factor Design)">
+            <CollapsibleSection defaultOpen={false} title="3.4.1. Phương pháp LRFD (Load & Resistance Factor Design)">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 ASCE 7-10 tích hợp trực tiếp xác suất vào 7 phương trình tổ hợp cố định thay vì dùng hệ số chiết giảm linh hoạt:
               </p>
@@ -603,7 +546,7 @@ export default function LoadsCombinations() {
               </div>
             </CollapsibleSection>
 
-            <CollapsibleSection title="4.2. Phương pháp ASD (Allowable Strength Design)">
+            <CollapsibleSection title="3.4.2. Phương pháp ASD (Allowable Strength Design)">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Duy trì tải trọng ở mức tiêu chuẩn (Service-level) và kiểm tra ứng suất cấu kiện trước cường độ danh định đã chia cho hệ số an toàn uốn/nén/cắt tổng thể <span className="highlight-text">&Omega;</span>:
               </p>
@@ -675,7 +618,7 @@ export default function LoadsCombinations() {
       {activeTab === 'fea_modeling' && (
         <div className="loads-section">
           <div className="grid-half">
-            <CollapsibleSection defaultOpen={false} title="5.1. Phương pháp phân tích trực tiếp (Direct Analysis Method - DAM)">
+            <CollapsibleSection defaultOpen={false} title="3.5.1. Phương pháp phân tích trực tiếp (Direct Analysis Method - DAM)">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 AISC 360-10 quy định phương pháp <span className="highlight-text">Direct Analysis Method (DAM)</span> tại Chương C nhằm giải quyết bài toán mất ổn định mà không cần tính toán hệ số chiều dài tính toán <span className="highlight-text"><var>K</var>-factor</span> phức tạp. DAM áp đặt hai điều kiện giải tích trong phần mềm:
               </p>
@@ -692,7 +635,7 @@ export default function LoadsCombinations() {
               </p>
             </CollapsibleSection>
 
-            <CollapsibleSection title="5.2. Kỹ thuật lập tổ hợp tùy chỉnh (Custom Combination Method)">
+            <CollapsibleSection title="3.5.2. Kỹ thuật lập tổ hợp tùy chỉnh (Custom Combination Method)">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Khi gán tải trọng Việt Nam (TCVN 2737:2023) vào mô hình tính toán thép theo AISC 360, kỹ sư dễ gặp lỗi <span className="highlight-text">nhân đôi hệ số an toàn</span> nếu sử dụng trình sinh tổ hợp tự động của phần mềm Mỹ (ETABS / SAP2000).
               </p>
@@ -722,7 +665,7 @@ export default function LoadsCombinations() {
       {activeTab === 'live_load_reduction' && (
         <div className="loads-section">
           <div className="grid-half">
-            <CollapsibleSection defaultOpen={false} title="6.1. Giá trị tiêu chuẩn hoạt tải sử dụng (Bảng 4 – TCVN 2737:2023)">
+            <CollapsibleSection defaultOpen={false} title="3.6.1. Giá trị tiêu chuẩn hoạt tải sử dụng (Bảng 4 – TCVN 2737:2023)">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Hoạt tải được phân nhóm theo <span className="highlight-text">mục đích công năng</span> của không gian sử dụng. Các khu vực có lưu thông người liên tục hoặc là nút sơ tán khi sự cố phải chịu tải trọng thiết kế cao hơn nhằm đảm bảo an toàn sinh mạng:
               </p>
@@ -781,7 +724,7 @@ export default function LoadsCombinations() {
               </div>
             </CollapsibleSection>
 
-            <CollapsibleSection title="6.2. Hệ số độ tin cậy tĩnh tải γ_f theo loại vật liệu">
+            <CollapsibleSection title="3.6.2. Hệ số độ tin cậy tĩnh tải γ_f theo loại vật liệu">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Tĩnh tải được tính toán theo công thức <span className="highlight-text">G<sub>d</sub> = γ<sub><var>f</var></sub> × V × γ<sub><var>vl</var></sub></span>, trong đó <var>V</var> là thể tích hình học và γ<sub><var>vl</var></sub> là trọng lượng riêng vật liệu. Hệ số độ tin cậy phụ thuộc vào mức độ kiểm soát chất lượng sản xuất:
               </p>
@@ -870,7 +813,7 @@ export default function LoadsCombinations() {
       {activeTab === 'earthquake_tcvn' && (
         <div className="loads-section">
           <div className="grid-half">
-            <CollapsibleSection defaultOpen={false} title="7.1. Hệ sinh thái Tiêu chuẩn 2025">
+            <CollapsibleSection defaultOpen={false} title="3.7.1. Hệ sinh thái Tiêu chuẩn 2025">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Phiên bản <span className="highlight-text">TCVN 9386:2025</span> vận hành như một tâm điểm liên kết với nhiều quy chuẩn, tiêu chuẩn khác để đồng bộ dữ liệu:
               </p>
@@ -927,7 +870,7 @@ export default function LoadsCombinations() {
               </div>
             </CollapsibleSection>
 
-            <CollapsibleSection title="7.2. Động lực học nền đất & Khai báo ETABS">
+            <CollapsibleSection title="3.7.2. Động lực học nền đất & Khai báo ETABS">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Rung chấn bị ảnh hưởng cực lớn bởi đặc điểm nền đất. Nền đất rời xốp sẽ khuếch đại biên độ sóng nghiêm trọng.
               </p>
@@ -976,7 +919,7 @@ export default function LoadsCombinations() {
           </div>
 
           <div className="grid-half" style={{ marginTop: '24px' }}>
-            <CollapsibleSection title="7.3. Thiết kế theo Khả năng (Capacity Design)">
+            <CollapsibleSection title="3.7.3. Thiết kế theo Khả năng (Capacity Design)">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Không cố làm kết cấu "không thể gãy", mà buộc nó phải "gãy theo cách đã lập trình".
               </p>
@@ -984,7 +927,7 @@ export default function LoadsCombinations() {
                 <li style={{ marginBottom: '8px' }}>
                   <strong>Cột khỏe - Dầm yếu:</strong> Ngăn chặn sập Tầng Mềm (Soft-story). Cường ép dầm nứt nẻ tạo khớp dẻo để tiêu tán năng lượng, giữ cho cột đứng vững.
                   <div className="formula-card" style={{ margin: '8px 0', borderLeftColor: '#f59e0b' }}>
-                    <div className="formula-line" style={{ color: '#f59e0b' }}>
+                    <div className="formula-line">
                       &sum; <var>M</var><sub><var>Rc</var></sub> &ge; 1.3 &sum; <var>M</var><sub><var>Rb</var></sub>
                     </div>
                     <div className="formula-desc">
@@ -999,7 +942,7 @@ export default function LoadsCombinations() {
               </ul>
             </CollapsibleSection>
 
-            <CollapsibleSection title="7.4. P-Delta & Chuyển vị lệch tầng">
+            <CollapsibleSection title="3.7.4. P-Delta & Chuyển vị lệch tầng">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
                 Kiểm toán độ cứng không gian và an toàn vi mô:
               </p>

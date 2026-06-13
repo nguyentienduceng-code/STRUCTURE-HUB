@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PageHeader from '../components/PageHeader';
 import CollapsibleSection from '../components/CollapsibleSection';
 import Skeleton from '../components/Skeleton';
 import ProgressBar from '../components/ProgressBar';
@@ -40,45 +41,11 @@ export default function SteelComponents() {
   return (
     <div>
       <style>{`
-        .tab-nav {
-          display: flex;
-          gap: 10px;
-          margin-bottom: 24px;
-          border-bottom: 1px solid var(--border-glass);
-          padding-bottom: 12px;
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: none;
-        }
-        .tab-nav::-webkit-scrollbar {
-          display: none;
-        }
-        .tab-btn {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 12px 20px;
-          background: var(--overlay-very-light);
-          border: 1px solid var(--border-glass);
-          border-radius: var(--radius-sm);
-          color: var(--text-secondary);
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 1.15rem;
-          white-space: nowrap;
-          flex-shrink: 0;
-          transition: all var(--transition);
-        }
-        .tab-btn:hover {
-          background: var(--overlay-light);
-          color: var(--text-primary);
-        }
-        .tab-btn.active {
-          background: var(--accent-gradient);
-          color: #fff;
-          border-color: transparent;
-          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
-        }
+        
+        
+        
+        
+        
         .steel-section {
           animation: fadeIn 0.4s ease-out;
         }
@@ -101,31 +68,17 @@ export default function SteelComponents() {
           }
         }
         @media (max-width: 768px) {
-          .tab-btn {
-            padding: 12px 20px;
-            font-size: 1.15rem;
-            gap: 5px;
-          }
+          
         }
       `}</style>
 
-      <h1 className="page-title">Cấu kiện Thép</h1>
-      <div className="breadcrumb" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '-16px', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = 'var(--text-primary)'} onMouseOut={(e) => e.target.style.color = 'var(--text-secondary)'}>Trang chủ</a>
-        <span>/</span>
-        <span style={{ color: 'var(--text-primary)' }}>Cấu kiện Thép</span>
-      </div>
-
-
-      <div className="card" style={{ marginBottom: '32px', background: 'linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%)', border: '1px solid rgba(102,126,234,0.3)', boxShadow: '0 0 30px rgba(102,126,234,0.15)' }}>
-        <h2 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <BookOpen size={24} color="var(--accent-primary)" />
-          <span className="gradient-text">Nguyên lý Thiết kế & Sức kháng Cấu kiện Thép</span>
-        </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.6, margin: 0 }}>
-          Kết cấu thép chịu nén và uốn cực tốt nhưng nhạy cảm với hiện tượng mất ổn định tổng thể và cục bộ do tính thanh mảnh cao. Việc tính toán đòi hỏi kiểm soát ứng suất dẻo sau mất ổn định và sức kháng giới hạn của cấu kiện và liên kết.
-        </p>
-      </div>
+      <PageHeader 
+        title="Cấu kiện Thép"
+        breadcrumbText="Cấu kiện Thép"
+        descriptionTitle="Nguyên lý Thiết kế & Sức kháng Cấu kiện Thép"
+        descriptionIcon={BookOpen}
+        description={<>Kết cấu thép chịu nén và uốn cực tốt nhưng nhạy cảm với hiện tượng mất ổn định tổng thể và cục bộ do tính thanh mảnh cao. Việc tính toán đòi hỏi kiểm soát ứng suất dẻo sau mất ổn định và sức kháng giới hạn của cấu kiện và liên kết.</>}
+      />
 
       {/* Tab Navigations */}
       <div className="tab-nav">
@@ -133,21 +86,18 @@ export default function SteelComponents() {
           className={`tab-btn ${activeTab === 'tcvn' ? 'active' : ''}`}
           onClick={() => setActiveTab('tcvn')}
         >
-          <Calculator size={18} />
           <span>5.1. Tiêu chuẩn Việt Nam TCVN 5575:2024</span>
         </button>
         <button 
           className={`tab-btn ${activeTab === 'aisc' ? 'active' : ''}`}
           onClick={() => setActiveTab('aisc')}
         >
-          <Crosshair size={18} />
           <span>5.2. Tiêu chuẩn Mỹ AISC 360-10</span>
         </button>
         <button 
           className={`tab-btn ${activeTab === 'compare' ? 'active' : ''}`}
           onClick={() => setActiveTab('compare')}
         >
-          <Shuffle size={18} />
           <span>5.3. So Sánh Triết Lý & Chuyển Vị</span>
         </button>
       </div>
