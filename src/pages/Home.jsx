@@ -198,14 +198,14 @@ export default function Home() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
           <BookOpen size={24} color="var(--accent-primary)" />
-          <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '700' }}>Giới thiệu tổng quan</h2>
+          <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '700' }}>Structural Knowledge Hub: Làm chủ tư duy, Dẫn dắt giải pháp kỹ thuật</h2>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', fontSize: '1.05rem', color: 'var(--text-secondary)', lineHeight: '1.7' }}>
           <p>
-            Chào mừng bạn đến với <strong>Structural Knowledge Hub</strong>, không gian số chuyên sâu dành riêng cho những ai đam mê và đang hoạt động trong lĩnh vực Kỹ thuật Kết cấu.
+            Để một dự án thành công, kỹ sư kết cấu không chỉ cần tính toán đúng, mà còn cần tư duy hệ thống để quản lý và triển khai hồ sơ hiệu quả. Hub được định hình là "trợ lý đắc lực" giúp bạn hệ thống hóa toàn bộ chuỗi kiến thức: từ nền tảng cơ học, cập nhật tiêu chuẩn mới, đến kỹ năng kiểm soát và đánh giá mô hình.
           </p>
           <p>
-            Được thiết kế nhằm mang lại sự liền mạch và trực quan, ứng dụng này số hóa toàn bộ các tiêu chuẩn thiết kế (như TCVN 5574:2018, TCVN 2737:2023, TCVN 5575:2024, và các tiêu chuẩn quốc tế như ASCE, Eurocode), kết hợp cùng những nguyên lý sức bền vật liệu cốt lõi.
+            Dù bạn đang trực tiếp triển khai thiết kế hay đảm nhận vai trò quản lý, Hub sẽ cung cấp những kinh nghiệm thực tế để bạn đưa ra quyết định kỹ thuật chuẩn xác và nhanh chóng nhất.
           </p>
         </div>
       </section>
@@ -213,7 +213,7 @@ export default function Home() {
       {/* Author Section */}
       <section id="author" style={{ 
         marginTop: '60px', 
-        padding: '40px', 
+        padding: '30px', 
         background: 'var(--bg-card)', 
         borderRadius: '24px', 
         border: '1px solid var(--border-glass)',
@@ -223,55 +223,29 @@ export default function Home() {
         alignItems: 'center',
         textAlign: 'center'
       }}>
-        <div style={{
-          width: '100px',
-          height: '100px',
-          borderRadius: '50%',
-          background: 'var(--accent-gradient)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '20px',
-          boxShadow: '0 8px 24px rgba(99, 102, 241, 0.3)',
-          border: '4px solid var(--bg-primary)'
-        }}>
-          <User size={48} color="#fff" />
-        </div>
-        
-        <h2 style={{ margin: '0 0 8px 0', fontSize: '2rem', fontWeight: '800', color: 'var(--text-primary)' }}>
+        <h2 style={{ margin: '0 0 4px 0', fontSize: '1.5rem', fontWeight: '800', color: 'var(--text-primary)' }}>
           Nguyễn Tiến Đức
         </h2>
-        <p style={{ margin: '0 0 24px 0', fontSize: '1.1rem', fontWeight: '600', color: 'var(--accent-primary)', letterSpacing: '0.05em' }}>
+        <p style={{ margin: '0 0 20px 0', fontSize: '1rem', fontWeight: '600', color: 'var(--accent-primary)' }}>
           Engineer Manager - Structural
         </p>
 
-        <p style={{ 
-          maxWidth: '600px', 
-          color: 'var(--text-secondary)', 
-          lineHeight: '1.7', 
-          fontSize: '1.05rem',
-          marginBottom: '32px'
-        }}>
-          Với hơn 10 năm kinh nghiệm trong thiết kế và quản lý dự án kết cấu phức tạp. 
-          Người xây dựng hệ thống <strong>Structural Knowledge Hub</strong> với mục tiêu chuẩn hóa và số hóa tri thức kỹ thuật cho cộng đồng kỹ sư xây dựng.
-        </p>
-
-        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
           <a href="mailto:contact@example.com" style={{ 
-            display: 'flex', alignItems: 'center', gap: '8px', 
+            display: 'flex', alignItems: 'center', gap: '6px', 
             background: 'var(--bg-glass)', border: '1px solid var(--border-glass)',
-            padding: '10px 24px', borderRadius: '30px', color: 'var(--text-primary)',
-            textDecoration: 'none', fontWeight: '600', transition: 'all 0.3s ease'
+            padding: '8px 16px', borderRadius: '20px', color: 'var(--text-secondary)',
+            textDecoration: 'none', fontSize: '0.95rem', fontWeight: '500', transition: 'all 0.2s ease'
           }} className="author-link">
-            <Mail size={18} color="var(--accent-primary)" /> Email Liên Hệ
+            <Mail size={16} /> Email Góp ý
           </a>
           <a href="#" style={{ 
-            display: 'flex', alignItems: 'center', gap: '8px', 
+            display: 'flex', alignItems: 'center', gap: '6px', 
             background: 'var(--bg-glass)', border: '1px solid var(--border-glass)',
-            padding: '10px 24px', borderRadius: '30px', color: 'var(--text-primary)',
-            textDecoration: 'none', fontWeight: '600', transition: 'all 0.3s ease'
+            padding: '8px 16px', borderRadius: '20px', color: 'var(--text-secondary)',
+            textDecoration: 'none', fontSize: '0.95rem', fontWeight: '500', transition: 'all 0.2s ease'
           }} className="author-link">
-            <Phone size={18} color="var(--accent-primary)" /> Đặt Lịch Tư Vấn
+            <Phone size={16} /> Liên hệ (SĐT)
           </a>
         </div>
       </section>
