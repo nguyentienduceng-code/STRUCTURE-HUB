@@ -2,20 +2,17 @@ import { useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import CollapsibleSection from '../components/CollapsibleSection';
 import { 
-  Scale, 
-  Wind, 
+   
+   
   Layers, 
-  BookOpen, 
-  Cpu, 
+   
+   
   Calculator, 
   ShieldAlert, 
   HelpCircle, 
   Activity, 
   CheckCircle,
-  TrendingUp,
-  BarChart3,
-  Zap
-} from 'lucide-react';
+  TrendingUp } from 'lucide-react';
 
 export default function LoadsCombinations() {
   const [activeTab, setActiveTab] = useState('tcvn_philosophy');
@@ -645,11 +642,11 @@ export default function LoadsCombinations() {
                   <span>Quy trình thiết lập thực hành tối ưu</span>
                 </div>
                 <ol style={{ paddingLeft: '16px', margin: 0, fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
-                  <li style={{ marginBottom: '8px' }}>Khai báo toàn bộ tải trọng (Dead, Live, Wind) vào phần mềm dưới dạng lực Tiêu chuẩn (Nominal Loads) chưa nhân bất kỳ hệ số &gamma;<sub><var>f</var></sub> nào của TCVN.</li>
+                  <li style={{ marginBottom: '8px' }}>Khai báo toàn bộ tải trọng (Dead, Live, ) vào phần mềm dưới dạng lực Tiêu chuẩn (Nominal Loads) chưa nhân bất kỳ hệ số &gamma;<sub><var>f</var></sub> nào của TCVN.</li>
                   <li style={{ marginBottom: '8px' }}>Tắt tính năng tự động tạo tổ hợp tải trọng của phần mềm.</li>
                   <li style={{ marginBottom: '8px' }}>Tự định nghĩa các tổ hợp tùy chỉnh theo công thức TCVN. Ví dụ, tổ hợp ULS với gió chủ đạo:
                     <div style={{ fontFamily: 'monospace', padding: '6px 12px', background: 'var(--bg-card)', margin: '8px 0', borderRadius: '4px', color: '#f8fafc' }}>
-                      COMB_ULS_WindMax = 1.05 &times; Dead + 2.1 &times; Wind + 1.08 &times; Live
+                      COMB_ULS_WindMax = 1.05 &times; Dead + 2.1 &times; + 1.08 &times; Live
                     </div>
                     (Với 1.08 = 1.2 &gamma;<sub><var>f</var></sub> hoạt tải &times; 0.9 &psi;<sub><var>t</var>,2</sub>)
                   </li>

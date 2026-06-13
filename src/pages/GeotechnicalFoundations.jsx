@@ -3,20 +3,20 @@ import PageHeader from '../components/PageHeader';
 import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   BookOpen, 
-  Layers, 
-  Activity, 
-  FileText,
+   
+   
+  
   ShieldAlert,
-  Calculator, 
+   
   HelpCircle,
-  TrendingUp,
+  
   CheckCircle
 } from 'lucide-react';
 
 export default function GeotechnicalFoundations() {
   const [activeTab, setActiveTab] = useState('uls');
 
-  // Calculator 1: Unit Converter & bearing capacities
+  // 1: Unit Converter & bearing capacities
   const [qUlt, setQUlt] = useState(350);
   const [df, setDf] = useState(2.0);
   const [gamma, setGamma] = useState(18);
@@ -26,7 +26,7 @@ export default function GeotechnicalFoundations() {
   const qNetSafe = (parseFloat(qNetU) / fs).toFixed(1);
   const qSafe = (parseFloat(qNetSafe) + (gamma * df)).toFixed(1);
 
-  // Calculator 2: Pile SPT estimator
+  // 2: Pile SPT estimator
   const [pileType, setPileType] = useState('bored');
   const [pileD, setPileD] = useState(800);
   const [pileL, setPileL] = useState(25);
@@ -49,7 +49,7 @@ export default function GeotechnicalFoundations() {
   const Ru = (parseFloat(Qs) + parseFloat(Qb)).toFixed(1);
   const Rsafe = (parseFloat(Ru) / 2.0).toFixed(1); // Fs = 2.0 for preliminary design from SPT
 
-  // Calculator 3: Static Load Test requirements
+  // 3: Static Load Test requirements
   const [totalPiles, setTotalPiles] = useState(120);
   const [consequenceClass, setConsequenceClass] = useState('C2');
 
@@ -423,7 +423,7 @@ export default function GeotechnicalFoundations() {
         </div>
       )}
 
-      {/* Tab 5: Bộ tính toán thực hành (Geotechnical Calculators) */}
+      {/* Tab 5: Bộ tính toán thực hành (Geotechnical s) */}
       {activeTab === 'calcs' && (
         <div className="geo-section">
           <div className="grid-half">

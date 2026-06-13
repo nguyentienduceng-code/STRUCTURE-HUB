@@ -2,12 +2,12 @@ import { useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import CollapsibleSection from '../components/CollapsibleSection';
 import { 
-  Building2, 
-  Layers, 
-  Settings, 
+   
+   
+   
   ShieldAlert, 
   Calculator,
-  Activity,
+  
   Cpu
 } from 'lucide-react';
 

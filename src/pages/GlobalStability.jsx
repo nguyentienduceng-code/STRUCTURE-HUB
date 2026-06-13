@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import PageHeader from '../components/PageHeader';
-import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   ShieldAlert, 
   Activity, 
@@ -12,9 +11,7 @@ import {
   ShieldCheck, 
   TrendingUp, 
   Scale, 
-  ClipboardList,
-  ChevronRight
-} from 'lucide-react';
+  ClipboardList } from 'lucide-react';
 
 export default function GlobalStability() {
   const [activeTab, setActiveTab] = useState(0);

@@ -4,12 +4,10 @@ import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   BookOpen, 
   ShieldAlert, 
-  Layers, 
+   
   Activity, 
-  FileText, 
-  Calculator, 
-  TrendingUp
-} from 'lucide-react';
+   
+  Calculator } from 'lucide-react';
 
 export default function RCComponents() {
   const [activeTab, setActiveTab] = useState('theory');

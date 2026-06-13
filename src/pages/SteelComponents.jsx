@@ -8,7 +8,7 @@ import {
   ShieldAlert, 
   Crosshair, 
   Sliders, 
-  Calculator, 
+   
   Activity, 
   Hammer, 
   Shuffle

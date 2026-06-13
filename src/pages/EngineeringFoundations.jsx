@@ -3,12 +3,8 @@ import PageHeader from '../components/PageHeader';
 import CollapsibleSection from '../components/CollapsibleSection';
 import { 
   BookOpen, 
-  Activity, 
-  Cpu,
-  CornerRightDown,
-  Maximize2,
-  Layers
-} from 'lucide-react';
+   
+  Cpu } from 'lucide-react';
 
 export default function EngineeringFoundations() {
   const [activeTab, setActiveTab] = useState('properties');

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Map, Mail, Phone, User, Award, Sliders, Activity, Layers, Search } from 'lucide-react';
+import { BookOpen, Map, Mail, Phone, User,  Sliders, Activity, Layers, Search } from 'lucide-react';
 
 import IBeamIcon from '../components/icons/IBeamIcon';
 import ConcreteIcon from '../components/icons/ConcreteIcon';
@@ -165,8 +165,7 @@ export default function Home() {
             alignItems: 'flex-start',
             gap: '20px',
             transition: 'all 0.3s ease',
-            color: 'var(--text-primary)',
-          }}>
+            color: 'var(--text-primary)' }}>
             <div style={{
               background: 'rgba(99, 102, 241, 0.1)',
               padding: '16px',
