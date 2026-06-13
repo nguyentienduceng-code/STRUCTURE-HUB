@@ -20,8 +20,8 @@ export default function Home() {
     { title: 'Cấu kiện Bê tông cốt thép', path: '/rc-components' },
     { title: 'Cấu kiện Thép', path: '/steel-components' },
     { title: 'Ổn định tổng thể', path: '/global-stability' },
-    { title: 'Nền móng & Địa kỹ thuật', path: '/geotechnical-foundations' },
-    { title: 'Thông số Vật liệu', path: '/parameters' },
+    { title: '7. Nền móng', path: '/geotechnical-foundations' },
+    { title: '2. Thông số Vật liệu', path: '/parameters' },
   ];
 
   useEffect(() => {
@@ -148,12 +148,12 @@ export default function Home() {
       <section className="chapters-grid" style={{ marginBottom: '60px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
         {[
           { title: "1. Nền tảng Kỹ thuật", path: "/engineering-foundations", icon: CompassRulerIcon, desc: "Cơ sở sức bền và đặc trưng vật liệu." },
-          { title: "2. Khai báo Tham số", path: "/parameters", icon: Sliders, desc: "Hệ tọa độ, bậc tự do và thuộc tính." },
+          { title: "2. Thông số Vật liệu", path: "/parameters", icon: Sliders, desc: "Hệ tọa độ, bậc tự do và thuộc tính." },
           { title: "3. Tải trọng & Tổ hợp", path: "/loads-combinations", icon: Activity, desc: "TCVN 2737:2023, ASCE 7-10." },
           { title: "4. BTCT Cấu kiện", path: "/rc-components", icon: ConcreteIcon, desc: "Thiết kế Dầm, Cột, Sàn, Vách." },
           { title: "5. Cấu kiện Thép", path: "/steel-components", icon: IBeamIcon, desc: "Thiết kế cấu kiện Thép cơ bản." },
           { title: "6. Ổn định Tổng thể", path: "/global-stability", icon: Layers, desc: "P-Delta, Chống lật, Chuyển vị." },
-          { title: "7. Cơ sở Địa kỹ thuật", path: "/geotechnical-foundations", icon: Map, desc: "Thiết kế Móng, Cọc và Sức chịu tải." }
+          { title: "7. Nền móng", path: "/geotechnical-foundations", icon: Map, desc: "Thiết kế Móng, Cọc và Sức chịu tải." }
         ].map((chapter, index) => (
           <Link to={chapter.path} key={index} className="chapter-card" style={{
             background: 'var(--bg-card)',

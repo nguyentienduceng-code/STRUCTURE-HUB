@@ -36,8 +36,8 @@ export default function Header({ toggleSidebar, theme, toggleTheme }) {
     { title: 'Cấu kiện Bê tông cốt thép', path: '/rc-components' },
     { title: 'Cấu kiện Thép', path: '/steel-components' },
     { title: 'Ổn định tổng thể', path: '/global-stability' },
-    { title: 'Nền móng & Địa kỹ thuật', path: '/geotechnical-foundations' },
-    { title: 'Thông số Vật liệu', path: '/parameters' },
+    { title: '7. Nền móng', path: '/geotechnical-foundations' },
+    { title: '2. Thông số Vật liệu', path: '/parameters' },
   ];
 
   useEffect(() => {
