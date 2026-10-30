@@ -1,17 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import Home from './pages/Home';
-import EngineeringFoundations from './pages/EngineeringFoundations';
-import LoadsCombinations from './pages/LoadsCombinations';
-import RCComponents from './pages/RCComponents';
-import SteelComponents from './pages/SteelComponents';
-import GlobalStability from './pages/GlobalStability';
-import GeotechnicalFoundations from './pages/GeotechnicalFoundations';
-import ParametersDefinitions from './pages/ParametersDefinitions';
-import Auth from './pages/Auth';
+import Skeleton from './components/Skeleton';
 import { AuthProvider } from './context/AuthContext';
+
+// Lazy loading tất cả 10 routes (Home + 7 chuyên đề nền tảng + Calculators + Auth)
+const Home = lazy(() => import('./pages/Home'));
+const EngineeringFoundations = lazy(() => import('./pages/EngineeringFoundations'));
+const LoadsCombinations = lazy(() => import('./pages/LoadsCombinations'));
+const RCComponents = lazy(() => import('./pages/RCComponents'));
+const SteelComponents = lazy(() => import('./pages/SteelComponents'));
+const GlobalStability = lazy(() => import('./pages/GlobalStability'));
+const GeotechnicalFoundations = lazy(() => import('./pages/GeotechnicalFoundations'));
+const ParametersDefinitions = lazy(() => import('./pages/ParametersDefinitions'));
+const InteractiveCalculators = lazy(() => import('./pages/InteractiveCalculators'));
+const Auth = lazy(() => import('./pages/Auth'));
+
+function PageFallback() {
+  return (
+    <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <Skeleton height="38px" width="40%" borderRadius="8px" />
+      <Skeleton height="20px" width="70%" borderRadius="6px" />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginTop: '1rem' }}>
+        <Skeleton height="150px" borderRadius="12px" />
+        <Skeleton height="150px" borderRadius="12px" />
+        <Skeleton height="150px" borderRadius="12px" />
+      </div>
+      <Skeleton height="320px" width="100%" borderRadius="12px" style={{ marginTop: '1rem' }} />
+    </div>
+  );
+}
 
 import './styles/index.css';
 import './styles/layout.css';
@@ -115,17 +134,20 @@ function App() {
             toggleTheme={toggleTheme}
           />
           <div className="page-content">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/engineering-foundations" element={<EngineeringFoundations />} />
-              <Route path="/loads-combinations" element={<LoadsCombinations />} />
-              <Route path="/rc-components" element={<RCComponents />} />
-              <Route path="/steel-components" element={<SteelComponents />} />
-              <Route path="/global-stability" element={<GlobalStability />} />
-              <Route path="/geotechnical-foundations" element={<GeotechnicalFoundations />} />
-              <Route path="/parameters" element={<ParametersDefinitions />} />
-              <Route path="/auth" element={<Auth />} />
-            </Routes>
+            <Suspense fallback={<PageFallback />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/engineering-foundations" element={<EngineeringFoundations />} />
+                <Route path="/loads-combinations" element={<LoadsCombinations />} />
+                <Route path="/rc-components" element={<RCComponents />} />
+                <Route path="/steel-components" element={<SteelComponents />} />
+                <Route path="/global-stability" element={<GlobalStability />} />
+                <Route path="/geotechnical-foundations" element={<GeotechnicalFoundations />} />
+                <Route path="/parameters" element={<ParametersDefinitions />} />
+                <Route path="/calculators" element={<InteractiveCalculators />} />
+                <Route path="/auth" element={<Auth />} />
+              </Routes>
+            </Suspense>
           </div>
         </main>
       </div>

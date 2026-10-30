@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Map, Mail, Phone, User,  Sliders, Activity, Layers, Search } from 'lucide-react';
+import { BookOpen, Map, Mail, Phone, User, Sliders, Activity, Layers, Search, Cpu, ArrowRight } from 'lucide-react';
 
 import IBeamIcon from '../components/icons/IBeamIcon';
 import ConcreteIcon from '../components/icons/ConcreteIcon';
@@ -13,6 +13,13 @@ export default function Home() {
   const searchRef = useRef(null);
 
   const searchIndex = [
+    { title: 'Máy tính Tương tác (TCVN)', path: '/calculators' },
+    { title: 'Tính gió TCVN 2737:2023', path: '/calculators' },
+    { title: 'Tính chiết giảm hoạt tải', path: '/calculators' },
+    { title: 'Tính cốt thép dầm 5574', path: '/calculators' },
+    { title: 'Tính bu lông cường độ cao 5575', path: '/calculators' },
+    { title: 'Tính sức chịu tải cọc SPT 10304', path: '/calculators' },
+    { title: 'Tính chiều dài neo & nối thép 5574', path: '/calculators' },
     { title: 'Nền tảng Sức bền vật liệu', path: '/engineering-foundations' },
     { title: 'Mô men quán tính & tiết diện', path: '/engineering-foundations' },
     { title: 'Vòng tròn Mohr & Ứng suất', path: '/engineering-foundations' },
@@ -143,7 +150,6 @@ export default function Home() {
         </div>
       </section>
 
-      
       {/* Chapters Grid Section */}
       <section className="chapters-grid" style={{ marginBottom: '60px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
         {[
@@ -153,7 +159,8 @@ export default function Home() {
           { title: "4. BTCT Cấu kiện", path: "/rc-components", icon: ConcreteIcon, desc: "Thiết kế Dầm, Cột, Sàn, Vách." },
           { title: "5. Cấu kiện Thép", path: "/steel-components", icon: IBeamIcon, desc: "Thiết kế cấu kiện Thép cơ bản." },
           { title: "6. Ổn định Tổng thể", path: "/global-stability", icon: Layers, desc: "P-Delta, Chống lật, Chuyển vị." },
-          { title: "7. Nền móng", path: "/geotechnical-foundations", icon: Map, desc: "Thiết kế Móng, Cọc và Sức chịu tải." }
+          { title: "7. Nền móng", path: "/geotechnical-foundations", icon: Map, desc: "Thiết kế Móng, Cọc và Sức chịu tải." },
+          { title: "8. Máy tính Tương tác", path: "/calculators", icon: Cpu, desc: "Bộ 6 công cụ tính toán tự động chuẩn TCVN & AI Handoff." }
         ].map((chapter, index) => (
           <Link to={chapter.path} key={index} className="chapter-card" style={{
             background: 'var(--bg-card)',
@@ -186,6 +193,58 @@ export default function Home() {
           </Link>
         ))}
       </section>
+
+      {/* Featured Interactive Calculators CTA Banner (Mục Máy tính ở cuối sau Mục 7) */}
+      <div 
+        className="card" 
+        style={{
+          background: 'linear-gradient(135deg, rgba(102,126,234,0.12) 0%, rgba(16,185,129,0.10) 100%)',
+          border: '1px solid rgba(102,126,234,0.35)',
+          marginBottom: '60px',
+          padding: '24px 28px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '20px'
+        }}
+      >
+        <div style={{ flex: '1 1 500px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+            <span className="spec-badge" style={{ background: 'var(--accent-gradient)', color: '#fff', border: 'none', padding: '3px 10px' }}>
+              MỤC 8 - TỰ ĐỘNG HÓA
+            </span>
+            <h3 style={{ margin: 0, color: 'var(--text-primary)', fontSize: '1.3rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Cpu size={22} color="var(--accent-primary)" />
+              Bộ 6 Công cụ Tính toán Tương tác Chuẩn 4 Tầng & AI Handoff
+            </h3>
+          </div>
+          <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.98rem', lineHeight: '1.6' }}>
+            Số hóa công thức và thuật toán: <strong>Gió TCVN 2737:2023</strong>, <strong>Chiết giảm hoạt tải</strong>, <strong>Cốt thép dầm TCVN 5574</strong>, <strong>Bu lông TCVN 5575</strong>, <strong>Sức chịu tải cọc SPT TCVN 10304</strong> và <strong>Chiều dài neo & nối cốt thép TCVN 5574</strong> kèm đánh giá chỉ số sử dụng &eta; và cầu nối SKILL_BRIDGE cho AI Agent.
+          </p>
+        </div>
+        <Link
+          to="/calculators"
+          className="calc-action-btn"
+          style={{
+            padding: '12px 24px',
+            fontSize: '0.95rem',
+            background: 'var(--accent-gradient)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '10px',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '10px',
+            fontWeight: '600',
+            boxShadow: '0 4px 15px rgba(102,126,234,0.3)'
+          }}
+        >
+          <span>Khám phá 6 Máy tính</span>
+          <ArrowRight size={18} />
+        </Link>
+      </div>
 
       {/* About Section */}
       <section className="about-section" style={{

@@ -86,14 +86,7 @@ export default function GeotechnicalFoundations() {
         .geo-section {
           animation: fadeIn 0.4s ease-out;
         }
-        .formula-card {
-          background: rgba(0, 0, 0, 0.25);
-          border-left: 4px solid var(--accent-primary);
-          padding: 16px;
-          border-radius: 4px 8px 8px 4px;
-          margin: 16px 0;
-          font-family: 'Courier New', Courier, monospace;
-        }
+
         .formula-line {
           font-size: clamp(1rem, 2vw, 1.1rem);
           color: var(--text-formula);
@@ -153,7 +146,7 @@ export default function GeotechnicalFoundations() {
         breadcrumbText="Cơ sở Địa kỹ thuật & Thiết kế Nền móng"
         descriptionTitle="Nguyên lý Địa kỹ thuật Nền móng và Thiết kế Tiêu chuẩn"
         descriptionIcon={BookOpen}
-        description={<>Hệ thống tra cứu chuyên sâu về triết lý sức chịu tải đất nền, các công thức thực hành thiết kế móng nông theo <strong>TCVN 9362:2012</strong>, móng cọc sâu theo tiêu chuẩn mới <strong>TCVN 10304:2025</strong>, độ lún SLS, và các widget tính toán kỹ thuật.</>}
+        description={<>Hệ thống tra cứu chuyên sâu về triết lý sức chịu tải đất nền, các công thức thực hành thiết kế móng nông theo <strong>TCVN 9362:2012</strong>, móng cọc sâu theo tiêu chuẩn mới <strong>TCVN 10304:2014</strong>, độ lún SLS, và các widget tính toán kỹ thuật.</>}
       />
 
       {/* Tabs Navigation */}
@@ -321,15 +314,15 @@ export default function GeotechnicalFoundations() {
         </div>
       )}
 
-      {/* Tab 3: Móng cọc sâu (TCVN 10304:2025) */}
+      {/* Tab 3: Móng cọc sâu (TCVN 10304:2014) */}
       {activeTab === 'deep' && (
         <div className="geo-section">
-          <CollapsibleSection defaultOpen={false} title="7.3.1. Cập nhật quan trọng theo Tiêu chuẩn Mới TCVN 10304:2025">
+          <CollapsibleSection defaultOpen={false} title="7.3.1. Cập nhật quan trọng theo Tiêu chuẩn Mới TCVN 10304:2014">
             <div className="grid-half">
               <div>
                 <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>1. Phân cấp hậu quả công trình & Hệ số tầm quan trọng (<var>&gamma;</var><sub>n</sub>):</h4>
                 <p style={{ fontSize: '0.92rem', lineHeight: 1.6 }}>
-                  Tiêu chuẩn mới <strong>TCVN 10304:2025</strong> đồng bộ trực tiếp với QCVN 03:2022/BXD, yêu cầu tính toán thiết kế lực dọc trục đầu cọc nhân với hệ số tầm quan trọng <var>&gamma;</var><sub>n</sub>:
+                  Tiêu chuẩn mới <strong>TCVN 10304:2014</strong> đồng bộ trực tiếp với QCVN 03:2022/BXD, yêu cầu tính toán thiết kế lực dọc trục đầu cọc nhân với hệ số tầm quan trọng <var>&gamma;</var><sub>n</sub>:
                 </p>
                 <ul className="params-list" style={{ fontSize: '0.88rem', marginLeft: '12px' }}>
                   <li><span className="bullet-purple">▪</span> <strong>Cấp C1 (Hậu quả thấp):</strong> <var>&gamma;</var><sub>n</sub> = 1.0</li>
@@ -657,7 +650,7 @@ export default function GeotechnicalFoundations() {
         </h2>
         <div style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.95rem' }}>
           <p>
-            Thiết kế móng cọc sâu theo tiêu chuẩn mới <strong>TCVN 10304:2025</strong> đặt nặng vai trò của việc phân cấp hậu quả công trình để áp dụng các hệ số chiết giảm và tần suất thí nghiệm nghiêm ngặt. Người thiết kế cần đặc biệt chú ý:
+            Thiết kế móng cọc sâu theo tiêu chuẩn mới <strong>TCVN 10304:2014</strong> đặt nặng vai trò của việc phân cấp hậu quả công trình để áp dụng các hệ số chiết giảm và tần suất thí nghiệm nghiêm ngặt. Người thiết kế cần đặc biệt chú ý:
           </p>
           <ul className="bullet-list" style={{ marginTop: '10px' }}>
             <li>Đối với các công trình có tầng hầm sâu ngập nước, cần tính toán kiểm tra ổn định đẩy nổi (buoyancy) của tòa nhà ở trạng thái giới hạn thứ nhất dưới áp lực nước ngầm lớn nhất vào mùa mưa.</li>

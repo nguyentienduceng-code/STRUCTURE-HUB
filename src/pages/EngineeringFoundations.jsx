@@ -298,7 +298,7 @@ export default function EngineeringFoundations() {
           </div>
 
           <div className="card" style={{ marginTop: '24px' }}>
-            <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>Tổ hợp Tải trọng Tiêu chuẩn Việt Nam (TCVN 2737-2023)</h3>
+            <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>Tổ hợp Tải trọng Tiêu chuẩn Việt Nam (TCVN 2737:2023)</h3>
             <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '16px' }}>
               Quy trình thiết kế bắt buộc phải tổ hợp các loại tải trọng khác nhau (Thường xuyên G<sub>k</sub>, Tạm thời dài hạn Q<sub>k,L</sub>, Tạm thời ngắn hạn Q<sub>k,t</sub>, Đặc biệt A<sub>d</sub>) để tìm ra nội lực bất lợi nhất.
             </p>
@@ -562,7 +562,7 @@ export default function EngineeringFoundations() {
               </div>
               <ul style={{ margin: 0, paddingLeft: '16px', color: 'var(--text-secondary)', fontSize: '0.92rem', lineHeight: 1.5 }}>
                 <li><strong>Khống chế độ võng dầm/sàn (SLS):</strong> Độ cứng chống uốn của dầm phụ thuộc trực tiếp vào tích số <strong>E &middot; I</strong> (Mô-đun đàn hồi &times; Mô-men quán tính). Việc tính toán độ võng dài hạn của sàn BTCT theo TCVN 5574:2018 bắt buộc phải điều chỉnh Mô-đun đàn hồi E<sub>b</sub> của bê tông bằng các hệ số chiết giảm từ biến để xét đến sự suy giảm độ cứng theo thời gian.</li>
-                <li><strong>Phân tích dao động và động đất:</strong> Trong mô hình tòa nhà cao tầng, ma trận độ cứng của khung nhà tỷ lệ thuận với E. Chu kỳ dao động tự riêng của tòa nhà (được dùng để tính toán lực động đất tác dụng theo TCVN 9386:2012) được xác định trực tiếp từ độ cứng đàn hồi E và khối lượng phân bổ của công trình.</li>
+                <li><strong>Phân tích dao động và động đất:</strong> Trong mô hình tòa nhà cao tầng, ma trận độ cứng của khung nhà tỷ lệ thuận với E. Chu kỳ dao động tự riêng của tòa nhà (được dùng để tính toán lực động đất tác dụng theo TCVN 9386:2025) được xác định trực tiếp từ độ cứng đàn hồi E và khối lượng phân bổ của công trình.</li>
                 <li><strong>Phân tích kết cấu thép (TCVN 5575:2024):</strong> Cường độ tính toán thiết kế của cấu kiện thép f được tính bằng f = f<sub>y</sub> / &gamma;<sub>M</sub> (với f<sub>y</sub> là giới hạn chảy tiêu chuẩn và &gamma;<sub>M</sub> là hệ số độ tin cậy vật liệu từ 1.05 đến 1.1). Đối với các cấu kiện chịu tải trọng lặp trực tiếp (như dầm cầu trục nhà xưởng), bắt buộc phải kiểm tra điều kiện bền mỏi dựa trên biên độ ứng suất &Delta;&sigma; &le; [&Delta;&sigma;]<sub>f</sub>.</li>
               </ul>
             </div>
@@ -591,37 +591,39 @@ export default function EngineeringFoundations() {
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 Chiều dài tính toán l<sub>0</sub> = &mu; &middot; l. Hệ số &mu; phụ thuộc vào điều kiện liên kết biên ở hai đầu cột, phản ánh hình dạng oằn cong thực tế:
               </p>
-              <table className="spec-table" style={{ fontSize: '0.85rem' }}>
-                <thead>
-                  <tr>
-                    <th>Liên kết biên</th>
-                    <th>Hệ số &mu;</th>
-                    <th>Mô tả hình dạng oằn</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><strong>Khớp - Khớp</strong></td>
-                    <td className="highlight-text">1.0</td>
-                    <td>Một nửa sóng parabol đơn giản</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Ngàm - Tự do</strong></td>
-                    <td className="highlight-text">2.0</td>
-                    <td>Cột điện hoặc cột cờ oằn tự do ở đỉnh</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Ngàm - Khớp</strong></td>
-                    <td className="highlight-text">0.7</td>
-                    <td>Điểm uốn xuất hiện ở 1/3 chiều cao</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Ngàm - Ngàm</strong></td>
-                    <td className="highlight-text">0.5</td>
-                    <td>Bị kiềm chế xoay mạnh ở cả hai đầu</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="spec-table-container">
+                <table className="spec-table" style={{ fontSize: '0.85rem' }}>
+                  <thead>
+                    <tr>
+                      <th>Liên kết biên</th>
+                      <th>Hệ số &mu;</th>
+                      <th>Mô tả hình dạng oằn</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Khớp - Khớp</strong></td>
+                      <td className="highlight-text">1.0</td>
+                      <td>Một nửa sóng parabol đơn giản</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Ngàm - Tự do</strong></td>
+                      <td className="highlight-text">2.0</td>
+                      <td>Cột điện hoặc cột cờ oằn tự do ở đỉnh</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Ngàm - Khớp</strong></td>
+                      <td className="highlight-text">0.7</td>
+                      <td>Điểm uốn xuất hiện ở 1/3 chiều cao</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Ngàm - Ngàm</strong></td>
+                      <td className="highlight-text">0.5</td>
+                      <td>Bị kiềm chế xoay mạnh ở cả hai đầu</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </CollapsibleSection>
           </div>
 
@@ -652,7 +654,7 @@ export default function EngineeringFoundations() {
 
               <h4 style={{ color: 'var(--text-primary)', marginTop: '20px', marginBottom: '8px' }}>Cột trung bình và ngắn (Ngoài miền đàn hồi):</h4>
               <p>
-                Khi cột có độ mảnh nhỏ (&lambda; &lt; &lambda;<sub>gh</sub>), vật liệu bị chảy dẻo trước khi oằn đàn hồi. Ứng suất tới hạn được xác định bằng công thức thực nghiệm của Yassin-sky: <strong>&sigma;<sub>cr</sub> = a - b &middot; &lambda;</strong>. Đối với cột rất ngắn (&lambda; &le; &lambda;<sub>0</sub>), cột hoàn toàn không bị uốn dọc mà bị phá hủy nén trực tiếp khi ứng suất đạt cường độ chảy dẻo của vật liệu.
+                Khi cột có độ mảnh nhỏ (&lambda; &lt; &lambda;<sub>gh</sub>), vật liệu bị chảy dẻo trước khi oằn đàn hồi. Ứng suất tới hạn được xác định bằng công thức thực nghiệm Tetmajer - Yasinsky: <strong>&sigma;<sub>cr</sub> = a - b &middot; &lambda;</strong>. Đối với cột rất ngắn (&lambda; &le; &lambda;<sub>0</sub>), cột hoàn toàn không bị uốn dọc mà bị phá hủy nén trực tiếp khi ứng suất đạt cường độ chảy dẻo của vật liệu.
               </p>
             </div>
 

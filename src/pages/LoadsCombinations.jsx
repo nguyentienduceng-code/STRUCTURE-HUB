@@ -32,19 +32,7 @@ export default function LoadsCombinations() {
         .loads-section {
           animation: fadeIn 0.4s ease-out;
         }
-        .formula-card {
-          background: rgba(0, 0, 0, 0.35);
-          border-left: 4px solid var(--accent-primary);
-          padding: 20px;
-          border-radius: 6px 12px 12px 6px;
-          margin: 20px 0;
-          box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-          transition: all 0.3s ease;
-        }
-        .formula-card:hover {
-          background: rgba(0, 0, 0, 0.45);
-          border-left-color: #f59e0b;
-        }
+
         .formula-line {
           font-size: clamp(1rem, 2vw, 1.3rem);
           color: var(--text-formula);
@@ -317,7 +305,7 @@ export default function LoadsCombinations() {
           <div className="grid-half">
             <CollapsibleSection defaultOpen={false} title="3.2.1. Dịch chuyển định chuẩn vận tốc gió">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
-                Bước chuyển mình lịch sử của <span className="highlight-text">TCVN 2737:2023</span> là việc thay thế mô hình vận tốc gió trung bình dài hạn (10 phút hoặc 2 phút) của bản cũ bằng mô hình <span className="highlight-text">gió giật 3 giây (3-second gust)</span> ở cao độ 10m trên bề mặt địa hình chuẩn, với chu kỳ lặp 20 năm.
+                Bước chuyển mình lịch sử của <span className="highlight-text">TCVN 2737:2023</span> là việc thay thế mô hình vận tốc gió trung bình dài hạn (10 phút hoặc 2 phút) của bản cũ bằng mô hình <span className="highlight-text">gió giật 3 giây (3-second gust)</span> ở cao độ 10m trên bề mặt địa hình chuẩn, với chu kỳ lặp <strong>50 năm</strong> (xác suất vượt 2% hàng năm, thay cho chu kỳ lặp 20 năm của TCVN 2737:1995 cũ).
               </p>
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6, marginTop: '12px' }}>
                 Sự thay đổi này đồng bộ hóa hoàn toàn cơ sở dữ liệu khí động học với tiêu chuẩn Mỹ <span className="highlight-text">ASCE 7-10 / 7-16</span> và Eurocode.
@@ -358,19 +346,22 @@ export default function LoadsCombinations() {
               </div>
             </CollapsibleSection>
 
-            <CollapsibleSection title="3.2.2. Hệ số độ tin cậy gió cực hạn 2.1 vs SLS 1.0">
+            <CollapsibleSection title="3.2.2. Hệ số độ tin cậy tải trọng gió ULS γ_f = 1.25 (TCVN 2737:2023) vs SLS 1.0">
               <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
-                Sự khác biệt cốt lõi trong việc quản lý rủi ro bão lũ giữa Việt Nam và Mỹ:
+                Minh định phương pháp luận xác định hệ số độ tin cậy tải trọng gió theo chuẩn TCVN 2737:2023 và đối chiếu quốc tế:
               </p>
               <ul style={{ paddingLeft: '16px', margin: '12px 0', fontSize: '0.92rem', lineHeight: 1.6 }}>
                 <li style={{ marginBottom: '12px' }}>
-                  <strong>ASCE 7-10 LRFD:</strong> Bản đồ bão cung cấp trực tiếp vận tốc cực hạn (chu kỳ lặp 700 năm cho công trình Risk Cat II). Vì thế hệ số tải trọng gió trong tổ hợp LRFD chỉ là <span className="highlight-text">1.0</span> (Strength-level wind).
+                  <strong>TCVN 2737:2023 ULS (Chính thức):</strong> Bản đồ phân vùng áp lực gió cơ sở W₀ (Bảng 9 & Phụ lục F) đã được lập theo chu kỳ lặp <strong>50 năm</strong> (vận tốc gió 3 giây, xác suất vượt 2% hàng năm). Theo Điều 10.2.1, hệ số độ tin cậy tải trọng gió thiết kế ở trạng thái giới hạn thứ nhất (ULS) là <span className="highlight-text">&gamma;<sub><var>f</var></sub> = 1.25</span> (kết hợp cơ bản).
                 </li>
                 <li style={{ marginBottom: '12px' }}>
-                  <strong>TCVN 2737:2023 ULS:</strong> Bản đồ phân vùng gió cơ sở Việt Nam (QCVN 02:2022/BXD) cung cấp vận tốc gió chu kỳ lặp 20 năm (Service-level). Để quy đổi phi tuyến tính (theo phân phối cực trị Gumbel) lên mức cực hạn ULS (chu kỳ lặp khoảng 430 - 450 năm), tiêu chuẩn áp dụng hệ số độ tin cậy tải trọng gió <span className="highlight-text">&gamma;<sub><var>f</var></sub> = 2.1</span>.
+                  <strong>Cảnh báo về Hệ số cũ 2.1:</strong> Trước đây khi dùng TCVN 2737:1995 (vốn đo gió ở chu kỳ 20 năm), một số tài liệu tạm thời nhân hệ số quy đổi 2.1 để nâng lên chu kỳ 500 năm. Khi đã áp dụng TCVN 2737:2023, <strong>tuyệt đối không nhân thêm hệ số 2.1</strong> vào W₀ (50 năm) để tránh làm tải trọng gió bị nhân đôi giả tạo và phi lý.
                 </li>
                 <li style={{ marginBottom: '12px' }}>
-                  <strong>TCVN 2737:2023 SLS:</strong> Khi kiểm tra võng dầm, chuyển vị ngang đỉnh cột hoặc thẩm mỹ vách kính, hệ số độ tin cậy được đưa về <span className="highlight-text">&gamma;<sub><var>f</var></sub> = 1.0</span> để tránh lãng phí kinh tế khi bắt cấu kiện phục vụ thẩm mỹ phải chống siêu bão ngàn năm.
+                  <strong>TCVN 2737:2023 SLS:</strong> Khi kiểm tra võng dầm, chuyển vị ngang đỉnh cột hoặc giới hạn gia tốc rung, hệ số độ tin cậy đưa về giá trị tiêu chuẩn <span className="highlight-text">&gamma;<sub><var>f</var></sub> = 1.0</span> (W_k) theo Bảng 7 và Điều 10.2.
+                </li>
+                <li style={{ marginBottom: '12px' }}>
+                  <strong>ASCE 7-10 LRFD:</strong> Bản đồ bão Hoa Kỳ cung cấp trực tiếp vận tốc gió cực hạn cấp thiết kế (chu kỳ lặp 700 năm cho Risk Category II), do đó hệ số tải trọng gió trong tổ hợp LRFD là <span className="highlight-text">1.0</span>.
                 </li>
               </ul>
             </CollapsibleSection>
@@ -464,20 +455,20 @@ export default function LoadsCombinations() {
               Trong quá trình giải tích hệ khung Portal, phần mềm phải tự động quét qua bao nội lực (Envelope) của các phép hoán vị vai trò chủ đạo:
             </p>
             <div className="grid-half" style={{ marginTop: '16px' }}>
-              <div style={{ background: 'rgba(0,0,0,0.15)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+              <div style={{ background: 'var(--bg-card-secondary)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <h4 style={{ color: 'var(--accent-primary)', marginBottom: '8px' }}>Kịch bản 1: Gió (<var>W</var>) làm chủ đạo</h4>
                 <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '0.9rem', lineHeight: 1.6 }}>
                   <li>Tĩnh tải: <span className="highlight-text">1.05 &times; <var>G</var><sub><var>k</var></sub></span></li>
-                  <li>Tải trọng Gió: <span className="highlight-text">(2.1 &times; 1.0) &times; <var>W</var><sub><var>k</var></sub> = 2.1 <var>W</var><sub><var>k</var></sub></span></li>
+                  <li>Tải trọng Gió (TCVN 2737:2023): <span className="highlight-text">(1.25 &times; 1.0) &times; <var>W</var><sub><var>k</var></sub> = 1.25 <var>W</var><sub><var>k</var></sub></span></li>
                   <li>Hoạt tải mái: <span className="highlight-text">(1.3 &times; 0.9) &times; <var>Q</var><sub><var>m&aacute;i</var>,<var>k</var></sub> = 1.17 <var>Q</var><sub><var>m&aacute;i</var>,<var>k</var></sub></span></li>
                 </ul>
               </div>
-              <div style={{ background: 'rgba(0,0,0,0.15)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+              <div style={{ background: 'var(--bg-card-secondary)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <h4 style={{ color: 'var(--accent-primary)', marginBottom: '8px' }}>Kịch bản 2: Hoạt tải mái (<var>Q</var><sub><var>t</var></sub>) làm chủ đạo</h4>
                 <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '0.9rem', lineHeight: 1.6 }}>
                   <li>Tĩnh tải: <span className="highlight-text">1.05 &times; <var>G</var><sub><var>k</var></sub></span></li>
                   <li>Hoạt tải mái: <span className="highlight-text">(1.3 &times; 1.0) &times; <var>Q</var><sub><var>m&aacute;i</var>,<var>k</var></sub> = 1.3 <var>Q</var><sub><var>m&aacute;i</var>,<var>k</var></sub></span></li>
-                  <li>Tải trọng Gió: <span className="highlight-text">(2.1 &times; 0.9) &times; <var>W</var><sub><var>k</var></sub> = 1.89 <var>W</var><sub><var>k</var></sub></span></li>
+                  <li>Tải trọng Gió (TCVN 2737:2023): <span className="highlight-text">(1.25 &times; 0.9) &times; <var>W</var><sub><var>k</var></sub> = 1.125 <var>W</var><sub><var>k</var></sub></span></li>
                 </ul>
               </div>
             </div>
@@ -642,13 +633,13 @@ export default function LoadsCombinations() {
                   <span>Quy trình thiết lập thực hành tối ưu</span>
                 </div>
                 <ol style={{ paddingLeft: '16px', margin: 0, fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
-                  <li style={{ marginBottom: '8px' }}>Khai báo toàn bộ tải trọng (Dead, Live, ) vào phần mềm dưới dạng lực Tiêu chuẩn (Nominal Loads) chưa nhân bất kỳ hệ số &gamma;<sub><var>f</var></sub> nào của TCVN.</li>
+                  <li style={{ marginBottom: '8px' }}>Khai báo toàn bộ tải trọng (Dead, Live, Wind) vào phần mềm dưới dạng lực Tiêu chuẩn (Nominal Loads) chưa nhân bất kỳ hệ số &gamma;<sub><var>f</var></sub> nào của TCVN.</li>
                   <li style={{ marginBottom: '8px' }}>Tắt tính năng tự động tạo tổ hợp tải trọng của phần mềm.</li>
                   <li style={{ marginBottom: '8px' }}>Tự định nghĩa các tổ hợp tùy chỉnh theo công thức TCVN. Ví dụ, tổ hợp ULS với gió chủ đạo:
-                    <div style={{ fontFamily: 'monospace', padding: '6px 12px', background: 'var(--bg-card)', margin: '8px 0', borderRadius: '4px', color: '#f8fafc' }}>
-                      COMB_ULS_WindMax = 1.05 &times; Dead + 2.1 &times; + 1.08 &times; Live
+                    <div style={{ fontFamily: 'var(--font-mono)', padding: '8px 14px', background: 'var(--overlay-light)', margin: '8px 0', borderRadius: '6px', color: 'var(--text-primary)', border: '1px solid var(--border-glass)', fontWeight: 600 }}>
+                      COMB_ULS_WindMax = 1.05 &times; Dead + 1.25 &times; Wind + 1.08 &times; Live
                     </div>
-                    (Với 1.08 = 1.2 &gamma;<sub><var>f</var></sub> hoạt tải &times; 0.9 &psi;<sub><var>t</var>,2</sub>)
+                    (Với γ_f gió = 1.25 theo TCVN 2737:2023; 1.08 = 1.2 &times; 0.9 là hệ số tổ hợp hoạt tải đi kèm)
                   </li>
                   <li>Chạy bộ kiểm tra thép AISC 360-10 LRFD Design, phần mềm sẽ đối chiếu nội lực ULS tùy chỉnh này trực tiếp với cường độ kháng tiết diện &phi;<var>R</var><sub><var>n</var></sub>.</li>
                 </ol>
@@ -756,7 +747,7 @@ export default function LoadsCombinations() {
               Đây là <span className="highlight-text">bước tiến cách mạng</span> của TCVN 2737:2023 so với phiên bản cũ: việc minh định cơ sở toán học xác suất cho phép giảm hoạt tải một cách có kiểm soát, tránh thiết kế quá dư thừa khi tổng hợp tải từ nhiều diện tích sàn hoặc nhiều tầng.
             </p>
             <div className="grid-half" style={{ marginTop: '16px' }}>
-              <div style={{ background: 'rgba(0,0,0,0.15)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+              <div style={{ background: 'var(--bg-card-secondary)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <h4 style={{ color: 'var(--accent-primary)', marginBottom: '12px' }}>Giảm tải theo Diện tích truyền tải (ψ<sub>A</sub>)</h4>
                 <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)', marginBottom: '12px' }}>
                   Khi dầm chịu tải từ diện tích mặt sàn lớn A<sub>t</sub>, xác suất đồng thời đạt cực đại trên toàn bộ diện tích giảm dần theo:
@@ -774,7 +765,7 @@ export default function LoadsCombinations() {
                   <div className="formula-desc">Khu vực C, D (hội trường, lớp học): ngưỡng kích hoạt cao hơn do rủi ro tập trung người cao.</div>
                 </div>
               </div>
-              <div style={{ background: 'rgba(0,0,0,0.15)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+              <div style={{ background: 'var(--bg-card-secondary)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                 <h4 style={{ color: 'var(--accent-primary)', marginBottom: '12px' }}>Giảm tải theo Số tầng (ψ<sub>n</sub>)</h4>
                 <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: 'var(--text-secondary)', marginBottom: '12px' }}>
                   Cột và móng chịu tải từ nhiều tầng — xác suất toàn bộ các tầng cùng đạt cực đại hoạt tải đồng thời giảm theo số tầng chịu tải:

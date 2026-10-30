@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Home, Sliders, Calculator, Map, Layers } from 'lucide-react';
+import { Home, Sliders, Calculator, Map, Layers, Cpu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import IBeamIcon from './icons/IBeamIcon';
 import ConcreteIcon from './icons/ConcreteIcon';
@@ -16,6 +16,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     { path: '/steel-components', label: '5. Cấu kiện Thép', icon: <IBeamIcon size={20} /> },
     { path: '/global-stability', label: '6. Ổn định Tổng thể', icon: <Layers size={20} /> },
     { path: '/geotechnical-foundations', label: '7. Nền móng', icon: <Map size={20} /> },
+    { path: '/calculators', label: '8. Máy tính Tương tác (TCVN)', icon: <Cpu size={20} /> },
   ];
 
   return (

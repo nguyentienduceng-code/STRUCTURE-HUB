@@ -34,11 +34,11 @@ export default function GlobalStability() {
       formula: 'M_{cl} \\ge M_{gl}',
       parameters: [
         { name: 'M_cl (Mô men chống lật)', desc: 'Xác định từ phần tĩnh tải có lợi và hoạt tải dài hạn: 0.9 × Tĩnh tải + η × Hoạt tải dài hạn (trong đó η là hệ số kể đến phần dài hạn của hoạt tải). Hệ số 0.9 cho tĩnh tải nhằm đề phòng trường hợp tĩnh tải thực tế nhẹ hơn tính toán.' },
-        { name: 'M_gl (Mô men gây lật)', desc: 'Tổng mô men do các tải trọng ngang gây lật gây ra. Trong đó tải trọng gió tính toán được nhân hệ số độ tin cậy γ_f = 2.1 (TTGH1).' }
+        { name: 'M_gl (Mô men gây lật)', desc: 'Tổng mô men do các tải trọng ngang gây lật gây ra. Theo TCVN 2737:2023 (Điều 10.2.1), áp lực gió cơ sở W₀ đã tính theo chu kỳ lặp 50 năm nên hệ số tin cậy tính toán thiết kế ULS là γ_f = 1.25.' }
       ],
-      notes: 'Sự kết hợp giữa hệ số quy đổi lớn cho tải trọng gió (γ_f = 2.1) và việc giảm trừ tĩnh tải chống lật (hệ số 0.9) khiến yêu cầu chống lật của TCVN 2737:2023 khắt khe hơn rất nhiều so với tiêu chuẩn cũ. Các công trình cao tầng mảnh hoặc kết cấu thép nhẹ có thể cần giải pháp móng nặng hơn hoặc neo giữ sâu hơn.',
+      notes: '⚠️ LƯU Ý HỆ SỐ GIÓ γ_f: Theo TCVN 2737:2023 (Điều 10.2.1), tải trọng gió ULS sử dụng hệ số độ tin cậy chuẩn γ_f = 1.25 (do W₀ đã ở chu kỳ 50 năm). Hệ số γ_f = 2.1 chỉ là cách quy đổi tạm thời từ TCVN 2737:1995 cũ (khi số liệu gió ở chu kỳ 20 năm); kỹ sư tuyệt đối không áp dụng hệ số 2.1 lên gió TCVN 2737:2023 để tránh nhân đôi hệ số an toàn. Khi tính chống lật, tĩnh tải giữ ổn định lấy hệ số giảm 0.9.',
       tableData: [
-        { type: 'Tải gây lật (Gió tính toán ULS)', coef: 'γ_f = 2.1', desc: 'Phản ánh quy đổi áp lực gió từ chu kỳ lặp 10 năm lên chu kỳ lặp 430-450 năm.' },
+        { type: 'Tải gây lật (Gió tính toán ULS)', coef: 'γ_f = 1.25', desc: 'Hệ số độ tin cậy tải trọng gió chính thức theo TCVN 2737:2023 (Điều 10.2.1).' },
         { type: 'Tải chống lật (Tĩnh tải có lợi)', coef: 'γ_f = 0.9', desc: 'Hệ số an toàn giảm tải trọng thường xuyên khi có tác dụng giữ ổn định.' },
         { type: 'Tải chống lật (Hoạt tải dài hạn)', coef: 'η', desc: 'Hệ số hoạt tải dài hạn có lợi cho chống lật.' }
       ]
@@ -59,12 +59,12 @@ export default function GlobalStability() {
       criterion: 'F_ct >= F_gt',
       formula: 'F_{ct} \\ge F_{gt}',
       parameters: [
-        { name: 'F_gt (Lực gây trượt)', desc: 'Tổng lực ngang tính toán, ví dụ như thành phần ngang của tải trọng gió tính toán (γ_f = 2.1 cho ULS) hoặc tải trọng động đất thiết kế (A_Ed).' },
+        { name: 'F_gt (Lực gây trượt)', desc: 'Tổng lực ngang tính toán, ví dụ như thành phần ngang của tải trọng gió tính toán (γ_f = 1.25 theo TCVN 2737:2023) hoặc tải trọng động đất thiết kế (A_Ed theo TCVN 9386).' },
         { name: 'F_ct (Lực chống trượt)', desc: 'Sức kháng ma sát đáy móng tính bằng: (0.9 × Tổng tĩnh tải đứng có lợi) × μ (μ là hệ số ma sát giữa móng và nền) cộng các lực kháng ngang của cọc, áp lực đất bị động (nếu có).' }
       ],
       notes: 'Hệ số ma sát μ phụ thuộc vào loại đất nền dưới đáy móng (thường dao động từ 0.30 - 0.45). Cần đặc biệt lưu ý giảm tĩnh tải đứng thẳng xuống hệ số 0.9 để đảm bảo an toàn.',
       tableData: [
-        { type: 'Lực gây trượt do Gió', coef: 'γ_f = 2.1', desc: 'Thành phần ngang tính toán của tải trọng gió ở TTGH1.' },
+        { type: 'Lực gây trượt do Gió', coef: 'γ_f = 1.25', desc: 'Thành phần ngang tính toán của tải trọng gió ở TTGH1 theo TCVN 2737:2023.' },
         { type: 'Lực gây trượt do Động đất', coef: 'γ_f = 1.0', desc: 'Lực ngang động đất thiết kế A_Ed theo TCVN 9386.' },
         { type: 'Lực chống trượt ma sát', coef: 'γ_f = 0.9', desc: 'Hệ số tĩnh tải đứng có lợi khi tính ma sát kháng trượt.' }
       ]
@@ -149,7 +149,7 @@ export default function GlobalStability() {
     {
       id: 'lech-tang-dong-dat',
       title: '6.6. Chuyển vị Lệch tầng do Động đất',
-      ref: 'TCVN 9386:2012, Mục 4.4.3.2',
+      ref: 'TCVN 9386:2025 — Mục 4.4.3.2 (số điều mục theo văn bản 9386:2012, cần đối chiếu lại với bản 2025)',
       limitState: 'Trạng thái hạn chế hư hỏng (Damage Limitation)',
       badgeClass: 'badge-sls',
       icon: <Activity size={18} />,
@@ -202,7 +202,7 @@ export default function GlobalStability() {
     {
       id: 'hieu-ung-p-delta',
       title: '6.8. Hiệu ứng P-Delta do Động đất',
-      ref: 'TCVN 9386:2012, Mục 4.4.2.2',
+      ref: 'TCVN 9386:2025 — Mục 4.4.2.2 (số điều mục theo văn bản 9386:2012, cần đối chiếu lại với bản 2025)',
       limitState: 'TTGH1 (Phân tích phi tuyến bậc 2)',
       badgeClass: 'badge-uls',
       icon: <Scale size={18} />,
@@ -231,7 +231,7 @@ export default function GlobalStability() {
     {
       id: 'dieu-kien-deo',
       title: '6.9. Điều kiện dẻo kết cấu (Cột khỏe - Dầm yếu)',
-      ref: 'TCVN 9386:2012, Mục 4.4.2.3',
+      ref: 'TCVN 9386:2025 — Mục 4.4.2.3 (số điều mục theo văn bản 9386:2012, cần đối chiếu lại với bản 2025)',
       limitState: 'Độ dẻo kháng chấn kết cấu',
       badgeClass: 'badge-uls',
       icon: <ShieldCheck size={18} />,
@@ -318,9 +318,14 @@ export default function GlobalStability() {
           border: 1px solid rgba(239, 68, 68, 0.3);
         }
         .badge-sls {
+          background: rgba(79, 70, 229, 0.12);
+          color: var(--accent-primary);
+          border: 1px solid rgba(79, 70, 229, 0.3);
+        }
+        [data-theme="dark"] .badge-sls {
           background: rgba(96, 165, 250, 0.15);
           color: #60a5fa;
-          border: 1px solid rgba(96, 165, 250, 0.3);
+          border: 1px solid rgba(96, 165, 250, 0.35);
         }
         .parameter-list {
           display: flex;
@@ -357,7 +362,7 @@ export default function GlobalStability() {
         breadcrumbText="Ổn định Tổng thể Công trình"
         descriptionTitle="Hệ thống Yêu cầu Kiểm tra Kết cấu theo TCVN & ISO"
         descriptionIcon={Activity}
-        description={<>Tổng hợp chi tiết 09 hạng mục kiểm tra ổn định tổng thể, chuyển vị lệch tầng, hiệu ứng bậc hai và sức bền cấu kiện cốt lõi của công trình dựa trên <strong>TCVN 2737:2023</strong>, <strong>TCVN 9386:2012</strong>, <strong>TCVN 5574:2018</strong>, <strong>TCVN 5575:2024</strong> và <strong>ISO 10137:2007</strong>.</>}
+        description={<>Tổng hợp chi tiết 09 hạng mục kiểm tra ổn định tổng thể, chuyển vị lệch tầng, hiệu ứng bậc hai và sức bền cấu kiện cốt lõi của công trình dựa trên <strong>TCVN 2737:2023</strong>, <strong>TCVN 9386:2025</strong>, <strong>TCVN 5574:2018</strong>, <strong>TCVN 5575:2024</strong> và <strong>ISO 10137:2007</strong>.</>}
       />
 
       <div className="tab-nav" style={{ flexWrap: 'wrap' }}>

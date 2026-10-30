@@ -120,7 +120,7 @@ export default function RCComponents() {
         breadcrumbText="BTCT Cấu kiện (TCVN 5574:2018)"
         descriptionTitle="Tính toán Kết cấu Bê tông Cốt thép"
         descriptionIcon={BookOpen}
-        description={<>Báo cáo chuyên sâu và công cụ tra cứu cơ sở tính toán cấu kiện bê tông cốt thép (Dầm, Cột, Sàn, Vách, Móng) theo Tiêu chuẩn Quốc gia <strong>TCVN 5574:2018</strong> và Thiết kế kháng chấn theo <strong>TCVN 9386:2012</strong>.</>}
+        description={<>Báo cáo chuyên sâu và công cụ tra cứu cơ sở tính toán cấu kiện bê tông cốt thép (Dầm, Cột, Sàn, Vách, Móng) theo Tiêu chuẩn Quốc gia <strong>TCVN 5574:2018</strong> và Thiết kế kháng chấn theo <strong>TCVN 9386:2025</strong>.</>}
       />
 
       {/* Tabs Navigation */}
@@ -593,7 +593,7 @@ export default function RCComponents() {
               </p>
               <div className="formula-card">
                 <div className="formula-line">&rho;<sub>v,min</sub> &ge; 0.2% &nbsp; | &nbsp; &rho;<sub>h,min</sub> &ge; 0.2%</div>
-                <div className="formula-units">Đứng (vertical) và Ngang (horizontal) theo TCVN 9386</div>
+                <div className="formula-units">Đứng (vertical) và Ngang (horizontal) theo TCVN 9386:2025 (số điều mục đang theo văn bản 2012, cần đối chiếu lại)</div>
               </div>
 
               <h4 style={{ color: 'var(--text-primary)', marginTop: '16px', marginBottom: '8px' }}>2. Lanh tô liên kết vách (Coupling Beams):</h4>
@@ -605,13 +605,13 @@ export default function RCComponents() {
         </div>
       )}
 
-      {/* Tab 6: Thiết kế Kháng chấn (TCVN 9386:2012) */}
+      {/* Tab 6: Thiết kế Kháng chấn (TCVN 9386:2025) */}
       {activeTab === 'seismic' && (
         <div className="rc-section">
           <div className="grid-half">
             <CollapsibleSection defaultOpen={false} title="4.6.1. Gia tốc nền thiết kế (a_g) & Ngưỡng Kháng chấn">
               <p style={{ lineHeight: 1.6, marginBottom: '16px' }}>
-                Gia tốc nền thiết kế <strong>a<sub>g</sub></strong> tại địa điểm xây dựng là căn cứ quyết định việc bắt buộc áp dụng thiết kế kháng chấn (theo <strong>TCVN 9386:2012</strong> và <strong>QCVN 02:2022/BXD</strong>):
+                Gia tốc nền thiết kế <strong>a<sub>g</sub></strong> tại địa điểm xây dựng là căn cứ quyết định việc bắt buộc áp dụng thiết kế kháng chấn (theo <strong>TCVN 9386:2025</strong> và <strong>QCVN 02:2022/BXD</strong>):
               </p>
               
               <div className="formula-card">
@@ -763,9 +763,9 @@ export default function RCComponents() {
             </CollapsibleSection>
           </div>
 
-          <CollapsibleSection title="4.6.5. So sánh chi tiết yêu cầu cấu tạo cốt thép TCVN 5574:2018 và TCVN 9386:2012 / Giáo trình" style={{ marginTop: '24px' }}>
+          <CollapsibleSection title="4.6.5. So sánh chi tiết yêu cầu cấu tạo cốt thép TCVN 5574:2018 và TCVN 9386:2025 / Giáo trình" style={{ marginTop: '24px' }}>
             <p style={{ lineHeight: 1.6, marginBottom: '16px', fontSize: '0.95rem' }}>
-              Bảng so sánh trực quan các thông số cấu tạo thép giữa kết cấu thông thường chịu tải trọng tĩnh (TCVN 5574:2018) và kết cấu kháng chấn (TCVN 9386:2012) đối với cấp dẻo trung bình (DCM) và khuyến nghị giáo trình:
+              Bảng so sánh trực quan các thông số cấu tạo thép giữa kết cấu thông thường chịu tải trọng tĩnh (TCVN 5574:2018) và kết cấu kháng chấn (TCVN 9386:2025) đối với cấp dẻo trung bình (DCM) và khuyến nghị giáo trình:
             </p>
             <div className="spec-table-container">
               <table className="spec-table">
@@ -774,7 +774,7 @@ export default function RCComponents() {
                     <th>Cấu kiện</th>
                     <th>Thông số thiết kế</th>
                     <th>Thiết kế thông thường (TCVN 5574:2018)</th>
-                    <th>Thiết kế kháng chấn (TCVN 9386 & Giáo trình)</th>
+                    <th>Thiết kế kháng chấn (TCVN 9386:2025 & Giáo trình)</th>
                   </tr>
                 </thead>
                 <tbody>

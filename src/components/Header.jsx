@@ -29,14 +29,21 @@ export default function Header({ toggleSidebar, theme, toggleTheme }) {
   const searchRef = useRef(null);
 
   const searchIndex = [
-    { title: 'Nền tảng Sức bền vật liệu', path: '/engineering-foundations' },
+    { title: 'Máy tính Tương tác (TCVN)', path: '/calculators' },
+    { title: 'Tính gió TCVN 2737:2023', path: '/calculators' },
+    { title: 'Tính chiết giảm hoạt tải', path: '/calculators' },
+    { title: 'Tính cốt thép dầm 5574', path: '/calculators' },
+    { title: 'Tính bu lông cường độ cao 5575', path: '/calculators' },
+    { title: 'Tính sức chịu tải cọc SPT 10304', path: '/calculators' },
+    { title: 'Tính chiều dài neo & nối thép 5574', path: '/calculators' },
+    { title: '1. Nền tảng Kỹ thuật & Sức bền vật liệu', path: '/engineering-foundations' },
     { title: 'Mô men quán tính & tiết diện', path: '/engineering-foundations' },
     { title: 'Vòng tròn Mohr & Ứng suất', path: '/engineering-foundations' },
-    { title: 'Tải trọng & Tổ hợp (TCVN 2737)', path: '/loads-combinations' },
-    { title: 'Cấu kiện Bê tông cốt thép', path: '/rc-components' },
-    { title: 'Cấu kiện Thép', path: '/steel-components' },
-    { title: 'Ổn định tổng thể', path: '/global-stability' },
-    { title: '7. Nền móng', path: '/geotechnical-foundations' },
+    { title: '3. Tải trọng & Tổ hợp (TCVN 2737)', path: '/loads-combinations' },
+    { title: '4. Cấu kiện Bê tông cốt thép', path: '/rc-components' },
+    { title: '5. Cấu kiện Thép', path: '/steel-components' },
+    { title: '6. Ổn định tổng thể', path: '/global-stability' },
+    { title: '7. Nền móng & Địa kỹ thuật', path: '/geotechnical-foundations' },
     { title: '2. Thông số Vật liệu', path: '/parameters' },
   ];
 
@@ -98,9 +105,13 @@ export default function Header({ toggleSidebar, theme, toggleTheme }) {
       </div>
 
       {/* Center: Global Navbar Links */}
-      <nav className="global-navbar" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+      <nav className="global-navbar" style={{ display: 'flex', gap: '22px', alignItems: 'center' }}>
         <Link to="/" style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'var(--text-secondary)'}>Trang chủ</Link>
-        <Link to="/engineering-foundations" style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'var(--text-secondary)'}>Danh mục</Link>
+        <Link to="/engineering-foundations" style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'var(--text-secondary)'}>Chuyên đề (1–7)</Link>
+        <Link to="/calculators" style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.95rem', transition: 'color 0.2s', display: 'flex', alignItems: 'center', gap: '5px' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'var(--text-secondary)'}>
+          <span>8. Máy tính TCVN</span>
+          <span style={{ fontSize: '0.68rem', padding: '1px 6px', borderRadius: '4px', background: 'var(--accent-gradient)', color: '#fff', fontWeight: 700 }}>6</span>
+        </Link>
         <a href="#author" style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = 'var(--text-primary)'} onMouseLeave={e => e.target.style.color = 'var(--text-secondary)'}>Tác giả</a>
       </nav>
 

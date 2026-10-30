@@ -252,7 +252,7 @@ export default function ParametersDefinitions() {
           <div className="grid-layout">
             <CollapsibleSection defaultOpen={false} title="Triết lý Thiết kế Thép: TCVN 5575 vs AISC 360">
               <div style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                <h4 style={{ color: 'var(--text-primary)', marginBottom: '6px' }}>TCVN 5575:2012 (Gốc SNIP Nga):</h4>
+                <h4 style={{ color: 'var(--text-primary)', marginBottom: '6px' }}>TCVN 5575:2024 / TCVN 5575:2012 (Gốc SNIP Nga):</h4>
                 <p>
                   Đặt nặng yêu cầu khống chế độ cứng và chống biến dạng. Rất bảo thủ về ổn định cục bộ. Ví dụ, bản bụng dầm thép chữ I chỉ được phép có độ mảnh (chiều cao / chiều dày bụng h/t) tối đa là <strong>100</strong> trước khi bắt buộc phải hàn thêm sườn gia cường để ngăn ngừa hiện tượng oằn bụng.
                 </p>
@@ -374,6 +374,76 @@ export default function ParametersDefinitions() {
               </table>
             </div>
           </div>
+
+          <div className="card" style={{ marginTop: '24px' }}>
+            <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>Bảng Chỉ tiêu Cơ lý Cốt thép Thanh (TCVN 1651:2018 & TCVN 5574:2018) và Đối chiếu Quốc tế</h3>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '16px' }}>
+              Trị số cường độ tính toán chịu kéo <var>R<sub>s</sub></var>, chịu nén <var>R<sub>sc</sub></var>, cốt đai <var>R<sub>sw</sub></var> và giới hạn chiều cao vùng nén tương đối &xi;<sub>R</sub> theo Bảng 13 & 14 TCVN 5574:2018 (với bê tông &le; B60, &omega; = 0.8, &sigma;<sub>sc,u</sub> = 700 MPa, E<sub>s</sub> = 2&times;10<sup>5</sup> MPa):
+            </p>
+            <div className="spec-table-container">
+              <table className="spec-table">
+                <thead>
+                  <tr>
+                    <th>Mác cốt thép TCVN 1651</th>
+                    <th>Giới hạn chảy f<sub>y</sub> (MPa)</th>
+                    <th>Cường độ kéo R<sub>s</sub> (MPa)</th>
+                    <th>Cường độ nén R<sub>sc</sub> (MPa)</th>
+                    <th>Cốt đai R<sub>sw</sub> (MPa)</th>
+                    <th>Giới hạn &xi;<sub>R</sub> (B20 - B60)</th>
+                    <th>Cấp tương đương Quốc tế</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>CB240-T</strong> (thép tròn trơn)</td>
+                    <td>240</td>
+                    <td className="highlight-text">210</td>
+                    <td>210</td>
+                    <td className="highlight-text">170</td>
+                    <td>0.615</td>
+                    <td>ASTM A615 Grade 40 (f<sub>y</sub> = 280 MPa)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>CB300-V</strong> (thép thanh vằn)</td>
+                    <td>300</td>
+                    <td className="highlight-text">260</td>
+                    <td>260</td>
+                    <td className="highlight-text">210</td>
+                    <td>0.583</td>
+                    <td>ASTM A615 Grade 40/60</td>
+                  </tr>
+                  <tr>
+                    <td><strong>CB400-V</strong> (thép thanh vằn)</td>
+                    <td>400</td>
+                    <td className="highlight-text">350</td>
+                    <td>350</td>
+                    <td className="highlight-text">280</td>
+                    <td>0.533</td>
+                    <td>ASTM A615 Grade 60 (f<sub>y</sub> = 420 MPa)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>CB500-V</strong> (thép thanh vằn)</td>
+                    <td>500</td>
+                    <td className="highlight-text">435</td>
+                    <td>400</td>
+                    <td className="highlight-text">300</td>
+                    <td>0.493</td>
+                    <td>ASTM A615 Grade 75/80, BS 4449 Gr 500</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="app-box" style={{ marginTop: '16px' }}>
+              <div className="app-box-title">
+                <Cpu size={16} />
+                LƯU Ý THỰC TIỄN VỀ CƯỜNG ĐỘ CỐT ĐAI R_sw & GIỚI HẠN &xi;_R:
+              </div>
+              <ul style={{ margin: 0, paddingLeft: '16px', color: 'var(--text-secondary)', fontSize: '0.92rem', lineHeight: 1.5 }}>
+                <li><strong>Cốt đai R<sub>sw</sub>:</strong> Tuyệt đối không lấy theo tỷ lệ áng chừng 0.8 R<sub>s</sub>. Tiêu chuẩn TCVN 5574:2018 khóa cứng R<sub>sw</sub>: CB240-T là 170 MPa, CB300-V là 210 MPa, CB400-V là 280 MPa, CB500-V là 300 MPa.</li>
+                <li><strong>Khống chế phá hoại giòn:</strong> Trong cấu kiện chịu uốn, nếu chiều cao vùng nén tính toán vượt quá giới hạn &xi; &gt; &xi;<sub>R</sub>, dầm sẽ bị phá hoại giòn đột ngột do bê tông vỡ vụn trước khi cốt thép kịp chảy dẻo. Khi đó kỹ sư bắt buộc phải tăng kích thước tiết diện dầm hoặc bố trí cốt thép chịu nén kép (A'<sub>s</sub>).</li>
+              </ul>
+            </div>
+          </div>
         </div>
       )}
 
@@ -392,36 +462,38 @@ export default function ParametersDefinitions() {
                 <h4 style={{ color: 'var(--text-primary)', marginTop: '12px', marginBottom: '8px' }}>Ký hiệu ASTM (Mỹ, ASTM F3125):</h4>
                 <p>Đặt tên trực tiếp theo tiêu chuẩn danh định. Mỗi cấp quy định một phạm vi vật liệu và cơ lý tính đặc thù.</p>
                 
-                <table className="spec-table" style={{ fontSize: '0.85rem', marginTop: '12px' }}>
-                  <thead>
-                    <tr>
-                      <th>Cấp TCVN / ISO</th>
-                      <th>Cấp ASTM tương đương</th>
-                      <th>Giới hạn Bền (MPa)</th>
-                      <th>Giới hạn Chảy (MPa)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><strong>8.8</strong></td>
-                      <td><strong>F3125 Gr. A325</strong></td>
-                      <td>800 - 830</td>
-                      <td>640 - 660</td>
-                    </tr>
-                    <tr>
-                      <td><strong>10.9</strong></td>
-                      <td><strong>F3125 Gr. A490</strong></td>
-                      <td>1000 - 1040</td>
-                      <td>900 - 940</td>
-                    </tr>
-                    <tr>
-                      <td><strong>12.9</strong></td>
-                      <td>(Vượt cấp A490)</td>
-                      <td>1200 - 1220</td>
-                      <td>1080 - 1100</td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div className="spec-table-container">
+                  <table className="spec-table" style={{ fontSize: '0.85rem', marginTop: '12px' }}>
+                    <thead>
+                      <tr>
+                        <th>Cấp TCVN / ISO</th>
+                        <th>Cấp ASTM tương đương</th>
+                        <th>Giới hạn Bền (MPa)</th>
+                        <th>Giới hạn Chảy (MPa)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>8.8</strong></td>
+                        <td><strong>F3125 Gr. A325</strong></td>
+                        <td>800 - 830</td>
+                        <td>640 - 660</td>
+                      </tr>
+                      <tr>
+                        <td><strong>10.9</strong></td>
+                        <td><strong>F3125 Gr. A490</strong></td>
+                        <td>1000 - 1040</td>
+                        <td>900 - 940</td>
+                      </tr>
+                      <tr>
+                        <td><strong>12.9</strong></td>
+                        <td>(Vượt cấp A490)</td>
+                        <td>1200 - 1220</td>
+                        <td>1080 - 1100</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </CollapsibleSection>
 
@@ -433,7 +505,7 @@ export default function ParametersDefinitions() {
                 </p>
                 <h4 style={{ color: 'var(--text-primary)', marginTop: '12px', marginBottom: '8px' }}>Khung tiêu chuẩn TCVN:</h4>
                 <p>
-                  Hệ thống TCVN chia nhỏ thành nhiều văn bản riêng biệt: TCVN 5575 (tính toán kết cấu), TCVN 9366-1 (lắp đặt cơ khí), TCVN 1691 (kiểu kích thước mối hàn), TCVN 3223 (que hàn điện).
+                  Hệ thống TCVN chia nhỏ thành nhiều văn bản riêng biệt: TCVN 5575:2024 (tính toán kết cấu), TCVN 9366-1 (lắp đặt cơ khí), TCVN 1691 (kiểu kích thước mối hàn), TCVN 3223 (que hàn điện).
                 </p>
                 <h4 style={{ color: 'var(--text-primary)', marginTop: '12px', marginBottom: '8px' }}>Sự hội tụ thông qua Tiêu chuẩn Quốc tế (ISO):</h4>
                 <p>
@@ -467,7 +539,7 @@ export default function ParametersDefinitions() {
                   <div className="formula-card">
                     <var>Q</var><sub><var>a</var></sub> = <var>Q</var><sub><var>u</var></sub> / &gamma;<sub><var>g</var></sub>
                   </div>
-                  Với &gamma;<sub>g</sub> là hệ số tin cậy đất nền theo tiêu chuẩn mới TCVN 10304:2025 (vd: &gamma;<sub>g</sub> = 1.20 đối với trường hợp xác định từ thí nghiệm nén tĩnh cọc).
+                  Với &gamma;<sub>g</sub> là hệ số tin cậy đất nền theo tiêu chuẩn mới TCVN 10304:2014 (vd: &gamma;<sub>g</sub> = 1.20 đối với trường hợp xác định từ thí nghiệm nén tĩnh cọc).
                 </li>
               </ul>
             </CollapsibleSection>

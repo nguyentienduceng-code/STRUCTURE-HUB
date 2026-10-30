@@ -504,7 +504,7 @@ export default function SteelComponents() {
                 <thead>
                   <tr>
                     <th>Cấu Kiện Kết Cấu Thép</th>
-                    <th>TCVN 2737:2023 & TCVN 5575:2025</th>
+                    <th>TCVN 2737:2023 & TCVN 5575:2024</th>
                     <th>Tiêu Chuẩn Mỹ (MBMA 2012 / IBC)</th>
                     <th>Phân Tích Cơ Sở Chênh Lệch</th>
                   </tr>
@@ -586,7 +586,7 @@ export default function SteelComponents() {
                 <thead>
                   <tr>
                     <th>Hạng Mục Kiểm Tra</th>
-                    <th>TCVN 2737:2023 & TCVN 5575:2025</th>
+                    <th>TCVN 2737:2023 & TCVN 5575:2024</th>
                     <th>Tiêu Chuẩn Mỹ (MBMA 2012)</th>
                     <th>Phân Tích Cơ Sở Chênh Lệch</th>
                   </tr>
@@ -664,7 +664,7 @@ export default function SteelComponents() {
             <div className="sub-grid">
               <div style={{ background: 'rgba(239, 68, 68, 0.05)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
                 <h4 style={{ color: 'var(--red)', marginBottom: '12px', fontSize: '1.05rem' }}>Trường hợp 1: Dự Án A</h4>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}><strong>Hệ thống:</strong> TCVN 2737:2023 & TCVN 5574/5575</p>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}><strong>Hệ thống:</strong> TCVN 2737:2023 & TCVN 5574:2018/5575</p>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}><strong>Công trình:</strong> Khối Cao Tầng CT1 (25 tòa nhà cao 20 - 30 tầng)</p>
                 <ul style={{ paddingLeft: '20px', color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0, lineHeight: 1.6 }}>
                   <li>Chuyển vị đỉnh tổng thể do gió bị khóa cứng ở mức <strong><var>H<sub>building</sub></var>/500</strong>.</li>
@@ -697,7 +697,7 @@ export default function SteelComponents() {
           <span>BẢN CHẤT KHÁC BIỆT VỀ KINH TẾ VÀ AN TOÀN</span>
         </div>
         <div className="alert-box-content">
-          TCVN 5575 đặt nặng yêu cầu về độ cứng kết cấu và ngăn chặn oằn cục bộ, dẫn đến khối lượng thép thiết kế có xu hướng nặng hơn. Trái lại, AISC 360-10 tận dụng tối đa khả năng chịu lực sau mất ổn định (Post-buckling strength) của bản thép mảnh, tạo ra các thiết kế kết cấu thép tiền chế (PEB) rất nhẹ và tối ưu hóa chi phí đầu tư.
+          TCVN 5575:2024 đặt nặng yêu cầu về độ cứng kết cấu và ngăn chặn oằn cục bộ, dẫn đến khối lượng thép thiết kế có xu hướng nặng hơn. Trái lại, AISC 360-10 tận dụng tối đa khả năng chịu lực sau mất ổn định (Post-buckling strength) của bản thép mảnh, tạo ra các thiết kế kết cấu thép tiền chế (PEB) rất nhẹ và tối ưu hóa chi phí đầu tư.
         </div>
       </div>
     </div>
