@@ -26,6 +26,14 @@ export function generatePhuLucData(moduleKey, inputs, results) {
       return generatePilePhuLuc(inputs, results, dateStr);
     case 'anchorage':
       return generateAnchoragePhuLuc(inputs, results, dateStr);
+    case 'rcbeamadvanced':
+      return generateRCBeamAdvancedPhuLuc(inputs, results, dateStr);
+    case 'loadcombo':
+      return generateLoadComboPhuLuc(inputs, results, dateStr);
+    case 'punching':
+      return generatePunchingPhuLuc(inputs, results, dateStr);
+    case 'deadload':
+      return generateDeadLoadPhuLuc(inputs, results, dateStr);
     default:
       return null;
   }
@@ -386,6 +394,334 @@ ${results.steps.map((s, i) => `#### 2.${i + 1} Bước ${i + 1}\n> ${s}\n`).join
 // (Tương thích 100% với verify_calculators.mjs & SKILL_PHULUC Master Engine)
 // ============================================================================
 
+
+// ============================================================================
+// 7. PHỤ LỤC DẦM BTCT CỐT KÉP & CỐT ĐAI CHỊU CẮT (TCVN 5574:2018)
+// ============================================================================
+function generateRCBeamAdvancedPhuLuc(inputs, results, dateStr) {
+  const title = 'PHỤ LỤC TÍNH TOÁN CỐT THÉP DẦM BTCT CHỊU UỐN VÀ CẮT TOÀN DIỆN';
+  const subtitle = "Tự động tính cốt đơn / cốt kép (As, As') và kiểm toán cốt đai chịu cắt (V_Rd) theo TCVN 5574:2018";
+  const standardRef = results.standardRef || 'TCVN 5574:2018 — Điều 8.1.2 & Điều 8.1.3';
+
+  const inputTable = [
+    { label: 'Bề rộng tiết diện dầm', symbol: 'b', value: results.b, unit: 'mm', ref: 'Thiết kế kết cấu' },
+    { label: 'Chiều cao tiết diện dầm', symbol: 'h', value: results.h, unit: 'mm', ref: 'Thiết kế kết cấu' },
+    { label: 'Chiều cao làm việc tiết diện', symbol: 'h₀', value: results.h0, unit: 'mm', ref: `a = ${results.a} mm, a' = ${results.aPrime} mm` },
+    { label: 'Cấp độ bền bê tông', symbol: 'B', value: inputs.concrete || 'B25', unit: '-', ref: 'Bảng 6 (TCVN 5574:2018)' },
+    { label: 'Nhóm cốt thép dọc chịu lực', symbol: 'Thép dọc', value: inputs.rebar || 'CB400V', unit: '-', ref: 'Bảng 13' },
+    { label: 'Nhóm cốt đai chịu cắt', symbol: 'Thép đai', value: inputs.stirrupRebar || 'CB240T', unit: '-', ref: 'Bảng 14' },
+    { label: 'Quy cách cốt đai bố trí', symbol: 'Cốt đai', value: inputs.stirrupDia && inputs.stirrupSpacing ? `${inputs.stirrupLegs || 2}c-Ø${inputs.stirrupDia}s${inputs.stirrupSpacing}` : 'Chưa bố trí', unit: '-', ref: 'Cấu tạo cốt đai' },
+    { label: 'Mômen uốn tính toán ULS', symbol: 'M', value: inputs.M, unit: 'kNm', ref: 'Tổ hợp nội lực' },
+    { label: 'Lực cắt tính toán ULS', symbol: 'V', value: inputs.V, unit: 'kN', ref: 'Tổ hợp nội lực' },
+  ];
+
+  const summaryTable = [
+    {
+      stt: 1,
+      item: results.isDoubleLayer ? 'Cốt thép dọc chịu nén (Cốt kép)' : 'Cốt thép dọc chịu kéo (Cốt đơn)',
+      symbol: results.isDoubleLayer ? "As / As'" : 'As',
+      calcVal: results.isDoubleLayer ? `As = ${results.AsDesignCm2} cm², As' = ${results.AsPrimeCm2} cm²` : `As = ${results.AsDesignCm2} cm²`,
+      limitVal: results.isDoubleLayer ? 'Cốt kép (α_m > α_R)' : `ξ = ${results.xi} ≤ ξ_R = ${results.xiR}`,
+      eta: results.etaFlex ? results.etaFlex.toFixed(3) : '-',
+      status: results.etaFlex <= 1.0 ? 'ĐẠT' : 'KHÔNG ĐẠT',
+    },
+    {
+      stt: 2,
+      item: 'Khả năng chịu nén dải nghiêng bê tông',
+      symbol: 'V_strut',
+      calcVal: `${results.VStrut} kN`,
+      limitVal: `≥ V = ${inputs.V} kN`,
+      eta: results.etaStrut ? results.etaStrut.toFixed(3) : '-',
+      status: results.etaStrut <= 1.0 ? 'ĐẠT' : 'KHÔNG ĐẠT',
+    },
+    {
+      stt: 3,
+      item: 'Khả năng chịu cắt cốt đai + bê tông',
+      symbol: 'V_Rd',
+      calcVal: results.VRd !== null ? `${results.VRd} kN` : `Chưa nhập đai (cần q_sw ≥ ${results.qSwReq} N/mm)`,
+      limitVal: `≥ V = ${inputs.V} kN`,
+      eta: results.etaShear !== null ? results.etaShear.toFixed(3) : '-',
+      status: results.VRd !== null ? (results.VRd >= inputs.V ? 'ĐẠT' : 'KHÔNG ĐẠT') : 'CHỜ BỐ TRÍ ĐAI',
+    },
+    {
+      stt: 4,
+      item: 'Chỉ số sử dụng tổng thể max(η_uốn, η_cắt, η_dải)',
+      symbol: 'η',
+      calcVal: results.utilization.eta.toFixed(3),
+      limitVal: '≤ 1.000',
+      eta: results.utilization.eta.toFixed(3),
+      status: results.utilization.passed ? 'ĐẠT' : 'KHÔNG ĐẠT',
+    },
+  ];
+
+  const markdown = `# ${title}
+## ${subtitle}
+
+**Căn cứ pháp lý:** ${standardRef}  
+**Ngày lập:** ${dateStr} | **Đơn vị:** STRUCTURE-HUB (Bộ 1 Times New Roman)  
+**Trạng thái kiểm toán:** ${results.utilization.passed ? '[ĐẠT / OK]' : '[KHÔNG ĐẠT / REJECT]'} (η = ${results.utilization.eta.toFixed(3)})
+
+---
+
+### 1. BẢNG THÔNG SỐ ĐẦU VÀO & VẬT LIỆU
+| STT | Thông số thiết kế | Ký hiệu | Giá trị | Đơn vị | Căn cứ tiêu chuẩn |
+|:---:|---|:---:|---:|:---:|---|
+${inputTable.map((r, i) => `| ${i + 1} | ${r.label} | ${r.symbol} | ${r.value} | ${r.unit} | ${r.ref} |`).join('\n')}
+
+---
+
+### 2. TRÌNH TỰ TÍNH TOÁN STEP-BY-STEP (TCVN 5574:2018)
+${results.steps.map((s, i) => `#### 2.${i + 1} Bước ${i + 1}\n> ${s}\n`).join('\n')}
+
+---
+
+### 3. BẢNG TỔNG HỢP KẾT QUẢ KIỂM TOÁN CHỈ SỐ SỬ DỤNG η
+| STT | Tiêu chí kiểm tra | Ký hiệu | Giá trị tính toán | Giới hạn cho phép | Hệ số η | Kết luận |
+|:---:|---|:---:|---:|---:|:---:|:---:|
+${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} | ${r.limitVal} | ${r.eta} | **${r.status}** |`).join('\n')}
+
+---
+*Ghi chú: Hồ sơ do Trợ lý AI lập tự động chuẩn SKILL_PHULUC. Cần kỹ sư có CCHN kiểm tra trước khi ký đóng dấu.*
+`;
+
+  return { title, subtitle, standardRef, dateStr, inputTable, summaryTable, steps: results.steps, utilization: results.utilization, markdown };
+}
+
+// ============================================================================
+// 8. PHỤ LỤC TỔ HỢP TẢI TRỌNG ENVELOPE (TCVN 2737:2023)
+// ============================================================================
+function generateLoadComboPhuLuc(inputs, results, dateStr) {
+  const title = 'PHỤ LỤC THIẾT LẬP TỔ HỢP TẢI TRỌNG VÀ BAO NỘI LỰC ENVELOPE';
+  const subtitle = 'Tổ hợp trạng thái giới hạn ULS (Cơ bản, Đặc biệt) và SLS theo TCVN 2737:2023';
+  const standardRef = results.standardRef || 'TCVN 2737:2023 — Điều 5, Điều 8 & Điều 10';
+
+  const inputTable = [
+    { label: 'Tĩnh tải chuẩn tại tiết diện', symbol: 'G_k', value: inputs.Gk, unit: 'kN (kNm)', ref: `γ_G = ${results.gammaG}` },
+    { label: 'Hoạt tải chuẩn tại tiết diện', symbol: 'Q_k', value: inputs.Qk, unit: 'kN (kNm)', ref: 'γ_Q = 1.30' },
+    { label: 'Tải gió chuẩn tại tiết diện', symbol: 'W_k', value: inputs.Wk, unit: 'kN (kNm)', ref: 'γ_W = 1.25' },
+    { label: 'Tải động đất chuẩn (nếu có)', symbol: 'E_k', value: inputs.Ek || 0, unit: 'kN (kNm)', ref: inputs.includeSeismic ? 'Kể đến Động đất' : 'Không kể đến' },
+    { label: 'Vật liệu kết cấu', symbol: 'Vật liệu', value: inputs.material === 'thep' ? 'Kết cấu Thép' : 'Bê tông cốt thép', unit: '-', ref: inputs.material === 'thep' ? 'γ_G = 1.05' : 'γ_G = 1.15' },
+    { label: 'Khả năng chịu tải cho phép', symbol: '[M_d]', value: inputs.capacity || 'Chưa nhập', unit: 'kN (kNm)', ref: 'Giới hạn chịu lực' },
+  ];
+
+  const summaryTable = results.combinations.map((c, i) => ({
+    stt: i + 1,
+    item: c.name,
+    symbol: c.id,
+    calcVal: `${c.value} kN`,
+    limitVal: c.formula,
+    eta: results.utilization.eta !== null ? (c.value / Number(inputs.capacity)).toFixed(3) : '-',
+    status: c.id === results.envelope.governing ? 'CHI PHỐI (MAX)' : 'ĐẠT',
+  }));
+
+  // Append envelope row
+  summaryTable.push({
+    stt: summaryTable.length + 1,
+    item: `Envelope cực đại (${results.envelope.governing})`,
+    symbol: 'M_ULS,max',
+    calcVal: `${results.envelope.max} kN`,
+    limitVal: inputs.capacity ? `≤ ${inputs.capacity} kN` : 'Bao nội lực thiết kế',
+    eta: results.utilization.eta !== null ? results.utilization.eta.toFixed(3) : '—',
+    status: results.utilization.passed ? 'ĐẠT' : 'KHÔNG ĐẠT',
+  });
+
+  const markdown = `# ${title}
+## ${subtitle}
+
+**Căn cứ pháp lý:** ${standardRef}  
+**Ngày lập:** ${dateStr} | **Đơn vị:** STRUCTURE-HUB (Bộ 1 Times New Roman)  
+**Trạng thái kiểm toán:** ${results.utilization.passed ? '[ĐẠT / OK]' : '[KHÔNG ĐẠT / REJECT]'} (Tổ hợp chi phối: ${results.envelope.governing})
+
+---
+
+### 1. BẢNG TẢI TRỌNG TIÊU CHUẨN THÀNH PHẦN
+| STT | Tải trọng thành phần | Ký hiệu | Giá trị | Đơn vị | Hệ số độ tin cậy |
+|:---:|---|:---:|---:|:---:|---|
+${inputTable.map((r, i) => `| ${i + 1} | ${r.label} | ${r.symbol} | ${r.value} | ${r.unit} | ${r.ref} |`).join('\n')}
+
+---
+
+### 2. KẾT QUẢ TÍNH TOÁN CÁC TỔ HỢP TẢI TRỌNG
+${results.steps.map((s, i) => `#### 2.${i + 1} Tổ hợp ${i + 1}\n> ${s}\n`).join('\n')}
+
+---
+
+### 3. BẢNG TỔNG HỢP CÁC TỔ HỢP VÀ BAO NỘI LỰC ENVELOPE
+| STT | Tên tổ hợp tải trọng | Mã | Giá trị tính toán | Công thức áp dụng | Hệ số η | Đánh giá |
+|:---:|---|:---:|---:|---:|:---:|:---:|
+${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} | ${r.limitVal} | ${r.eta} | **${r.status}** |`).join('\n')}
+
+---
+*Ghi chú: Hồ sơ do Trợ lý AI lập tự động chuẩn SKILL_PHULUC. Cần kỹ sư có CCHN kiểm tra trước khi ký đóng dấu.*
+`;
+
+  return { title, subtitle, standardRef, dateStr, inputTable, summaryTable, steps: results.steps, utilization: results.utilization, markdown };
+}
+
+// ============================================================================
+// 9. PHỤ LỤC KIỂM TOÁN CHỌC THỦNG SÀN NẤM & ĐÀI CỌC (TCVN 5574:2018)
+// ============================================================================
+function generatePunchingPhuLuc(inputs, results, dateStr) {
+  const title = 'PHỤ LỤC KIỂM TOÁN KHẢ NĂNG CHỐNG CHỌC THỦNG SÀN NẤM VÀ ĐÀI CỌC';
+  const subtitle = 'Kiểm toán sức kháng chọc thủng của bê tông và cốt đai theo TCVN 5574:2018 Mục 8.1.6';
+  const standardRef = results.standardRef || 'TCVN 5574:2018 — Mục 8.1.6 (Công thức 194–205)';
+
+  const posLabel = inputs.columnPosition === 'edge' ? 'Cột biên' : inputs.columnPosition === 'corner' ? 'Cột góc' : 'Cột giữa';
+
+  const inputTable = [
+    { label: 'Chiều dày bản sàn / đài cọc', symbol: 'h', value: results.h, unit: 'mm', ref: 'Thiết kế kết cấu' },
+    { label: 'Chiều cao làm việc tính toán', symbol: 'h₀', value: results.d, unit: 'mm', ref: `a = ${inputs.a} mm` },
+    { label: 'Kích thước tiết diện cột', symbol: 'b_c × h_c', value: `${results.columnB} × ${results.columnH}`, unit: 'mm', ref: 'Mặt cắt cột' },
+    { label: 'Vị trí cột trên mặt bằng', symbol: 'Vị trí', value: posLabel, unit: '-', ref: 'Sơ đồ hình học' },
+    { label: 'Cấp độ bền bê tông', symbol: 'B', value: inputs.concrete || 'B25', unit: '-', ref: `R_bt = ${results.Rbt || 1.05} MPa` },
+    { label: 'Lực tập trung gây chọc thủng', symbol: 'F', value: inputs.F, unit: 'kN', ref: 'Tổ hợp nội lực ULS' },
+    { label: 'Mômen uốn cột truyền vào sàn', symbol: 'M_bx / M_by', value: `${inputs.Mbx || 0} / ${inputs.Mby || 0}`, unit: 'kNm', ref: 'Uốn 2 phương' },
+    { label: 'Cốt đai chống chọc thủng', symbol: 'Cốt đai', value: results.hasStirrup ? `${inputs.stirrupLegs}c-Ø${inputs.stirrupDia}s${inputs.stirrupSpacing}` : 'Không bố trí', unit: '-', ref: inputs.stirrupRebar || 'CB240T' },
+  ];
+
+  const summaryTable = [
+    {
+      stt: 1,
+      item: 'Chu vi đường bao tính toán cách mép cột h₀/2',
+      symbol: 'u_b',
+      calcVal: `${results.uB} mm`,
+      limitVal: 'Đường bao tới hạn',
+      eta: '-',
+      status: 'ĐẠT',
+    },
+    {
+      stt: 2,
+      item: 'Sức kháng chọc thủng của bê tông nguyên sinh',
+      symbol: 'F_b,ult',
+      calcVal: `${results.Fult} kN`,
+      limitVal: `≥ F = ${inputs.F} kN`,
+      eta: results.etaF.toFixed(3),
+      status: results.etaF <= 1.0 ? 'ĐẠT' : 'CẦN CỐT ĐAI / MŨ CỘT',
+    },
+    {
+      stt: 3,
+      item: results.hasStirrup ? 'Sức kháng chọc thủng có cốt đai bổ sung' : 'Chỉ số kiểm toán chọc thủng (kể cả mômen)',
+      symbol: results.hasStirrup ? 'F_b,ult,sw' : 'η_punch',
+      calcVal: results.hasStirrup ? `${results.FUltStirrup} kN` : `η = ${results.etaPunch}`,
+      limitVal: results.hasStirrup ? `min(F_b + F_sw, 2F_b)` : 'η ≤ 1.000',
+      eta: results.utilization.eta.toFixed(3),
+      status: results.utilization.passed ? 'ĐẠT' : 'KHÔNG ĐẠT',
+    },
+  ];
+
+  const markdown = `# ${title}
+## ${subtitle}
+
+**Căn cứ pháp lý:** ${standardRef}  
+**Ngày lập:** ${dateStr} | **Đơn vị:** STRUCTURE-HUB (Bộ 1 Times New Roman)  
+**Trạng thái kiểm toán:** ${results.utilization.passed ? '[ĐẠT / OK]' : '[KHÔNG ĐẠT / REJECT]'} (η = ${results.utilization.eta.toFixed(3)})
+
+---
+
+### 1. BẢNG THÔNG SỐ HÌNH HỌC VÀ TẢI TRỌNG TÁC DỤNG
+| STT | Thông số thiết kế | Ký hiệu | Giá trị | Đơn vị | Căn cứ tiêu chuẩn |
+|:---:|---|:---:|---:|:---:|---|
+${inputTable.map((r, i) => `| ${i + 1} | ${r.label} | ${r.symbol} | ${r.value} | ${r.unit} | ${r.ref} |`).join('\n')}
+
+---
+
+### 2. TRÌNH TỰ KIỂM TOÁN CHỌC THỦNG STEP-BY-STEP
+${results.steps.map((s, i) => `#### 2.${i + 1} Bước ${i + 1}\n> ${s}\n`).join('\n')}
+
+---
+
+### 3. BẢNG TỔNG HỢP KẾT QUẢ KIỂM TOÁN CHỈ SỐ SỬ DỤNG η
+| STT | Tiêu chí kiểm tra | Ký hiệu | Giá trị tính toán | Giới hạn cho phép | Hệ số η | Kết luận |
+|:---:|---|:---:|---:|---:|:---:|:---:|
+${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} | ${r.limitVal} | ${r.eta} | **${r.status}** |`).join('\n')}
+
+---
+*Ghi chú: Hồ sơ do Trợ lý AI lập tự động chuẩn SKILL_PHULUC. Cần kỹ sư có CCHN kiểm tra trước khi ký đóng dấu.*
+`;
+
+  return { title, subtitle, standardRef, dateStr, inputTable, summaryTable, steps: results.steps, utilization: results.utilization, markdown };
+}
+
+
+// ============================================================================
+// 10. PHỤ LỤC TÍNH TOÁN TĨNH TẢI SÀN & TƯỜNG (TCVN 2737:2023)
+// ============================================================================
+function generateDeadLoadPhuLuc(inputs, results, dateStr) {
+  const title = 'PHỤ LỤC TÍNH TOÁN TÍCH LŨY TĨNH TẢI SÀN VÀ TƯỜNG XÂY TRÊN DẦM';
+  const subtitle = 'Xác định tĩnh tải nhiều lớp hoàn thiện sàn & tải trọng phân bố đều của tường theo TCVN 2737:2023';
+  const standardRef = results.standardRef || 'TCVN 2737:2023 — Bảng 3 & Mục 5';
+
+  const inputTable = [
+    { label: 'Số lớp cấu tạo sàn', symbol: 'Số lớp', value: `${results.processedLayers?.length || 0} lớp`, unit: '-', ref: 'Bảng 3 TCVN 2737' },
+    { label: 'Chiều cao tầng', symbol: 'H_t', value: inputs.storyHeight || 3.6, unit: 'm', ref: 'Bản vẽ kiến trúc' },
+    { label: 'Chiều cao tiết diện dầm đỡ tường', symbol: 'h_d', value: inputs.beamHeight || 0.6, unit: 'm', ref: 'Mặt cắt dầm kết cấu' },
+    { label: 'Bề dày tường xây', symbol: 't_w', value: inputs.wallThickness || 200, unit: 'mm', ref: 'Bản vẽ xây tường' },
+    { label: 'Loại gạch xây tường', symbol: 'Gạch', value: results.brickTypeName || 'Gạch 4 lỗ rỗng', unit: '-', ref: 'Bảng 3' },
+    { label: 'Chiều dày vữa trát 2 mặt', symbol: 't_plaster', value: inputs.plasterThickness || 15, unit: 'mm', ref: 'Trát trong + ngoài' },
+    { label: 'Tỷ lệ mở cửa tường', symbol: 'k_open', value: inputs.openingPercent || 0, unit: '%', ref: 'Cửa sổ + cửa đi' },
+    { label: 'Tĩnh tải sàn cho phép', symbol: '[G_d]', value: results.allowableFloorGd, unit: 'kN/m²', ref: 'Giới hạn kết cấu' },
+  ];
+
+  const summaryTable = [
+    { stt: 1, item: 'Tổng tĩnh tải sàn tiêu chuẩn', symbol: 'G_k', calcVal: `${results.floorGk} kN/m²`, limitVal: '-', eta: '-', status: 'ĐẠT' },
+    { stt: 2, item: 'Tổng tĩnh tải sàn tính toán', symbol: 'G_d', calcVal: `${results.floorGd} kN/m²`, limitVal: `≤ ${results.allowableFloorGd} kN/m²`, eta: results.utilization?.eta?.toFixed(3) || '-', status: results.utilization?.passed ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+    { stt: 3, item: 'Trọng lượng tường tiêu chuẩn trên m²', symbol: 'g_w,k', calcVal: `${results.gWallTotalK} kN/m²`, limitVal: 'Gạch + Vữa trát', eta: '-', status: 'ĐẠT' },
+    { stt: 4, item: 'Chiều cao thông thủy tường', symbol: 'H_w', calcVal: `${results.netWallHeight} m`, limitVal: 'H_t - h_d', eta: '-', status: 'ĐẠT' },
+    { stt: 5, item: 'Tải trọng tường tiêu chuẩn trên dầm', symbol: 'q_w,k', calcVal: `${results.wallQk} kN/m`, limitVal: '-', eta: '-', status: 'ĐẠT' },
+    { stt: 6, item: 'Tải trọng tường tính toán trên dầm', symbol: 'q_w,d', calcVal: `${results.wallQd} kN/m`, limitVal: '-', eta: '-', status: 'ĐẠT' },
+  ];
+
+  const markdown = `# ${title}
+## ${subtitle}
+
+**Căn cứ pháp lý:** ${standardRef}  
+**Ngày lập:** ${dateStr} | **Đơn vị:** STRUCTURE-HUB (Bộ 1 Times New Roman)  
+**Trạng thái kiểm toán:** ${results.utilization?.passed ? '[ĐẠT / OK]' : '[KHÔNG ĐẠT / REJECT]'} (η = ${results.utilization?.eta?.toFixed(3) || '-'})
+
+---
+
+### 1. BẢNG THÔNG SỐ ĐẦU VÀO
+| STT | Thông số thiết kế | Ký hiệu | Giá trị | Đơn vị | Căn cứ tiêu chuẩn |
+|:---:|---|:---:|---:|:---:|---|
+${inputTable.map((r, i) => `| ${i + 1} | ${r.label} | ${r.symbol} | ${r.value} | ${r.unit} | ${r.ref} |`).join('\n')}
+
+---
+
+### 2. CHI TIẾT CÁC LỚP HOÀN THIỆN SÀN
+| STT | Lớp cấu tạo | Chiều dày (mm) | Khối lượng thể tích (kN/m³) | Hệ số γ_f | Tải tiêu chuẩn G_k (kN/m²) | Tải tính toán G_d (kN/m²) |
+|:---:|---|:---:|:---:|:---:|:---:|:---:|
+${(results.processedLayers || []).map((l) => `| ${l.index} | ${l.name} | ${l.thickness} | ${l.density} | ${l.gammaF} | ${l.gk} | ${l.gd} |`).join('\n')}
+| **Σ** | **TỔNG CỘNG TĨNH TẢI SÀN** | - | - | - | **${results.floorGk}** | **${results.floorGd}** |
+
+---
+
+### 3. TRÌNH TỰ TÍNH TOÁN STEP-BY-STEP (TCVN 2737:2023)
+${(results.steps || []).map((s, i) => `#### 3.${i + 1} Bước ${i + 1}\n> ${s}\n`).join('\n')}
+
+---
+
+### 4. BẢNG TỔNG HỢP KẾT QUẢ VÀ CHỈ SỐ SỬ DỤNG η
+| STT | Cấu kiện / Tải trọng | Ký hiệu | Giá trị tính toán | Giới hạn thiết kế | Hệ số η | Đánh giá |
+|:---:|---|:---:|---:|---:|:---:|:---:|
+${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} | ${r.limitVal} | ${r.eta} | **${r.status}** |`).join('\n')}
+
+---
+*Ghi chú: Hồ sơ do Trợ lý AI lập tự động chuẩn SKILL_PHULUC. Cần kỹ sư có chứng chỉ hành nghề kiểm tra trước khi ký đóng dấu.*
+`;
+
+  return {
+    title,
+    subtitle,
+    standardRef,
+    dateStr,
+    inputTable,
+    summaryTable,
+    steps: results.steps,
+    utilization: results.utilization,
+    markdown,
+  };
+}
+
 export function generatePhuLucDocument(calcResult, options = {}) {
   if (!calcResult || !calcResult.valid) return null;
 
@@ -444,6 +780,68 @@ export function generatePhuLucDocument(calcResult, options = {}) {
       { stt: 1, item: 'Hệ số chiết giảm sàn theo diện tích', symbol: 'α_A', calcVal: calcResult.alphaA, limitVal: '≥ 0.60', eta: '-', status: 'ĐẠT' },
       { stt: 2, item: 'Hệ số chiết giảm cột theo số tầng', symbol: 'α_n', calcVal: calcResult.alphaN, limitVal: '≥ 0.50', eta: '-', status: 'ĐẠT' },
       { stt: 3, item: 'Hoạt tải sàn tính toán sau chiết giảm', symbol: 'p_d,red', calcVal: `${calcResult.pdReducedArea} kN/m²`, limitVal: `≤ ${calcResult.designCapacityPd || 2.6} kN/m²`, eta: calcResult.utilization?.eta?.toFixed(3) || '-', status: calcResult.utilization?.passed ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+    ];
+  } else if (calcResult.VRdc !== undefined) {
+    // 7. Dầm BTCT Cốt kép & Cắt (B1 nâng cao)
+    title = 'PHỤ LỤC TÍNH TOÁN CỐT THÉP DẦM BTCT CHỊU UỐN VÀ CẮT TOÀN DIỆN';
+    subtitle = "Tự động tính cốt đơn / cốt kép (As, As') và kiểm toán cốt đai chịu cắt (V_Rd) theo TCVN 5574:2018";
+    inputRows = [
+      { label: 'Bề rộng tiết diện dầm', symbol: 'b', value: calcResult.b, unit: 'mm', ref: 'Thiết kế kết cấu' },
+      { label: 'Chiều cao tiết diện dầm', symbol: 'h', value: calcResult.h, unit: 'mm', ref: 'Thiết kế kết cấu' },
+      { label: 'Chiều cao làm việc tiết diện', symbol: 'h₀', value: calcResult.h0, unit: 'mm', ref: `a = ${calcResult.a} mm, a' = ${calcResult.aPrime} mm` },
+      { label: 'Cốt thép uốn yêu cầu', symbol: "As / As'", value: calcResult.isDoubleLayer ? `As = ${calcResult.AsDesignCm2} cm², As' = ${calcResult.AsPrimeCm2} cm²` : `As = ${calcResult.AsDesignCm2} cm²`, unit: '-', ref: calcResult.isDoubleLayer ? 'Cốt kép' : 'Cốt đơn' },
+      { label: 'Mômen uốn tính toán ULS', symbol: 'M', value: calcResult.MRd ? calcResult.MRd : 220, unit: 'kNm', ref: 'Tổ hợp nội lực' },
+      { label: 'Khả năng chịu cắt cốt đai', symbol: 'V_Rd', value: calcResult.VRd !== null ? `${calcResult.VRd} kN` : 'Chưa bố trí đai', unit: '-', ref: 'Điều 8.1.3' },
+    ];
+    summaryRows = [
+      { stt: 1, item: 'Khả năng chịu uốn tiết diện dầm', symbol: 'M / M_Rd', calcVal: calcResult.MRd ? `${calcResult.MRd} kNm` : '-', limitVal: 'Điều 8.1.2', eta: calcResult.etaFlex ? calcResult.etaFlex.toFixed(3) : '-', status: calcResult.etaFlex <= 1.0 ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+      { stt: 2, item: 'Khả năng chịu nén dải nghiêng bê tông', symbol: 'V_strut', calcVal: `${calcResult.VStrut} kN`, limitVal: 'Điều 8.1.3', eta: calcResult.etaStrut ? calcResult.etaStrut.toFixed(3) : '-', status: calcResult.etaStrut <= 1.0 ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+      { stt: 3, item: 'Chỉ số sử dụng tổng hợp lớn nhất', symbol: 'η', calcVal: calcResult.utilization?.eta?.toFixed(3) || '-', limitVal: '≤ 1.000', eta: calcResult.utilization?.eta?.toFixed(3) || '-', status: calcResult.utilization?.passed ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+    ];
+  } else if (calcResult.combinations !== undefined) {
+    // 8. Tổ hợp Envelope (A4)
+    title = 'PHỤ LỤC THIẾT LẬP TỔ HỢP TẢI TRỌNG VÀ BAO NỘI LỰC ENVELOPE';
+    subtitle = 'Xác định bao nội lực ULS và SLS theo TCVN 2737:2023';
+    inputRows = [
+      { label: 'Số lượng tổ hợp phát sinh', symbol: 'Số tổ hợp', value: `${calcResult.combinations.length} tổ hợp`, unit: 'tổ hợp', ref: 'Điều 5, 8 & 10' },
+      { label: 'Tổ hợp chi phối lớn nhất', symbol: 'Governing', value: calcResult.envelope.governing, unit: '-', ref: 'Max Envelope' },
+      { label: 'Giá trị bao cực đại', symbol: 'M_ULS,max', value: `${calcResult.envelope.max} kN`, unit: 'kN (kNm)', ref: 'Nội lực tính toán' },
+      { label: 'Giá trị bao cực tiểu', symbol: 'M_ULS,min', value: `${calcResult.envelope.min} kN`, unit: 'kN (kNm)', ref: 'Nội lực tính toán' },
+    ];
+    summaryRows = [
+      { stt: 1, item: 'Bao nội lực cực đại thiết kế', symbol: 'Envelope Max', calcVal: `${calcResult.envelope.max} kN`, limitVal: calcResult.envelope.governing, eta: calcResult.utilization?.eta !== null ? calcResult.utilization?.eta?.toFixed(3) : '-', status: 'ĐẠT' },
+      { stt: 2, item: 'Đánh giá chỉ số an toàn Policy Engine', symbol: 'η', calcVal: calcResult.utilization?.eta !== null ? calcResult.utilization?.eta?.toFixed(3) : 'Chưa nhập [M_d]', limitVal: '≤ 1.000', eta: calcResult.utilization?.eta !== null ? calcResult.utilization?.eta?.toFixed(3) : '-', status: calcResult.utilization?.passed ? 'ĐẠT' : 'INFO' },
+    ];
+  } else if (calcResult.floorGd !== undefined) {
+    // 10. Tích lũy tĩnh tải sàn & tường (TCVN 2737:2023)
+    title = 'PHỤ LỤC TÍNH TOÁN TÍCH LŨY TĨNH TẢI SÀN VÀ TƯỜNG XÂY TRÊN DẦM';
+    subtitle = 'Xác định tĩnh tải nhiều lớp hoàn thiện sàn & tải trọng phân bố đều của tường theo TCVN 2737:2023';
+    inputRows = [
+      { label: 'Số lớp cấu tạo sàn', symbol: 'Số lớp', value: `${calcResult.processedLayers?.length || 0} lớp`, unit: '-', ref: 'Bảng 3 TCVN 2737' },
+      { label: 'Loại gạch xây tường', symbol: 'Gạch', value: calcResult.brickTypeName || 'Gạch 4 lỗ rỗng', unit: '-', ref: 'Bảng 3' },
+      { label: 'Chiều cao tường thông thủy', symbol: 'H_w', value: `${calcResult.netWallHeight} m`, unit: 'm', ref: 'H_t - h_d' },
+      { label: 'Tải tường tiêu chuẩn m²', symbol: 'g_w,k', value: `${calcResult.gWallTotalK} kN/m²`, unit: 'kN/m²', ref: 'Gạch + Trát vữa' },
+      { label: 'Tĩnh tải sàn cho phép', symbol: '[G_d]', value: `${calcResult.allowableFloorGd} kN/m²`, unit: 'kN/m²', ref: 'Giới hạn kết cấu' },
+    ];
+    summaryRows = [
+      { stt: 1, item: 'Tổng tĩnh tải sàn tiêu chuẩn', symbol: 'G_k', calcVal: `${calcResult.floorGk} kN/m²`, limitVal: '-', eta: '-', status: 'ĐẠT' },
+      { stt: 2, item: 'Tổng tĩnh tải sàn tính toán', symbol: 'G_d', calcVal: `${calcResult.floorGd} kN/m²`, limitVal: `≤ ${calcResult.allowableFloorGd} kN/m²`, eta: calcResult.utilization?.eta?.toFixed(3) || '-', status: calcResult.utilization?.passed ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+      { stt: 3, item: 'Tải trọng tường tiêu chuẩn trên dầm', symbol: 'q_w,k', calcVal: `${calcResult.wallQk} kN/m`, limitVal: '-', eta: '-', status: 'ĐẠT' },
+      { stt: 4, item: 'Tải trọng tường tính toán trên dầm', symbol: 'q_w,d', calcVal: `${calcResult.wallQd} kN/m`, limitVal: '-', eta: '-', status: 'ĐẠT' },
+    ];
+  } else if (calcResult.uB !== undefined) {
+    // 9. Chọc thủng (B4)
+    title = 'PHỤ LỤC KIỂM TOÁN KHẢ NĂNG CHỐNG CHỌC THỦNG SÀN NẤM VÀ ĐÀI CỌC';
+    subtitle = 'Kiểm toán khả năng chống đâm thủng của bê tông và cốt đai theo TCVN 5574:2018 Mục 8.1.6';
+    inputRows = [
+      { label: 'Chiều dày bản sàn / đài cọc', symbol: 'h', value: calcResult.h, unit: 'mm', ref: `h₀ = ${calcResult.d} mm` },
+      { label: 'Kích thước tiết diện cột', symbol: 'b_c × h_c', value: `${calcResult.columnB} × ${calcResult.columnH}`, unit: 'mm', ref: 'Mặt cắt cột' },
+      { label: 'Chu vi đường bao tính toán', symbol: 'u_b', value: `${calcResult.uB} mm`, unit: 'mm', ref: 'Mục 8.1.6' },
+      { label: 'Sức chịu chọc thủng bê tông', symbol: 'F_b,ult', value: `${calcResult.Fult} kN`, unit: 'kN', ref: 'CT 194' },
+    ];
+    summaryRows = [
+      { stt: 1, item: 'Sức kháng chọc thủng của bê tông', symbol: 'F_b,ult', calcVal: `${calcResult.Fult} kN`, limitVal: 'Mục 8.1.6', eta: calcResult.etaF ? calcResult.etaF.toFixed(3) : '-', status: 'ĐẠT' },
+      { stt: 2, item: 'Chỉ số kiểm toán chọc thủng tổng thể', symbol: 'η', calcVal: calcResult.utilization?.eta?.toFixed(3) || '-', limitVal: '≤ 1.000', eta: calcResult.utilization?.eta?.toFixed(3) || '-', status: calcResult.utilization?.passed ? 'ĐẠT' : 'KHÔNG ĐẠT' },
     ];
   } else if (calcResult.AsDesignMm2 !== undefined || calcResult.xiR !== undefined) {
     // 3. Cốt thép dầm BTCT (TCVN 5574:2018)

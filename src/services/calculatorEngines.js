@@ -928,6 +928,464 @@ export function calculateAnchorageLapTCVN5574({
 }
 
 // ============================================================================
+// MÔ-ĐUN 7 (B1 NÂNG CAO): DẦM BTCT TOÀN DIỆN — CỐT ĐƠN/CỐT KÉP + CẮT CỐT ĐAI
+// TCVN 5574:2018 Điều 8.1.2 (uốn) & Điều 8.1.3 (cắt) — kế thừa calc_rc_section.py
+// ============================================================================
+export function calculateRCBeamAdvanced({
+  b = 300,
+  h = 600,
+  a = 40,
+  aPrime = 40,
+  M = 250,
+  V = 120,
+  concrete = 'B25',
+  rebar = 'CB400V',
+  stirrupRebar = 'CB240T',
+  stirrupDia,
+  stirrupLegs = 2,
+  stirrupSpacing,
+  gammaB = 1.0,
+}) {
+  const errors = [];
+  const numB = Number(b);
+  const numH = Number(h);
+  const numA = Number(a);
+  const numAp = Number(aPrime);
+  const numM = Number(M);
+  const numV = Number(V);
+  const numLegs = Number(stirrupLegs);
+  const numGammaB = Number(gammaB);
+
+  if (!CONCRETE_GRADES_TCVN5574[concrete]) errors.push('Cấp độ bền bê tông không hợp lệ.');
+  if (!REBAR_GRADES_TCVN5574[rebar]) errors.push('Nhóm cốt thép dọc không hợp lệ.');
+  if (!REBAR_GRADES_TCVN5574[stirrupRebar]) errors.push('Nhóm cốt đai không hợp lệ.');
+  if (!Number.isFinite(numB) || numB < 100 || numB > 2500) errors.push('Bề rộng dầm b phải nằm trong [100, 2500] mm.');
+  if (!Number.isFinite(numH) || numH < 150 || numH > 4000) errors.push('Chiều cao dầm h phải nằm trong [150, 4000] mm.');
+  if (!Number.isFinite(numA) || numA < 15 || numA >= numH / 2) errors.push('Khoảng cách a phải nằm trong [15 mm, h/2).');
+  if (!Number.isFinite(numAp) || numAp < 15 || numAp >= numH / 2) errors.push('Khoảng cách a\' phải nằm trong [15 mm, h/2).');
+  if (!Number.isFinite(numM) || numM <= 0 || numM > 50000) errors.push('Mômen M phải > 0 (kNm).');
+  if (!Number.isFinite(numV) || numV < 0 || numV > 50000) errors.push('Lực cắt V phải >= 0 (kN).');
+  if (!Number.isInteger(numLegs) || numLegs < 1 || numLegs > 4) errors.push('Số nhánh cốt đai phải là 1–4.');
+
+  if (errors.length > 0) return { valid: false, errors };
+
+  const conc = CONCRETE_GRADES_TCVN5574[concrete];
+  const steel = REBAR_GRADES_TCVN5574[rebar];
+  const stir = REBAR_GRADES_TCVN5574[stirrupRebar];
+  const Rb = conc.Rb * numGammaB;
+  const Rbt = conc.Rbt * numGammaB;
+  const Rs = steel.Rs;
+  const Rsc = steel.Rsc;
+  const Rsw = stir.Rsw;
+  const Es = steel.Es;
+  const epsB2 = 0.0035;
+
+  const h0 = numH - numA;
+  const za = numH - numAp - numA; // cánh tay đòn giữa hai lớp thép
+  const xiR = 0.8 / (1 + (Rs / Es) / epsB2);
+  const alphaR = xiR * (1 - 0.5 * xiR);
+  const alphaM = (numM * 1e6) / (Rb * numB * h0 * h0);
+
+  const warnings = [];
+  const isDoubleLayer = alphaM > alphaR;
+
+  let xi;
+  let x;
+  let AsRequired;
+  let AsPrimeRequired;
+
+  if (!isDoubleLayer) {
+    // ----- CỐT ĐƠN (α_m ≤ α_R) -----
+    xi = 1 - Math.sqrt(Math.max(0, 1 - 2 * alphaM));
+    x = xi * h0;
+    AsRequired = ((Rb * numB * h0) / Rs) * (1 - Math.sqrt(Math.max(0, 1 - 2 * alphaM)));
+    AsPrimeRequired = 0;
+  } else {
+    // ----- CỐT KÉP (α_m > α_R): đưa x về giới hạn dẻo x_R = ξ_R·h0 -----
+    xi = xiR;
+    x = xiR * h0;
+    const MConcrete = (Rb * numB * x * (h0 - x / 2)) / 1e6; // kNm (phần bê tông gánh)
+    AsPrimeRequired = Math.max(0, ((numM - MConcrete) * 1e6) / (Rsc * za));
+    AsRequired = Math.max(0, (Rb * numB * x + Rsc * AsPrimeRequired) / Rs);
+    warnings.push(
+      `⚠️ α_m = ${alphaM.toFixed(4)} > α_R = ${alphaR.toFixed(4)} → tiết diện VƯỢT GIỚI HẠN CỐT ĐƠN. Tự động chuyển CỐT KÉP (As & As') với x = x_R = ${x.toFixed(1)} mm.`
+    );
+  }
+
+  // Cốt thép dọc tối thiểu (Điều 10.3.3.2)
+  const muMin = 0.1;
+  const AsMin = (muMin / 100) * numB * h0;
+  const AsDesign = Math.max(AsRequired, AsMin);
+
+  // Khả năng chịu uốn thực tế của tiết diện (M_Rd) — dùng cho η
+  const MRd = (Rb * numB * x * (h0 - x / 2) + Rsc * AsPrimeRequired * za) / 1e6; // kNm
+  const etaFlex = MRd > 0 ? numM / MRd : 999;
+
+  // ----- CẮT (Điều 8.1.3): V_Rd = V_Rd,c (bê tông) + V_Rd,s (cốt đai) -----
+  const VStrut = 0.3 * Rb * numB * h0 * 1e-3; // dải nén xiên
+  const etaStrut = VStrut > 0 ? numV / VStrut : 999;
+  const VRdc = 0.75 * Rbt * numB * h0 * 1e-3; // phần bê tông (c = 2h0)
+  const hasStirrup = Number.isFinite(Number(stirrupDia)) && Number.isFinite(Number(stirrupSpacing));
+  let VRds = null;
+  let VRd = null;
+  let qSw = null;
+  let qSwReq = null;
+  let etaShear = null;
+
+  if (hasStirrup) {
+    const Asw = numLegs * (Math.PI * Number(stirrupDia) ** 2) / 4;
+    qSw = (Rsw * Asw) / Number(stirrupSpacing); // N/mm
+    VRds = 0.75 * qSw * (2 * h0) * 1e-3; // kN
+    VRd = VRdc + VRds;
+    etaShear = VRd > 0 ? numV / VRd : 999;
+  } else {
+    // Không nhập cốt đai → KHÔNG kết luận, chỉ đưa yêu cầu tối thiểu (No-Hallucination)
+    qSwReq = Math.max(numV - VRdc, 0) * 1e3 / (0.75 * 2 * h0);
+    warnings.push(`Chưa nhập cốt đai (đường kính & bước) — chưa kết luận được khả năng chịu cắt. Yêu cầu tối thiểu q_sw ≥ ${qSwReq.toFixed(2)} N/mm.`);
+  }
+
+  // Làm tròn 4 chữ số các thành phần η trước khi lấy max — tránh sai số floating-point
+  // đẩy η = M/M_Rd (bằng 1.0 đúng cấu trúc ở chế độ THIẾT KẾ) sang 1.0000000001 → FAIL giả.
+  const etaComponents = [
+    +(etaFlex).toFixed(4),
+    +(etaStrut).toFixed(4),
+    ...(hasStirrup ? [+(etaShear).toFixed(4)] : []),
+  ];
+  const eta = Math.max(...etaComponents);
+  const utilization = evaluateUtilization(eta);
+  if (!hasStirrup) {
+    warnings.push('Khả năng chịu cắt CHƯA KẾT LUẬN (thiếu thông số cốt đai) — η tổng hợp hiện chỉ gồm η_uốn & η_dải_nén.');
+  }
+
+  const statusMessage = isDoubleLayer
+    ? `Dầm cần CỐT KÉP: As = ${AsDesign.toFixed(0)} mm², As' = ${AsPrimeRequired.toFixed(0)} mm² (x = x_R = ${x.toFixed(1)} mm).`
+    : `Dầm đủ CỐT ĐƠN: As = ${AsDesign.toFixed(0)} mm² (ξ = ${xi.toFixed(3)} ≤ ξ_R = ${xiR.toFixed(3)}).`;
+
+  const steps = [
+    `Bước 1 [TCVN 5574:2018 — Bảng 6/13]: Bê tông ${conc.code} (R_b=${Rb.toFixed(1)}, R_bt=${Rbt.toFixed(2)} MPa); Thép dọc ${steel.code} (R_s=${Rs}, R_sc=${Rsc} MPa); Thép đai ${stir.code} (R_sw=${Rsw} MPa). h₀=${h0} mm, z_a=${za} mm.`,
+    `Bước 2 [Điểm 8.1.2.2.2]: ξ_R = 0.8/[1 + ${Rs}/(0.0035×200000)] = ${xiR.toFixed(4)} → α_R = ${alphaR.toFixed(4)}. α_m = M/(R_b·b·h₀²) = ${alphaM.toFixed(4)} → ${isDoubleLayer ? 'VƯỢT α_R → CỐT KÉP' : 'đặt CỐT ĐƠN'}.`,
+    isDoubleLayer
+      ? `Bước 3 [Cốt kép, x=x_R]: M_bê tông = R_b·b·x·(h₀-x/2) = ${((Rb * numB * x * (h0 - x / 2)) / 1e6).toFixed(1)} kNm → As' = [M − M_bt]/(R_sc·z_a) = ${AsPrimeRequired.toFixed(1)} mm²; As = [R_b·b·x + R_sc·As'] / R_s = ${AsRequired.toFixed(1)} mm².`
+      : `Bước 3 [Cốt đơn]: ξ = 1−√(1−2α_m) = ${xi.toFixed(4)}, x = ${x.toFixed(1)} mm; As = (R_b·b·h₀/R_s)(1−√(1−2α_m)) = ${AsRequired.toFixed(1)} mm².`,
+    `Bước 4 [Cắt — Điều 8.1.3]: Dải nén V_strut = 0.3·R_b·b·h₀ = ${VStrut.toFixed(1)} kN; V_Rd,c = 0.75·R_bt·b·h₀ = ${VRdc.toFixed(1)} kN.`,
+    hasStirrup
+      ? `Bước 5 [Cắt có cốt đai]: q_sw = R_sw·As_w/s = ${qSw.toFixed(2)} N/mm → V_Rd,s = ${VRds.toFixed(1)} kN, V_Rd = ${VRd.toFixed(1)} kN; η_cắt = V/V_Rd = ${etaShear.toFixed(3)}.`
+      : `Bước 5 [Cắt — chưa nhập cốt đai]: q_sw yêu cầu ≥ ${qSwReq.toFixed(2)} N/mm (CHƯA KẾT LUẬN).`,
+    `Bước 6 [Đánh giá η]: η = max(η_uốn, η_cắt, η_dải) = ${eta.toFixed(3)} → ${utilization.icon} ${utilization.label}.`,
+  ];
+
+  return {
+    valid: true,
+    errors: [],
+    warnings,
+    b: numB, h: numH, a: numA, aPrime: numAp, h0,
+    isDoubleLayer,
+    xi: +xi.toFixed(4), xiR: +xiR.toFixed(4), alphaR: +alphaR.toFixed(4), alphaM: +alphaM.toFixed(4),
+    x: +x.toFixed(1),
+    AsRequiredMm2: +AsRequired.toFixed(1),
+    AsPrimeRequiredMm2: +AsPrimeRequired.toFixed(1),
+    AsDesignMm2: +AsDesign.toFixed(1),
+    AsDesignCm2: +(AsDesign / 100).toFixed(2),
+    AsPrimeCm2: +(AsPrimeRequired / 100).toFixed(2),
+    MRd: +MRd.toFixed(2),
+    etaFlex: +etaFlex.toFixed(3),
+    VStrut: +VStrut.toFixed(2),
+    VRdc: +VRdc.toFixed(2),
+    VRds: VRds !== null ? +VRds.toFixed(2) : null,
+    VRd: VRd !== null ? +VRd.toFixed(2) : null,
+    qSw: qSw !== null ? +qSw.toFixed(2) : null,
+    qSwReq: qSwReq !== null ? +qSwReq.toFixed(2) : null,
+    etaShear: etaShear !== null ? +etaShear.toFixed(3) : null,
+    etaStrut: +etaStrut.toFixed(3),
+    statusMessage,
+    utilization,
+    steps,
+    standardRef: 'TCVN 5574:2018 — Điều 8.1.2 (uốn) & 8.1.3 (cắt)',
+  };
+}
+
+// ============================================================================
+// MÔ-ĐUN 8 (A4): TRÌNH TẠO TỔ HỢP TẢI TRỌNG ULS/SLS/ĐẶC BIỆT + ENVELOPE
+// TCVN 2737:2023 (Điều 5, 8, 10) — dùng hệ số đã khóa tại Chapter 3
+// ============================================================================
+// Hệ số tổ hợp (ngắn hạn) & (đặc biệt) theo TCVN 2737:2023 — Chapter 3.3:
+//   ULS cơ bản: ψ_t,1 = 1.0 (chủ đạo), ψ_t,2 = 0.9 (đi kèm), ψ_t,3... = 0.7
+//   ULS đặc biệt (E): ψ_L = 0.5 (chủ đạo), ψ_t = 0.3 (các tải còn lại)
+// γ_f mặc định: G (BTCT) = 1.05/1.15, Q = 1.3, W = 1.25
+export const LOAD_COMBINATION_FACTORS_TCVN2737 = {
+  gammaG_btct: 1.15,
+  gammaQ: 1.3,
+  gammaW: 1.25,
+  psi_t_dominant: 1.0,
+  psi_t_accompanying: 0.9,
+  psi_t_following: 0.7,
+  psi_L_accidental: 0.5,
+  psi_t_accidental: 0.3,
+};
+
+export function calculateLoadCombination({
+  Gk = 10, // kN (trọng tải chuẩn tại tiết diện kiểm tra)
+  Qk = 5, // hoạt tải chuẩn
+  Wk = 0, // gió chuẩn
+  Ek = 0, // động đất (đặc biệt)
+  capacity = null, // kN — khả năng chịu tải thiết kế [R_d] (tuỳ chọn) để đánh giá η
+  material = 'btct',
+  includeSeismic = false,
+}) {
+  const errors = [];
+  const numG = Number(Gk);
+  const numQ = Number(Qk);
+  const numW = Number(Wk);
+  const numE = Number(Ek);
+  const numCap = capacity === null || capacity === undefined || capacity === '' ? null : Number(capacity);
+  const f = LOAD_COMBINATION_FACTORS_TCVN2737;
+  const gammaG = material === 'thep' ? 1.05 : f.gammaG_btct;
+
+  if (![Number.isFinite(numG), Number.isFinite(numQ), Number.isFinite(numW), Number.isFinite(numE)].every(Boolean)) {
+    errors.push('Các tải trọng chuẩn phải là số hữu hạn.');
+  }
+  if (numG < 0 || numQ < 0 || numW < 0 || numE < 0) errors.push('Tải trọng chuẩn không được âm.');
+
+  if (errors.length > 0) return { valid: false, errors };
+
+  const combos = [];
+
+  // ULS — Tĩnh tải chi phối
+  combos.push({
+    id: 'ULS_G',
+    name: 'ULS — Tĩnh tải chi phối',
+    type: 'ULS',
+    formula: `${gammaG}·G + ${f.psi_t_following * f.gammaQ}·Q`,
+    value: +(gammaG * numG + f.psi_t_following * f.gammaQ * numQ).toFixed(2),
+  });
+
+  // ULS — Hoạt tải chi phối
+  combos.push({
+    id: 'ULS_Q',
+    name: 'ULS — Hoạt tải chi phối',
+    type: 'ULS',
+    formula: `${gammaG}·G + ${f.gammaQ}·Q + ${f.psi_t_accompanying * f.gammaW}·W`,
+    value: +(gammaG * numG + f.gammaQ * numQ + f.psi_t_accompanying * f.gammaW * numW).toFixed(2),
+  });
+
+  // ULS — Gió chi phối
+  if (numW > 0) {
+    combos.push({
+      id: 'ULS_W',
+      name: 'ULS — Gió chi phối',
+      type: 'ULS',
+      formula: `${gammaG}·G + ${f.gammaW}·W + ${f.psi_t_accompanying * f.gammaQ}·Q`,
+      value: +(gammaG * numG + f.gammaW * numW + f.psi_t_accompanying * f.gammaQ * numQ).toFixed(2),
+    });
+  }
+
+  // ULS — Đặc biệt (động đất)
+  if (includeSeismic && numE > 0) {
+    combos.push({
+      id: 'ULS_E',
+      name: 'ULS — Đặc biệt (Động đất)',
+      type: 'ULS_ACCIDENTAL',
+      formula: `${gammaG}·G + E + ${f.psi_L_accidental * f.gammaQ}·Q + ${f.psi_t_accidental * f.gammaW}·W`,
+      value: +(gammaG * numG + numE + f.psi_L_accidental * f.gammaQ * numQ + f.psi_t_accidental * f.gammaW * numW).toFixed(2),
+    });
+  }
+
+  // SLS — Tĩnh + Hoạt (tiêu chuẩn, γ_f = 1.0)
+  combos.push({
+    id: 'SLS',
+    name: 'SLS — Độ võng / nứt (tiêu chuẩn)',
+    type: 'SLS',
+    formula: `G + Q + 0.5·W`,
+    value: +(numG + numQ + 0.5 * numW).toFixed(2),
+  });
+
+  // ENVELOPE (bao nội lực) — max / min
+  const values = combos.map((c) => c.value);
+  const envelope = {
+    max: +Math.max(...values).toFixed(2),
+    min: +Math.min(...values).toFixed(2),
+    governing: combos.reduce((a, b) => (b.value > a.value ? b : a)).id,
+  };
+
+  // η = M_ULS,env / [M_d] (nếu nhập khả năng chịu tải cho phép); không nhập → không kết luận η
+  let utilization;
+  if (numCap !== null && Number.isFinite(numCap) && numCap > 0) {
+    utilization = evaluateUtilization(envelope.max / numCap);
+  } else {
+    utilization = {
+      eta: null,
+      percent: 0,
+      level: 'INFO',
+      icon: 'ℹ️',
+      color: '#64748b',
+      bg: 'rgba(100, 116, 139, 0.12)',
+      border: 'rgba(100, 116, 139, 0.35)',
+      label: 'Đã sinh tổ hợp ULS/SLS — chưa so với khả năng chịu tải (chưa nhập [M_d])',
+      policyAdvice: 'Nhập khả năng chịu tải thiết kế [M_d] (kNm/kN) để đánh giá chỉ số η theo Policy Engine.',
+      passed: true,
+    };
+  }
+
+  const steps = combos.map((c) => `Tổ hợp ${c.id} [${c.name}]: ${c.formula} = ${c.value} kN.`).concat([
+    `Envelope bao nội lực: M_ULS,max = ${envelope.max} kN (tổ hợp chi phối ${envelope.governing}), min = ${envelope.min} kN. Dùng M_ULS,max làm nội lực tính toán cho tiết diện.`,
+    ...(numCap !== null && Number.isFinite(numCap) && numCap > 0 ? [`Bước cuối [Đánh giá η]: η = M_ULS,max / [M_d] = ${envelope.max} / ${numCap} = ${utilization.eta.toFixed(3)} → ${utilization.icon} ${utilization.label}.`] : []),
+  ]);
+
+  return {
+    valid: true,
+    errors: [],
+    material,
+    gammaG,
+    factors: f,
+    combinations: combos,
+    envelope,
+    utilization,
+    steps,
+    standardRef: 'TCVN 2737:2023 — Điều 5, 8 & 10 (Hệ số tổ hợp ψ_t, ψ_L)',
+  };
+}
+
+// ============================================================================
+// MÔ-ĐUN 9 (B4): KIỂM TOÁN CHỌC THỦNG SÀN NẤM / ĐÀI CỌC (TCVN 5574:2018 Mục 8.1.6)
+// Kế thừa calc_punching_shear.py
+// ============================================================================
+export function calculatePunchingShear({
+  h = 200,
+  a = 30,
+  columnB = 300,
+  columnH = 300,
+  columnPosition = 'interior', // 'interior' | 'edge' | 'corner'
+  F = 600, // kN lực tập trung (trừ áp lực dưới vùng)
+  Mbx = 0,
+  Mby = 0,
+  concrete = 'B25',
+  stirrupDia,
+  stirrupLegs,
+  stirrupSpacing,
+  stirrupRebar = 'CB240T',
+}) {
+  const errors = [];
+  const numH = Number(h);
+  const numA = Number(a);
+  const numCb = Number(columnB);
+  const numCh = Number(columnH);
+  const numF = Number(F);
+  const numMbx = Number(Mbx);
+  const numMby = Number(Mby);
+
+  if (!CONCRETE_GRADES_TCVN5574[concrete]) errors.push('Cấp bê tông không hợp lệ.');
+  if (!REBAR_GRADES_TCVN5574[stirrupRebar]) errors.push('Nhóm cốt đai không hợp lệ.');
+  if (!Number.isFinite(numH) || numH < 100 || numH > 1500) errors.push('Chiều cao sàn h phải nằm trong [100, 1500] mm.');
+  if (!Number.isFinite(numA) || numA < 10 || numA >= numH / 2) errors.push('a phải nằm trong [10 mm, h/2).');
+  if (!Number.isFinite(numCb) || numCb < 100 || numCb > 3000) errors.push('Kích thước cột b_c phải nằm trong [100, 3000] mm.');
+  if (!Number.isFinite(numF) || numF < 0) errors.push('Lực tập trung F phải ≥ 0 kN.');
+
+  if (errors.length > 0) return { valid: false, errors };
+
+  const conc = CONCRETE_GRADES_TCVN5574[concrete];
+  const Rbt = conc.Rbt;
+  const d = numH - numA;
+  const warnings = [];
+
+  let Lx, Ly, uB;
+  if (columnPosition === 'edge') {
+    Lx = numCb + 0.5 * d;
+    Ly = numCh + d;
+    uB = 2 * Lx + Ly;
+  } else if (columnPosition === 'corner') {
+    Lx = numCb + 0.5 * d;
+    Ly = numCh + 0.5 * d;
+    uB = Lx + Ly;
+  } else {
+    Lx = numCb + d;
+    Ly = numCh + d;
+    uB = 2 * (Lx + Ly);
+  }
+
+  // Mô đun kháng uốn đường bao (Điều 8.1.6.2 CT 199–203)
+  let WBx, WBy;
+  if (columnPosition === 'interior') {
+    WBx = Ly * (Ly / 3 + Lx);
+    WBy = Lx * (Lx / 3 + Ly);
+  } else if (columnPosition === 'edge') {
+    WBx = Ly * (Ly / 6 + Lx);
+    WBy = Lx * (Lx / 3 + 0.5 * Ly);
+  } else {
+    WBx = Ly * (Ly / 6 + 0.5 * Lx);
+    WBy = Lx * (Lx / 6 + 0.5 * Ly);
+  }
+
+  const Ac = uB * d;
+  const Fult = Rbt * Ac * 1e-3; // kN
+  const MBxUlt = Rbt * WBx * d * 1e-6; // kNm
+  const MByUlt = Rbt * WBy * d * 1e-6;
+
+  const hasMoment = numMbx !== 0 || numMby !== 0;
+  const etaF = Fult > 0 ? numF / Fult : 999;
+  let etaMraw = 0;
+  let etaPunch = etaF;
+  if (hasMoment) {
+    etaMraw = (Math.abs(numMbx) / (MBxUlt || 1) + Math.abs(numMby) / (MByUlt || 1));
+    // Điều 8.1.6.1: tác dụng mô men ≤ 0.5 tác dụng lực tập trung
+    const etaMCapped = Math.min(etaMraw, 0.5 * etaF);
+    etaPunch = etaF + etaMCapped;
+  }
+
+  // Cốt đai chống chọc thủng (Điều 8.1.6.3 CT 204–205) — có tùy chọn
+  const hasStirrup = Number.isFinite(Number(stirrupDia)) && Number.isFinite(Number(stirrupSpacing)) && Number.isFinite(Number(stirrupLegs));
+  let FStirrup = null;
+  let FUltStirrup = null;
+  let etaPunchStirrup = null;
+  if (hasStirrup) {
+    const Rsw = REBAR_GRADES_TCVN5574[stirrupRebar].Rsw;
+    const Asw = Number(stirrupLegs) * (Math.PI * Number(stirrupDia) ** 2) / 4;
+    const qSw = (Rsw * Asw) / Number(stirrupSpacing);
+    FStirrup = 0.8 * qSw * d * 2.0 * 1e-3;
+    FUltStirrup = Math.min(Fult + FStirrup, 2.0 * Fult);
+    const Feq = etaPunch * Fult; // lực tương đương
+    etaPunchStirrup = FUltStirrup > 0 ? Feq / FUltStirrup : 999;
+  } else if (etaPunch > 1.0) {
+    warnings.push(`η_chọc thủng = ${etaPunch.toFixed(2)} > 1.0 → cần cốt đai chống chọc thủng hoặc mũ cột (Điểm 8.1.6.3).`);
+  }
+
+  const eta = hasStirrup ? etaPunchStirrup : etaPunch;
+  const utilization = evaluateUtilization(eta);
+
+  const steps = [
+    `Bước 1 [Đường bao cách mép cột h₀/2 — TCVN 5574:2018 Mục 8.1.6]: Vị trí ${columnPosition} → u_b = ${uB.toFixed(1)} mm, A_c = u_b·h₀ = ${Ac.toFixed(0)} mm².`,
+    `Bước 2 [Khả năng bê tông]: F_b,ult = R_bt·u_b·h₀ = ${Rbt.toFixed(2)}·${uB.toFixed(1)}·${d}·10⁻³ = ${Fult.toFixed(1)} kN; M_bx,ult = ${MBxUlt.toFixed(1)} kNm; M_by,ult = ${MByUlt.toFixed(1)} kNm.`,
+    hasMoment
+      ? `Bước 3 [Chọc thủng 2 phương — CT 198]: η = F/F_b,ult + min(M_x/M_x,ult + M_y/M_y,ult, 0.5·F/F_b,ult) = ${etaF.toFixed(3)} + min(${etaMraw.toFixed(3)}, ${(0.5 * etaF).toFixed(3)}) = ${etaPunch.toFixed(3)}.`
+      : `Bước 3 [Chọc thủng đúng tâm]: η = F/F_b,ult = ${etaF.toFixed(3)}.`,
+    hasStirrup
+      ? `Bước 4 [Có cốt đai — CT 205]: F_b,ult,sw = min(F_b,ult + 0.8·q_sw·u_sw, 2.0·F_b,ult) = ${FUltStirrup.toFixed(1)} kN; η = ${etaPunchStirrup.toFixed(3)}.`
+      : `Bước 4 [Chưa nhập cốt đai]: ${etaPunch > 1 ? '⚠️ Cần bố trí cốt đai/mũ cột' : 'Không cần cốt đai bổ sung'}.`,
+    `Bước 5 [Đánh giá η]: η = ${eta.toFixed(3)} → ${utilization.icon} ${utilization.label}.`,
+  ];
+
+  return {
+    valid: true,
+    errors: [],
+    warnings,
+    h: numH, d,
+    columnB: numCb, columnH: numCh,
+    uB: +uB.toFixed(1),
+    Fult: +Fult.toFixed(1),
+    MBxUlt: +MBxUlt.toFixed(1),
+    MByUlt: +MByUlt.toFixed(1),
+    etaF: +etaF.toFixed(3),
+    etaPunch: +etaPunch.toFixed(3),
+    FStirrup: FStirrup !== null ? +FStirrup.toFixed(1) : null,
+    FUltStirrup: FUltStirrup !== null ? +FUltStirrup.toFixed(1) : null,
+    etaPunchStirrup: etaPunchStirrup !== null ? +etaPunchStirrup.toFixed(3) : null,
+    hasStirrup,
+    utilization,
+    steps,
+    standardRef: 'TCVN 5574:2018 — Mục 8.1.6 (Chọc thủng)',
+  };
+}
+
+// ============================================================================
 // HỆ THỐNG XUẤT HANDOFF JSON CHUẨN SKILL_BRIDGE (ĐỒNG BỘ AI AGENTS)
 // ============================================================================
 
@@ -943,6 +1401,114 @@ function sanitizePayloadValue(val) {
     return clean;
   }
   return val;
+}
+
+
+// ============================================================================
+// MÔ-ĐUN 10 (A1): TÍCH LŨY TĨNH TẢI SÀN & TƯỜNG XÂY TRÊN DẦM (TCVN 2737:2023)
+// ============================================================================
+export const BRICK_TYPES_TCVN2737 = {
+  hollow_clay: { code: 'hollow_clay', name: 'Gạch ống đất sét nung 4 lỗ rỗng (8x8x18 cm)', density: 13.0, gammaF: 1.15 },
+  solid_clay: { code: 'solid_clay', name: 'Gạch tuynel đất sét nung đặc', density: 18.0, gammaF: 1.15 },
+  aac_block: { code: 'aac_block', name: 'Gạch bê tông khí chưng áp nhẹ (AAC)', density: 8.5, gammaF: 1.15 },
+  concrete_block: { code: 'concrete_block', name: 'Gạch xi măng cốt liệu rỗng', density: 15.0, gammaF: 1.15 },
+};
+
+export function calculateDeadLoad({
+  floorLayers = [
+    { id: 1, name: 'Gạch ceramic lát nền', thickness: 10, density: 20, gammaF: 1.1 },
+    { id: 2, name: 'Vữa lót xi măng cát M75', thickness: 30, density: 18, gammaF: 1.2 },
+    { id: 3, name: 'Bản sàn BTCT chịu lực', thickness: 120, density: 25, gammaF: 1.15 },
+    { id: 4, name: 'Trần thạch cao khung chìm & MEP', thickness: 0, density: 0, loadK: 0.35, gammaF: 1.2 },
+  ],
+  storyHeight = 3.6,
+  beamHeight = 0.6,
+  wallThickness = 200,
+  brickType = 'hollow_clay',
+  plasterThickness = 15,
+  openingPercent = 15,
+  allowableFloorGd = 6.0,
+}) {
+  const errors = [];
+  const numStoryH = Number(storyHeight);
+  const numBeamH = Number(beamHeight);
+  const numWallT = Number(wallThickness);
+  const numPlasterT = Number(plasterThickness);
+  const numOpening = Number(openingPercent);
+  const numAllowable = Number(allowableFloorGd);
+
+  if (!BRICK_TYPES_TCVN2737[brickType]) errors.push('Loại gạch xây không hợp lệ.');
+  if (numStoryH <= 0 || numStoryH > 20) errors.push('Chiều cao tầng phải trong khoảng (0, 20] m.');
+  if (numBeamH < 0 || numBeamH >= numStoryH) errors.push('Chiều cao dầm phải nhỏ hơn chiều cao tầng.');
+  if (numWallT < 50 || numWallT > 500) errors.push('Bề dày tường phải trong khoảng [50, 500] mm.');
+  if (numOpening < 0 || numOpening > 90) errors.push('Tỷ lệ mở cửa phải trong khoảng [0, 90] %.');
+
+  if (errors.length > 0) return { valid: false, errors };
+
+  // 1. Tính tĩnh tải sàn
+  let totalFloorGk = 0;
+  let totalFloorGd = 0;
+  const processedLayers = (floorLayers || []).map((l, i) => {
+    const t = Number(l.thickness) || 0;
+    const rho = Number(l.density) || 0;
+    const lk = Number(l.loadK) || 0;
+    const gf = Number(l.gammaF) || 1.15;
+    const gk = t > 0 ? (t / 1000) * rho : lk;
+    const gd = gk * gf;
+    totalFloorGk += gk;
+    totalFloorGd += gd;
+    return {
+      index: i + 1,
+      name: l.name,
+      thickness: t,
+      density: rho,
+      gammaF: gf,
+      gk: +gk.toFixed(3),
+      gd: +gd.toFixed(3),
+    };
+  });
+
+  // 2. Tính tải tường xây trên dầm
+  const brick = BRICK_TYPES_TCVN2737[brickType];
+  const netWallHeight = Math.max(0, numStoryH - numBeamH); // m
+  const gBrickK = (numWallT / 1000) * brick.density; // kN/m²
+  const gPlasterK = 2 * (numPlasterT / 1000) * 18.0; // kN/m² (trát 2 mặt)
+  const gWallTotalK = gBrickK + gPlasterK; // kN/m²
+  const openingFactor = Math.max(0, 1 - numOpening / 100);
+  const wallQk = gWallTotalK * netWallHeight * openingFactor; // kN/m
+  const wallQd = wallQk * brick.gammaF; // kN/m
+
+  // 3. Đánh giá Policy Engine
+  const eta = numAllowable > 0 ? totalFloorGd / numAllowable : 0;
+  const utilization = evaluateUtilization(eta);
+
+  const steps = [
+    `Bước 1 [TCVN 2737:2023 — Bảng 3 & Mục 5]: Tích lũy ${processedLayers.length} lớp hoàn thiện sàn → Tĩnh tải tiêu chuẩn G_k = ${totalFloorGk.toFixed(3)} kN/m²; Tĩnh tải tính toán G_d = ${totalFloorGd.toFixed(3)} kN/m².`,
+    `Bước 2 [Tường xây trên dầm]: Chiều cao tường thực H_w = H_t − h_d = ${numStoryH.toFixed(2)} − ${numBeamH.toFixed(2)} = ${netWallHeight.toFixed(2)} m.`,
+    `Bước 3 [Trọng lượng riêng tường]: ${brick.name} (dày ${numWallT} mm, γ = ${brick.density} kN/m³) + Trát 2 mặt (${numPlasterT} mm × 2, γ = 18 kN/m³) → g_tường = ${gBrickK.toFixed(2)} + ${gPlasterK.toFixed(2)} = ${gWallTotalK.toFixed(2)} kN/m².`,
+    `Bước 4 [Tải phân bố trên dầm]: Giảm trừ ${numOpening}% cửa mở (hệ số ${(openingFactor).toFixed(2)}) → Tải tiêu chuẩn q_w,k = ${wallQk.toFixed(2)} kN/m; Tải tính toán q_w,d = ${wallQd.toFixed(2)} kN/m (γ_f = ${brick.gammaF}).`,
+    `Bước 5 [Đánh giá tải sàn η]: η = G_d / [G_d] = ${totalFloorGd.toFixed(3)} / ${numAllowable.toFixed(2)} = ${eta.toFixed(3)} → ${utilization.icon} ${utilization.label}.`,
+  ];
+
+  return {
+    valid: true,
+    errors: [],
+    processedLayers,
+    floorGk: +totalFloorGk.toFixed(3),
+    floorGd: +totalFloorGd.toFixed(3),
+    netWallHeight: +netWallHeight.toFixed(2),
+    gBrickK: +gBrickK.toFixed(2),
+    gPlasterK: +gPlasterK.toFixed(2),
+    gWallTotalK: +gWallTotalK.toFixed(2),
+    wallQk: +wallQk.toFixed(2),
+    wallQd: +wallQd.toFixed(2),
+    brickTypeName: brick.name,
+    openingFactor: +openingFactor.toFixed(2),
+    allowableFloorGd: numAllowable,
+    utilization,
+    steps,
+    standardRef: 'TCVN 2737:2023 — Bảng 3 & Mục 5 (Tĩnh tải công trình)',
+  };
 }
 
 export function buildSkillBridgePayload(param) {
@@ -962,11 +1528,38 @@ export function buildSkillBridgePayload(param) {
     inputs = param.inputs || {};
     outputs = param.outputs || {};
     if (moduleName.includes('Gió')) moduleId = 'wind_tcvn2737';
-    else if (moduleName.includes('hoạt tải')) moduleId = 'liveload_tcvn2737';
+    else if (moduleName.includes('hoạt tải') || moduleName.includes('Hoạt tải')) moduleId = 'liveload_tcvn2737';
+    else if (moduleName.includes('Cốt kép') || moduleName.includes('Cốt thép Dầm')) moduleId = 'rcbeam_advanced_tcvn5574';
     else if (moduleName.includes('dầm')) moduleId = 'beam_tcvn5574';
+    else if (moduleName.includes('Tổ hợp') || moduleName.includes('Envelope')) moduleId = 'load_combination_tcvn2737';
+    else if (moduleName.includes('Chọc thủng')) moduleId = 'punching_shear_tcvn5574';
     else if (moduleName.includes('Bu lông')) moduleId = 'bolt_tcvn5575';
-    else if (moduleName.includes('cọc')) moduleId = 'pile_tcvn10304';
-    else if (moduleName.includes('neo') || moduleName.includes('nối')) moduleId = 'anchorage_tcvn5574';
+    else if (moduleName.includes('cọc') || moduleName.includes('Cọc')) moduleId = 'pile_tcvn10304';
+    else if (moduleName.includes('neo') || moduleName.includes('nối') || moduleName.includes('Neo') || moduleName.includes('Nối')) moduleId = 'anchorage_tcvn5574';
+  } else if (param.floorGd !== undefined) {
+    moduleId = 'deadload_tcvn2737';
+    moduleName = 'Tĩnh tải sàn & Tường trên dầm TCVN 2737:2023';
+    standard = 'TCVN 2737:2023';
+    inputs = { allowableFloorGd: param.allowableFloorGd };
+    outputs = { floorGk_kNm2: param.floorGk, floorGd_kNm2: param.floorGd, wallQk_kNm: param.wallQk, wallQd_kNm: param.wallQd };
+  } else if (param.VRdc !== undefined) {
+    moduleId = 'rcbeam_advanced_tcvn5574';
+    moduleName = 'Dầm BTCT Cốt kép & Cắt cốt đai TCVN 5574:2018';
+    standard = 'TCVN 5574:2018';
+    inputs = { b: param.b, h: param.h, a: param.a, aPrime: param.aPrime, concrete: 'B?', rebar: 'CB?' };
+    outputs = { is_double: param.isDoubleLayer, AsDesignCm2: param.AsDesignCm2, AsPrimeCm2: param.AsPrimeCm2, VRd_kN: param.VRd, MRd_kNm: param.MRd };
+  } else if (param.envelope !== undefined) {
+    moduleId = 'load_combination_tcvn2737';
+    moduleName = 'Tổ hợp tải trọng ULS/SLS & Envelope TCVN 2737:2023';
+    standard = 'TCVN 2737:2023';
+    inputs = {};
+    outputs = { combinations: param.combinations.length, envelope_max: param.envelope.max, envelope_governing: param.envelope.governing };
+  } else if (param.uB !== undefined) {
+    moduleId = 'punching_shear_tcvn5574';
+    moduleName = 'Chọc thủng sàn nấm TCVN 5574:2018';
+    standard = 'TCVN 5574:2018';
+    inputs = { h: param.h, columnB: param.columnB, columnH: param.columnH, position: param.columnPosition };
+    outputs = { uB_mm: param.uB, Fult_kN: param.Fult, eta_punch: param.etaPunch };
   } else if (param.kz !== undefined) {
     moduleId = 'wind_tcvn2737';
     moduleName = 'Gió TCVN 2737:2023';
