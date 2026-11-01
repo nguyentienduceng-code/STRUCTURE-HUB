@@ -1027,11 +1027,49 @@ sub sub, sup sup, sub sup, sup sub {
   margin: 15mm 15mm 15mm 15mm;
 }
 
+@page :left {
+  margin: 15mm 15mm 15mm 15mm;
+}
+
+@page :right {
+  margin: 15mm 15mm 15mm 15mm;
+}
+
 @media print {
-  body {
+  /* 1. Global Reset & Elimination of Clipping Containers */
+  html, body {
     background: #ffffff !important;
-    color: #000000 !important;
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    font-size: 11pt;
+    line-height: 1.5;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
+
+  /* 2. Theme Overrides: Ensure clean paper palette even when browsing in Dark CAD Mode */
+  [data-theme="dark"],
+  :root {
+    --bg-primary: #ffffff !important;
+    --bg-secondary: #ffffff !important;
+    --bg-card: #ffffff !important;
+    --bg-glass: #ffffff !important;
+    --border-glass: #e2e8f0 !important;
+    --text-primary: #111827 !important;
+    --text-secondary: #374151 !important;
+    --text-muted: #6b7280 !important;
+    --bg-formula: #f8fafc !important;
+    --border-formula: #e2e8f0 !important;
+    --text-formula: #111827 !important;
+  }
+
+  /* 3. Hide Navigation Chrome & Non-Printable Elements */
   .sidebar,
   .header,
   header,
@@ -1039,65 +1077,301 @@ sub sub, sup sup, sub sup, sup sub {
   .bg-animation,
   .no-print,
   .tab-nav,
-  .page-header,
-  .interactive-calculators-container > .card,
-  .interactive-calculators-container > .page-header,
-  .calc-tier:not(.phuluc-sheet-viewport) {
+  .search-bar,
+  .breadcrumb,
+  .copy-btn,
+  .calc-action-btn,
+  .floating-actions,
+  button:not(.allow-print) {
     display: none !important;
   }
+
+  /* 4. Base App Tree Unconstrained Flow (When printing regular chapter pages) */
   .app-container,
   .main-content,
   .page-content {
+    display: block !important;
+    position: static !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
+    background: transparent !important;
   }
-  .phuluc-modal-overlay {
+
+  /* 5. Normal Page Card & Section Styling for Print */
+  .card,
+  .calc-module-card {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+    border-radius: 6px !important;
+    margin-bottom: 20px !important;
+    padding: 16px 20px !important;
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+    overflow: visible !important;
+  }
+
+  .collapsible-card {
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+    margin-bottom: 16px !important;
+  }
+
+  .collapsible-header {
+    background: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 12px 16px !important;
+  }
+
+  .collapsible-content-wrapper {
+    display: block !important;
+    grid-template-rows: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .collapsible-content-inner {
+    overflow: visible !important;
+  }
+
+  .chevron-container {
+    display: none !important;
+  }
+
+  .page-header {
+    margin-bottom: 20px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 2px solid #002060 !important;
+  }
+
+  .page-title {
+    font-size: 1.6rem !important;
+    color: #002060 !important;
+    margin-bottom: 8px !important;
+  }
+
+  .page-description-card p {
+    display: block !important;
+    -webkit-line-clamp: unset !important;
+    overflow: visible !important;
+  }
+
+  /* 6. Formulas, Metrics & Code Cards */
+  .formula-card,
+  .calc-tier,
+  .calc-metric-box,
+  .alert-box,
+  .info-box,
+  .step-card,
+  .app-box {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+    color: #111827 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 7. Typography & Page Breaks */
+  h1, h2, h3, h4, h5, h6 {
+    color: #002060 !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  p, li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* 8. Tables Printing Optimization */
+  table,
+  .spec-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+    font-size: 9.5pt !important;
+  }
+
+  .spec-table-container,
+  .table-container {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    margin-bottom: 16px !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  th {
+    background: #002060 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    padding: 6px 8px !important;
+    border: 1px solid #001848 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  td {
+    padding: 6px 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #111827 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* ==========================================================================
+     9. CHẾ ĐỘ IN PHỤ LỤC TÍNH TOÁN A4 (KHI MODAL MỞ)
+     Khóa triệt để #root để chỉ xuất bản trang A4 Calculation Sheet duy nhất!
+     ========================================================================== */
+  body.phuluc-modal-open > #root {
+    display: none !important;
+  }
+
+  body.phuluc-modal-open {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  body.phuluc-modal-open .phuluc-modal-overlay {
     position: static !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
     background: transparent !important;
     backdrop-filter: none !important;
-    padding: 0 !important;
+    inset: auto !important;
+    z-index: auto !important;
   }
-  .phuluc-modal-window {
-    box-shadow: none !important;
-    border: none !important;
+
+  body.phuluc-modal-open .phuluc-modal-window {
+    position: static !important;
+    display: block !important;
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
-  }
-  .phuluc-sheet-viewport {
-    padding: 0 !important;
-    background: #ffffff !important;
-  }
-  .phuluc-a4-page {
+    min-height: 0 !important;
+    overflow: visible !important;
     box-shadow: none !important;
     border: none !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    margin: 0 !important;
     padding: 0 !important;
-    max-width: 100% !important;
-    width: 100% !important;
   }
+
+  body.phuluc-modal-open .phuluc-sheet-viewport {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+  }
+
+  body.phuluc-modal-open .phuluc-a4-page {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+  }
+
   /* Bộ 1: Times New Roman 13pt (print fidelity) */
   .phuluc-a4-page--times {
     font-family: 'Times New Roman', 'Times', serif !important;
     font-size: 13pt !important;
-    line-height: 1.2 !important;
+    line-height: 1.25 !important;
   }
+
   /* Bộ 2: TVTK Arial 11pt (print fidelity) */
   .phuluc-a4-page--arial {
     font-family: 'Arial', sans-serif !important;
     font-size: 11pt !important;
-    line-height: 1.15 !important;
+    line-height: 1.2 !important;
   }
+
   .phuluc-a4-page table,
   .phuluc-a4-page td,
   .phuluc-a4-page th {
     font-size: inherit !important;
   }
-  .spec-table th {
+
+  /* Header bảng màu chuẩn thương hiệu */
+  .phuluc-a4-page--times .spec-table th {
     background: #002060 !important;
     color: #ffffff !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .phuluc-a4-page--arial .spec-table th {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Step-by-step block avoidance */
+  .phuluc-step-block {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* 3-Column Approval Matrix avoidance */
+  .phuluc-approval-box {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Disclaimer and Hold Point box */
+  .phuluc-disclaimer-box {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    margin-top: 24px !important;
   }
 }

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   FileText,
   Copy,
@@ -14,6 +15,25 @@ import {
 export default function PhuLucCalculationModal({ isOpen, onClose, phuLucData }) {
   const [styleMode, setStyleMode] = useState('times'); // 'times' | 'tvtk'
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    document.body.classList.add('phuluc-modal-open');
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.classList.remove('phuluc-modal-open');
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen || !phuLucData) return null;
 
@@ -58,7 +78,7 @@ export default function PhuLucCalculationModal({ isOpen, onClose, phuLucData }) 
     window.print();
   };
 
-  return (
+  const modalElement = (
     <div
       className="phuluc-modal-overlay"
       style={{
@@ -303,6 +323,7 @@ export default function PhuLucCalculationModal({ isOpen, onClose, phuLucData }) 
 
               {/* BẢNG PHÊ DUYỆT 3 CỘT (AGENTS.MD §8) */}
               <div
+                className="phuluc-approval-box"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(3, 1fr)',
@@ -403,6 +424,7 @@ export default function PhuLucCalculationModal({ isOpen, onClose, phuLucData }) 
                   return (
                     <div
                       key={idx}
+                      className="phuluc-step-block"
                       style={{
                         padding: '12px 16px',
                         borderRadius: '8px',
@@ -513,6 +535,7 @@ export default function PhuLucCalculationModal({ isOpen, onClose, phuLucData }) 
 
             {/* 5. DISCLAIMER & TRÁCH NHIỆM HÀNH NGHỀ (AGENTS.MD §8) */}
             <div
+              className="phuluc-disclaimer-box"
               style={{
                 marginTop: '32px',
                 paddingTop: '16px',
@@ -591,4 +614,8 @@ export default function PhuLucCalculationModal({ isOpen, onClose, phuLucData }) 
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined'
+    ? createPortal(modalElement, document.body)
+    : modalElement;
 }
