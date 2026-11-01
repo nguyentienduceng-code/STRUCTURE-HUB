@@ -1375,3 +1375,294 @@ sub sub, sup sup, sub sup, sup sub {
     margin-top: 24px !important;
   }
 }
+
+
+/* ─── SCIENTIFIC CALCULATOR TAXONOMY NAVIGATION STYLES ───────────── */
+.calc-nav-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.calc-discipline-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  background: var(--bg-card-secondary, rgba(255, 255, 255, 0.02));
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-glass);
+}
+
+.calc-discipline-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.calc-discipline-btn:hover {
+  background: var(--overlay-light);
+  color: var(--text-primary);
+}
+
+.calc-discipline-btn.active {
+  background: var(--accent-gradient);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.35);
+}
+
+.calc-discipline-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+}
+
+.calc-sub-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 4px 0 10px 0;
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.calc-sub-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: var(--overlay-very-light);
+  border: 1px solid var(--border-glass);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.calc-sub-btn:hover {
+  background: var(--overlay-light);
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
+}
+
+.calc-sub-btn.active {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.calc-sub-code {
+  font-family: monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 2px 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+
+/* ─── CATALOG OVERVIEW GRID & CARDS ──────────────────────────────── */
+.calc-catalog-section {
+  margin-bottom: 32px;
+}
+
+.calc-catalog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.calc-catalog-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.calc-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.calc-catalog-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.calc-catalog-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-primary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.calc-catalog-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.calc-catalog-code {
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--accent-primary);
+}
+
+.calc-catalog-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--overlay-light);
+  color: var(--text-muted);
+}
+
+.calc-catalog-name {
+  margin: 0 0 6px 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.calc-catalog-desc {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+  flex-grow: 1;
+}
+
+.calc-catalog-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.calc-catalog-tag {
+  font-size: 0.72rem;
+  padding: 2px 6px;
+  background: var(--overlay-very-light);
+  border: 1px solid var(--border-glass);
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+
+.calc-catalog-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 14px;
+  background: var(--overlay-very-light);
+  border: 1px solid var(--border-glass);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calc-catalog-card:hover .calc-catalog-btn {
+  background: var(--accent-gradient);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ─── FOCUSED VIEW BREADCRUMB & SWITCHER ─────────────────────────── */
+.calc-focused-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card-secondary, rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--border-glass);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.calc-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.calc-breadcrumb strong {
+  color: var(--text-primary);
+}
+
+.calc-step-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calc-step-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--overlay-very-light);
+  border: 1px solid var(--border-glass);
+  border-radius: 5px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.calc-step-btn:hover:not(:disabled) {
+  background: var(--overlay-light);
+  color: var(--text-primary);
+}
+
+.calc-step-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

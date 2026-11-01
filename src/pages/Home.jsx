@@ -13,13 +13,17 @@ export default function Home() {
   const searchRef = useRef(null);
 
   const searchIndex = [
-    { title: 'Máy tính Tương tác (TCVN)', path: '/calculators' },
-    { title: 'Tính gió TCVN 2737:2023', path: '/calculators' },
-    { title: 'Tính chiết giảm hoạt tải', path: '/calculators' },
-    { title: 'Tính cốt thép dầm 5574', path: '/calculators' },
-    { title: 'Tính bu lông cường độ cao 5575', path: '/calculators' },
-    { title: 'Tính sức chịu tải cọc SPT 10304', path: '/calculators' },
-    { title: 'Tính chiều dài neo & nối thép 5574', path: '/calculators' },
+    { title: '8. Máy tính Tương tác TCVN (10 Mô-đun)', path: '/calculators' },
+    { title: '1.1 Tĩnh tải sàn & tường trên dầm (TCVN 2737)', path: '/calculators' },
+    { title: '1.2 Chiết giảm hoạt tải sử dụng (TCVN 2737)', path: '/calculators' },
+    { title: '1.3 Tải trọng gió động (TCVN 2737:2023)', path: '/calculators' },
+    { title: '1.4 Tổ hợp ULS/SLS & Bao Envelope (TCVN 2737)', path: '/calculators' },
+    { title: '2.1 Cốt thép dầm BTCT cốt đơn (TCVN 5574)', path: '/calculators' },
+    { title: '2.2 Dầm cốt kép & cốt đai cắt B1 (TCVN 5574)', path: '/calculators' },
+    { title: '2.3 Chọc thủng sàn nấm & đài cọc B4 (TCVN 5574)', path: '/calculators' },
+    { title: '2.4 Chiều dài neo & nối thép (TCVN 5574)', path: '/calculators' },
+    { title: '3.1 Bu lông cường độ cao (TCVN 5575:2024)', path: '/calculators' },
+    { title: '4.1 Sức chịu tải cọc đơn SPT (TCVN 10304)', path: '/calculators' },
     { title: 'Nền tảng Sức bền vật liệu', path: '/engineering-foundations' },
     { title: 'Mô men quán tính & tiết diện', path: '/engineering-foundations' },
     { title: 'Vòng tròn Mohr & Ứng suất', path: '/engineering-foundations' },
@@ -160,7 +164,7 @@ export default function Home() {
           { title: "5. Cấu kiện Thép", path: "/steel-components", icon: IBeamIcon, desc: "Thiết kế cấu kiện Thép cơ bản." },
           { title: "6. Ổn định Tổng thể", path: "/global-stability", icon: Layers, desc: "P-Delta, Chống lật, Chuyển vị." },
           { title: "7. Nền móng", path: "/geotechnical-foundations", icon: Map, desc: "Thiết kế Móng, Cọc và Sức chịu tải." },
-          { title: "8. Máy tính Tương tác", path: "/calculators", icon: Cpu, desc: "Bộ 6 công cụ tính toán tự động chuẩn TCVN & AI Handoff." }
+          { title: "8. Máy tính Tương tác", path: "/calculators", icon: Cpu, desc: "Hệ sinh thái 10 công cụ tính toán tự động chuẩn TCVN phân theo 4 chuyên khoa." }
         ].map((chapter, index) => (
           <Link to={chapter.path} key={index} className="chapter-card" style={{
             background: 'var(--bg-card)',
@@ -216,11 +220,11 @@ export default function Home() {
             </span>
             <h3 style={{ margin: 0, color: 'var(--text-primary)', fontSize: '1.3rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Cpu size={22} color="var(--accent-primary)" />
-              Bộ 6 Công cụ Tính toán Tương tác Chuẩn 4 Tầng & AI Handoff
+              Hệ sinh thái 10 Công cụ Tính toán Tương tác Chuẩn 4 Tầng & AI Handoff
             </h3>
           </div>
           <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.98rem', lineHeight: '1.6' }}>
-            Số hóa công thức và thuật toán: <strong>Gió TCVN 2737:2023</strong>, <strong>Chiết giảm hoạt tải</strong>, <strong>Cốt thép dầm TCVN 5574</strong>, <strong>Bu lông TCVN 5575</strong>, <strong>Sức chịu tải cọc SPT TCVN 10304</strong> và <strong>Chiều dài neo & nối cốt thép TCVN 5574</strong> kèm đánh giá chỉ số sử dụng &eta; và cầu nối SKILL_BRIDGE cho AI Agent.
+            Số hóa công thức và thuật toán theo 4 Chuyên khoa: <strong>Tải trọng & Tổ hợp (TCVN 2737:2023)</strong>, <strong>Bê tông Cốt thép (TCVN 5574:2018)</strong>, <strong>Kết cấu Thép (TCVN 5575:2024)</strong> và <strong>Nền móng (TCVN 10304:2014)</strong> kèm Policy Engine &eta;, Phụ lục A4 và cầu nối SKILL_BRIDGE cho AI Agent.
           </p>
         </div>
         <Link
@@ -241,7 +245,7 @@ export default function Home() {
             boxShadow: '0 4px 15px rgba(102,126,234,0.3)'
           }}
         >
-          <span>Khám phá 6 Máy tính</span>
+          <span>Khám phá 10 Máy tính</span>
           <ArrowRight size={18} />
         </Link>
       </div>
