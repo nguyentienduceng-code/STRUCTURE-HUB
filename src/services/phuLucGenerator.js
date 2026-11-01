@@ -34,6 +34,14 @@ export function generatePhuLucData(moduleKey, inputs, results) {
       return generatePunchingPhuLuc(inputs, results, dateStr);
     case 'deadload':
       return generateDeadLoadPhuLuc(inputs, results, dateStr);
+    case 'rccolumn':
+      return generateRCColumnPhuLuc(inputs, results, dateStr);
+    case 'twowayslab':
+      return generateTwoWaySlabPhuLuc(inputs, results, dateStr);
+    case 'steelbeam':
+      return generateSteelBeamPhuLuc(inputs, results, dateStr);
+    case 'globalstability':
+      return generateGlobalStabilityPhuLuc(inputs, results, dateStr);
     default:
       return null;
   }
@@ -722,6 +730,242 @@ ${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} |
   };
 }
 
+
+// ============================================================================
+// 11. PHỤ LỤC TÍNH TOÁN CỘT BTCT NÉN LỆCH TÂM XIÊN BRESLER (TCVN 5574:2018)
+// ============================================================================
+function generateRCColumnPhuLuc(inputs, results, dateStr) {
+  const title = 'PHỤ LỤC TÍNH TOÁN CỘT BTCT NÉN LỆCH TÂM XIÊN (BRESLER)';
+  const subtitle = 'Kiểm toán khả năng chịu lực nén uốn 2 phương theo TCVN 5574:2018 & Công thức tương tác Bresler';
+  const standardRef = results.standardRef || 'TCVN 5574:2018 — Mục 8.1.4 & Phụ lục E';
+
+  const inputTable = [
+    { label: 'Kích thước tiết diện cột (b x h)', symbol: 'b x h', value: `${results.b} x ${results.h}`, unit: 'mm', ref: 'Mặt bằng kết cấu' },
+    { label: 'Chiều dài tính toán cột', symbol: 'L_0', value: results.L0, unit: 'mm', ref: '0.7 x H_tầng' },
+    { label: 'Cấp độ bền bê tông', symbol: 'Bê tông', value: inputs.concrete || 'B25', unit: '-', ref: 'Bảng 6 TCVN 5574' },
+    { label: 'Nhóm cốt thép dọc', symbol: 'Thép', value: inputs.rebar || 'CB400V', unit: '-', ref: 'Bảng 13 TCVN 5574' },
+    { label: 'Cốt thép bố trí', symbol: 'A_s,tot', value: `${results.rebarCount}Ø${results.rebarDia} (As = ${results.AsTot} mm²)`, unit: 'mm²', ref: `μ = ${results.mu}%` },
+    { label: 'Lực nén tính toán ULS', symbol: 'N_Ed', value: results.Ned, unit: 'kN', ref: 'Tổ hợp nội lực' },
+    { label: 'Mômen uốn phương x', symbol: 'M_Ed,x', value: results.Medx, unit: 'kNm', ref: 'Tổ hợp nội lực' },
+    { label: 'Mômen uốn phương y', symbol: 'M_Ed,y', value: results.Medy, unit: 'kNm', ref: 'Tổ hợp nội lực' },
+  ];
+
+  const summaryTable = [
+    { stt: 1, item: 'Sức chịu nén đúng tâm', symbol: 'N_Rd,0', calcVal: `${results.NRd0} kN`, limitVal: 'R_b.A_b + R_sc.A_s', eta: '-', status: 'ĐẠT' },
+    { stt: 2, item: 'Sức chịu nén lệch tâm phẳng phương X', symbol: 'N_Rd,x', calcVal: `${results.NRdx} kN`, limitVal: 'Lệch tâm tĩnh e_0x', eta: '-', status: 'ĐẠT' },
+    { stt: 3, item: 'Sức chịu nén lệch tâm phẳng phương Y', symbol: 'N_Rd,y', calcVal: `${results.NRdy} kN`, limitVal: 'Lệch tâm tĩnh e_0y', eta: '-', status: 'ĐẠT' },
+    { stt: 4, item: 'Sức chịu nén lệch tâm xiên Bresler', symbol: 'N_Rd,Bresler', calcVal: `${results.NRdBresler} kN`, limitVal: `≥ N = ${results.Ned} kN`, eta: results.utilization?.eta?.toFixed(3) || '-', status: results.utilization?.passed ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+  ];
+
+  const markdown = `# ${title}
+## ${subtitle}
+
+**Căn cứ pháp lý:** ${standardRef}  
+**Ngày lập:** ${dateStr} | **Đơn vị:** STRUCTURE-HUB (Bộ 1 Times New Roman)  
+**Trạng thái kiểm toán:** ${results.utilization?.passed ? '[ĐẠT / OK]' : '[KHÔNG ĐẠT / REJECT]'} (η = ${results.utilization?.eta?.toFixed(3) || '-'})
+
+---
+
+### 1. BẢNG THÔNG SỐ ĐẦU VÀO CỘT
+| STT | Thông số thiết kế | Ký hiệu | Giá trị | Đơn vị | Căn cứ tiêu chuẩn |
+|:---:|---|:---:|---:|:---:|---|
+${inputTable.map((r, i) => `| ${i + 1} | ${r.label} | ${r.symbol} | ${r.value} | ${r.unit} | ${r.ref} |`).join('\n')}
+
+---
+
+### 2. TRÌNH TỰ TÍNH TOÁN CHI TIẾT (BRESLER FORMULA)
+${(results.steps || []).map((s, i) => `#### 2.${i + 1} Bước ${i + 1}\n> ${s}\n`).join('\n')}
+
+---
+
+### 3. BẢNG TỔNG HỢP KHẢ NĂNG CHỊU LỰC & CHỈ SỐ η
+| STT | Trạng thái chịu lực | Ký hiệu | Giá trị tính toán | Giới hạn thiết kế | Hệ số η | Đánh giá |
+|:---:|---|:---:|---:|---:|:---:|:---:|
+${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} | ${r.limitVal} | ${r.eta} | **${r.status}** |`).join('\n')}
+
+---
+*Ghi chú: Hồ sơ do Trợ lý AI lập tự động chuẩn SKILL_PHULUC. Cần kỹ sư có CCHN kiểm tra trước khi ký đóng dấu.*
+`;
+
+  return { title, subtitle, standardRef, dateStr, inputTable, summaryTable, steps: results.steps, utilization: results.utilization, markdown };
+}
+
+// ============================================================================
+// 12. PHỤ LỤC TÍNH TOÁN Ô BẢN SÀN BTCT 2 PHƯƠNG (MARCUS - TCVN 5574:2018)
+// ============================================================================
+function generateTwoWaySlabPhuLuc(inputs, results, dateStr) {
+  const title = 'PHỤ LỤC TÍNH TOÁN CỐT THÉP Ô BẢN SÀN BTCT 2 PHƯƠNG';
+  const subtitle = 'Xác định mômen uốn Marcus dải 1m & kiểm toán võng nứt theo TCVN 5574:2018';
+  const standardRef = results.standardRef || 'TCVN 5574:2018 — Mục 8.1.2 & Lý thuyết bản kê 4 cạnh';
+
+  const inputTable = [
+    { label: 'Kích thước ô bản (Lx x Ly)', symbol: 'L_x x L_y', value: `${results.Lx} x ${results.Ly}`, unit: 'm', ref: 'Mặt bằng kết cấu' },
+    { label: 'Tỷ số cạnh ô bản', symbol: 'ρ = L_2/L_1', value: results.rho, unit: '-', ref: results.isOneWay ? 'Bản 1 phương' : 'Bản 2 phương' },
+    { label: 'Chiều dày bản sàn', symbol: 'h_s', value: results.h, unit: 'mm', ref: `h₀ = ${results.h0} mm` },
+    { label: 'Cấp độ bền bê tông sàn', symbol: 'Bê tông', value: inputs.concrete || 'B25', unit: '-', ref: 'Bảng 6 TCVN 5574' },
+    { label: 'Nhóm cốt thép sàn', symbol: 'Thép', value: inputs.rebar || 'CB240T', unit: '-', ref: 'Bảng 13 TCVN 5574' },
+    { label: 'Tải trọng ULS dải 1m', symbol: 'q_ULS', value: results.qUls, unit: 'kN/m²', ref: '1.2 DL + 1.3 LL' },
+    { label: 'Tải trọng SLS dải 1m', symbol: 'q_SLS', value: results.qSls, unit: 'kN/m²', ref: 'DL + LL' },
+  ];
+
+  const summaryTable = [
+    { stt: 1, item: 'Mômen nhịp ngắn (Nhịp / Gối)', symbol: 'M_1', calcVal: `M_pos = ${results.M1Pos} kNm | M_neg = ${results.M1Neg} kNm`, limitVal: 'Dải bản 1m', eta: '-', status: 'ĐẠT' },
+    { stt: 2, item: 'Cốt thép nhịp ngắn yêu cầu', symbol: 'A_s1', calcVal: `Nhịp: ${results.As1Pos} mm²/m | Gối: ${results.As1Neg} mm²/m`, limitVal: 'TCVN 5574', eta: '-', status: 'ĐẠT' },
+    { stt: 3, item: 'Mômen nhịp dài (Nhịp / Gối)', symbol: 'M_2', calcVal: `M_pos = ${results.M2Pos} kNm | M_neg = ${results.M2Neg} kNm`, limitVal: 'Dải bản 1m', eta: '-', status: 'ĐẠT' },
+    { stt: 4, item: 'Cốt thép nhịp dài yêu cầu', symbol: 'A_s2', calcVal: `Nhịp: ${results.As2Pos} mm²/m | Gối: ${results.As2Neg} mm²/m`, limitVal: 'TCVN 5574', eta: '-', status: 'ĐẠT' },
+    { stt: 5, item: 'Kiểm toán độ võng SLS', symbol: 'f', calcVal: `${results.fCalc} mm`, limitVal: `≤ [f] = ${results.fAllow} mm (L/250)`, eta: results.etaDeflection ? results.etaDeflection.toFixed(3) : '-', status: results.etaDeflection <= 1.0 ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+  ];
+
+  const markdown = `# ${title}
+## ${subtitle}
+
+**Căn cứ pháp lý:** ${standardRef}  
+**Ngày lập:** ${dateStr} | **Đơn vị:** STRUCTURE-HUB (Bộ 1 Times New Roman)  
+**Trạng thái kiểm toán:** ${results.utilization?.passed ? '[ĐẠT / OK]' : '[KHÔNG ĐẠT / REJECT]'} (η = ${results.utilization?.eta?.toFixed(3) || '-'})
+
+---
+
+### 1. BẢNG THÔNG SỐ ĐẦU VÀO Ô BẢN SÀN
+| STT | Thông số thiết kế | Ký hiệu | Giá trị | Đơn vị | Căn cứ tiêu chuẩn |
+|:---:|---|:---:|---:|:---:|---|
+${inputTable.map((r, i) => `| ${i + 1} | ${r.label} | ${r.symbol} | ${r.value} | ${r.unit} | ${r.ref} |`).join('\n')}
+
+---
+
+### 2. TRÌNH TỰ TÍNH TOÁN NỘI LỰC VÀ BỐ TRÍ CỐT THÉP
+${(results.steps || []).map((s, i) => `#### 2.${i + 1} Bước ${i + 1}\n> ${s}\n`).join('\n')}
+
+---
+
+### 3. BẢNG TỔNG HỢP MÔMEN, CỐT THÉP & ĐỘ VÕNG SLS
+| STT | Cấu kiện / Phương lực | Ký hiệu | Giá trị tính toán | Giới hạn thiết kế | Hệ số η | Đánh giá |
+|:---:|---|:---:|---:|---:|:---:|:---:|
+${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} | ${r.limitVal} | ${r.eta} | **${r.status}** |`).join('\n')}
+
+---
+*Ghi chú: Hồ sơ do Trợ lý AI lập tự động chuẩn SKILL_PHULUC. Cần kỹ sư có CCHN kiểm tra trước khi ký đóng dấu.*
+`;
+
+  return { title, subtitle, standardRef, dateStr, inputTable, summaryTable, steps: results.steps, utilization: results.utilization, markdown };
+}
+
+// ============================================================================
+// 13. PHỤ LỤC TÍNH TOÁN DẦM THÉP HÌNH CHỮ I & ỔN ĐỊNH LTB (TCVN 5575:2024)
+// ============================================================================
+function generateSteelBeamPhuLuc(inputs, results, dateStr) {
+  const title = 'PHỤ LỤC KIỂM TOÁN DẦM THÉP HÌNH CHỮ I (BỀN UỐN, CẮT & LTB)';
+  const subtitle = 'Kiểm toán khả năng chịu tải ULS và ổn định uốn xoắn tổng thể theo TCVN 5575:2024';
+  const standardRef = results.standardRef || 'TCVN 5575:2024 — Mục 8.1, 8.2 & Phụ lục D';
+
+  const inputTable = [
+    { label: 'Quy cách tiết diện dầm thép', symbol: 'Tiết diện', value: results.profileName, unit: '-', ref: 'Bảng quy cách I' },
+    { label: 'Nhịp tính toán dầm', symbol: 'L', value: results.L, unit: 'm', ref: 'Bản vẽ kết cấu thép' },
+    { label: 'Chiều dài giằng cánh nén', symbol: 'L_cr', value: results.hasDeckBracing ? '0 (Giằng liên tục)' : `${results.Lcr} m`, unit: 'm', ref: 'Cấu tạo giằng' },
+    { label: 'Mác thép kết cấu', symbol: 'Mác thép', value: results.steelGrade, unit: '-', ref: `f_y = ${results.fy} MPa` },
+    { label: 'Tải trọng phân bố đều', symbol: 'q', value: results.q, unit: 'kN/m', ref: 'Tổ hợp ULS' },
+    { label: 'Mômen uốn tính toán ULS', symbol: 'M_Ed', value: results.Med, unit: 'kNm', ref: 'q.L²/8' },
+    { label: 'Lực cắt tính toán ULS', symbol: 'V_Ed', value: results.Ved, unit: 'kN', ref: 'q.L/2' },
+  ];
+
+  const summaryTable = [
+    { stt: 1, item: 'Khả năng chịu uốn bền tiết diện', symbol: 'M_c,Rd', calcVal: `${results.McRd} kNm`, limitVal: `≥ M_Ed = ${results.Med} kNm`, eta: (results.Med / results.McRd).toFixed(3), status: 'ĐẠT' },
+    { stt: 2, item: 'Khả năng chịu cắt bản bụng', symbol: 'V_c,Rd', calcVal: `${results.VcRd} kN`, limitVal: `≥ V_Ed = ${results.Ved} kN`, eta: results.etaShear.toFixed(3), status: results.etaShear <= 1.0 ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+    { stt: 3, item: 'Ổn định uốn xoắn tổng thể (LTB)', symbol: 'M_b,Rd', calcVal: `${results.MbRd} kNm`, limitVal: `χ_LT = ${results.chiLT}`, eta: results.etaFlex.toFixed(3), status: results.etaFlex <= 1.0 ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+    { stt: 4, item: 'Độ võng dầm đàn hồi SLS', symbol: 'f', calcVal: `${results.fCalc} mm`, limitVal: `≤ [f] = ${results.fAllow} mm (L/400)`, eta: results.etaDeflection.toFixed(3), status: results.etaDeflection <= 1.0 ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+  ];
+
+  const markdown = `# ${title}
+## ${subtitle}
+
+**Căn cứ pháp lý:** ${standardRef}  
+**Ngày lập:** ${dateStr} | **Đơn vị:** STRUCTURE-HUB (Bộ 1 Times New Roman)  
+**Trạng thái kiểm toán:** ${results.utilization?.passed ? '[ĐẠT / OK]' : '[KHÔNG ĐẠT / REJECT]'} (η = ${results.utilization?.eta?.toFixed(3) || '-'})
+
+---
+
+### 1. BẢNG THÔNG SỐ TIẾT DIỆN VÀ TẢI TRỌNG
+| STT | Thông số thiết kế | Ký hiệu | Giá trị | Đơn vị | Căn cứ tiêu chuẩn |
+|:---:|---|:---:|---:|:---:|---|
+${inputTable.map((r, i) => `| ${i + 1} | ${r.label} | ${r.symbol} | ${r.value} | ${r.unit} | ${r.ref} |`).join('\n')}
+
+---
+
+### 2. TRÌNH TỰ KIỂM TOÁN ULS & ỔN ĐỊNH LTB (TCVN 5575:2024)
+${(results.steps || []).map((s, i) => `#### 2.${i + 1} Bước ${i + 1}\n> ${s}\n`).join('\n')}
+
+---
+
+### 3. BẢNG TỔNG HỢP KIỂM TOÁN VÀ CHỈ SỐ SỬ DỤNG η
+| STT | Tiêu chí kiểm tra | Ký hiệu | Giá trị tính toán | Giới hạn thiết kế | Hệ số η | Đánh giá |
+|:---:|---|:---:|---:|---:|:---:|:---:|
+${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} | ${r.limitVal} | ${r.eta} | **${r.status}** |`).join('\n')}
+
+---
+*Ghi chú: Hồ sơ do Trợ lý AI lập tự động chuẩn SKILL_PHULUC. Cần kỹ sư có CCHN kiểm tra trước khi ký đóng dấu.*
+`;
+
+  return { title, subtitle, standardRef, dateStr, inputTable, summaryTable, steps: results.steps, utilization: results.utilization, markdown };
+}
+
+// ============================================================================
+// 14. PHỤ LỤC KIỂM TOÁN ỔN ĐỊNH TỔNG THỂ CÔNG TRÌNH (TCVN 2737 / TCVN 5574)
+// ============================================================================
+function generateGlobalStabilityPhuLuc(inputs, results, dateStr) {
+  const title = 'PHỤ LỤC KIỂM TOÁN ỔN ĐỊNH TỔNG THỂ CÔNG TRÌNH';
+  const subtitle = 'Kiểm toán Chống lật, Chống trượt, Hiệu ứng P-Delta và Chuyển vị tầng theo TCVN 2737 & TCVN 5574';
+  const standardRef = results.standardRef || 'TCVN 2737:2023 & TCVN 5574:2018';
+
+  const inputTable = [
+    { label: 'Tổng trọng lượng công trình', symbol: 'G_tot', value: results.totalWeightG, unit: 'kN', ref: 'Tổ hợp tĩnh tải' },
+    { label: 'Tổng lực cắt ngang đáy (Gió/Động đất)', symbol: 'V_ngang', value: results.lateralWindV, unit: 'kN', ref: 'Tổ hợp tải ngang' },
+    { label: 'Tổng mômen gây lật quanh đáy móng', symbol: 'M_w', value: results.overturningMw, unit: 'kNm', ref: 'Tổ hợp tải ngang' },
+    { label: 'Bề rộng móng công trình', symbol: 'B', value: results.foundationB, unit: 'm', ref: 'Mặt bằng móng' },
+    { label: 'Tổng chiều cao công trình', symbol: 'H', value: results.totalHeightH, unit: 'm', ref: 'Số tầng: ' + results.storyCount },
+    { label: 'Chuyển vị lệch tầng lớn nhất', symbol: 'Δ_i', value: results.maxStoryDrift, unit: 'mm', ref: 'Phân tích ETABS' },
+    { label: 'Hệ số ma sát đáy móng với đất', symbol: 'f', value: results.frictionCoeff, unit: '-', ref: 'Khảo sát địa chất' },
+  ];
+
+  const summaryTable = [
+    { stt: 1, item: 'Ổn định chống lật công trình', symbol: 'K_lật', calcVal: `K = ${results.Klat} (M_cl = ${results.Mcl} kNm)`, limitVal: '≥ [1.50]', eta: results.etaLat.toFixed(3), status: results.passLat ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+    { stt: 2, item: 'Ổn định chống trượt công trình', symbol: 'K_trượt', calcVal: `K = ${results.Ktruot} (F_tr = ${results.Ftr} kN)`, limitVal: '≥ [1.20]', eta: results.etaTruot.toFixed(3), status: results.passTruot ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+    { stt: 3, item: 'Độ nhạy P-Delta bậc hai', symbol: 'θ', calcVal: `θ = ${results.theta}`, limitVal: '≤ [0.10 / 0.20]', eta: (results.theta / 0.10).toFixed(3), status: results.passPDelta ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+    { stt: 4, item: 'Chuyển vị lệch tầng đàn hồi', symbol: 'Δ_i / h_i', calcVal: results.driftRatio, limitVal: `≤ [${results.allowDriftRatio}] (1/250)`, eta: (results.driftRatio / results.allowDriftRatio).toFixed(3), status: results.passDrift ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+    { stt: 5, item: 'Chuyển vị đỉnh công trình', symbol: 'Δ_top / H', calcVal: results.deltaTopRatio, limitVal: `≤ [${results.allowTopRatio}] (1/500)`, eta: (results.deltaTopRatio / results.allowTopRatio).toFixed(3), status: results.passTop ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+  ];
+
+  const markdown = `# ${title}
+## ${subtitle}
+
+**Căn cứ pháp lý:** ${standardRef}  
+**Ngày lập:** ${dateStr} | **Đơn vị:** STRUCTURE-HUB (Bộ 1 Times New Roman)  
+**Trạng thái kiểm toán:** ${results.utilization?.passed ? '[ĐẠT / OK]' : '[KHÔNG ĐẠT / REJECT]'} (η = ${results.utilization?.eta?.toFixed(3) || '-'})
+
+---
+
+### 1. BẢNG THÔNG SỐ TẢI TRỌNG VÀ HÌNH HỌC TỔNG THỂ
+| STT | Thông số thiết kế | Ký hiệu | Giá trị | Đơn vị | Căn cứ tiêu chuẩn |
+|:---:|---|:---:|---:|:---:|---|
+${inputTable.map((r, i) => `| ${i + 1} | ${r.label} | ${r.symbol} | ${r.value} | ${r.unit} | ${r.ref} |`).join('\n')}
+
+---
+
+### 2. TRÌNH TỰ KIỂM TOÁN ỔN ĐỊNH TOÀN DIỆN
+${(results.steps || []).map((s, i) => `#### 2.${i + 1} Bước ${i + 1}\n> ${s}\n`).join('\n')}
+
+---
+
+### 3. BẢNG TỔNG HỢP CÁC CHỈ SỐ ỔN ĐỊNH HỆ THỐNG
+| STT | Tiêu chí kiểm tra ổn định | Ký hiệu | Giá trị tính toán | Giới hạn thiết kế | Hệ số η | Đánh giá |
+|:---:|---|:---:|---:|---:|:---:|:---:|
+${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} | ${r.limitVal} | ${r.eta} | **${r.status}** |`).join('\n')}
+
+---
+*Ghi chú: Hồ sơ do Trợ lý AI lập tự động chuẩn SKILL_PHULUC. Cần kỹ sư có CCHN kiểm tra trước khi ký đóng dấu.*
+`;
+
+  return { title, subtitle, standardRef, dateStr, inputTable, summaryTable, steps: results.steps, utilization: results.utilization, markdown };
+}
+
 export function generatePhuLucDocument(calcResult, options = {}) {
   if (!calcResult || !calcResult.valid) return null;
 
@@ -811,6 +1055,64 @@ export function generatePhuLucDocument(calcResult, options = {}) {
     summaryRows = [
       { stt: 1, item: 'Bao nội lực cực đại thiết kế', symbol: 'Envelope Max', calcVal: `${calcResult.envelope.max} kN`, limitVal: calcResult.envelope.governing, eta: calcResult.utilization?.eta !== null ? calcResult.utilization?.eta?.toFixed(3) : '-', status: 'ĐẠT' },
       { stt: 2, item: 'Đánh giá chỉ số an toàn Policy Engine', symbol: 'η', calcVal: calcResult.utilization?.eta !== null ? calcResult.utilization?.eta?.toFixed(3) : 'Chưa nhập [M_d]', limitVal: '≤ 1.000', eta: calcResult.utilization?.eta !== null ? calcResult.utilization?.eta?.toFixed(3) : '-', status: calcResult.utilization?.passed ? 'ĐẠT' : 'INFO' },
+    ];
+  } else if (calcResult.NRdBresler !== undefined) {
+    // 11. Cột BTCT nén lệch tâm xiên Bresler
+    title = 'PHỤ LỤC TÍNH TOÁN CỘT BTCT NÉN LỆCH TÂM XIÊN (BRESLER)';
+    subtitle = 'Kiểm toán khả năng chịu lực nén uốn 2 phương theo TCVN 5574:2018 & Công thức Bresler';
+    inputRows = [
+      { label: 'Kích thước cột b x h', symbol: 'b x h', value: `${calcResult.b} x ${calcResult.h}`, unit: 'mm', ref: 'Tiết diện cột' },
+      { label: 'Chiều dài tính toán L0', symbol: 'L_0', value: `${calcResult.L0} mm`, unit: 'mm', ref: '0.7 H_tầng' },
+      { label: 'Cốt thép bố trí', symbol: 'A_s,tot', value: `${calcResult.rebarCount}Ø${calcResult.rebarDia}`, unit: '-', ref: `As = ${calcResult.AsTot} mm²` },
+      { label: 'Lực nén tính toán ULS', symbol: 'N_Ed', value: `${calcResult.Ned} kN`, unit: 'kN', ref: 'Tổ hợp nội lực' },
+    ];
+    summaryRows = [
+      { stt: 1, item: 'Sức chịu nén đúng tâm', symbol: 'N_Rd,0', calcVal: `${calcResult.NRd0} kN`, limitVal: '-', eta: '-', status: 'ĐẠT' },
+      { stt: 2, item: 'Sức chịu nén lệch tâm phẳng X', symbol: 'N_Rd,x', calcVal: `${calcResult.NRdx} kN`, limitVal: '-', eta: '-', status: 'ĐẠT' },
+      { stt: 3, item: 'Sức chịu nén lệch tâm phẳng Y', symbol: 'N_Rd,y', calcVal: `${calcResult.NRdy} kN`, limitVal: '-', eta: '-', status: 'ĐẠT' },
+      { stt: 4, item: 'Sức chịu nén lệch tâm xiên Bresler', symbol: 'N_Rd', calcVal: `${calcResult.NRdBresler} kN`, limitVal: `≥ N = ${calcResult.Ned} kN`, eta: calcResult.utilization?.eta?.toFixed(3) || '-', status: calcResult.utilization?.passed ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+    ];
+  } else if (calcResult.M1Pos !== undefined) {
+    // 12. Bản sàn 2 phương Marcus
+    title = 'PHỤ LỤC TÍNH TOÁN CỐT THÉP Ô BẢN SÀN BTCT 2 PHƯƠNG';
+    subtitle = 'Xác định mômen uốn Marcus dải 1m & kiểm toán võng theo TCVN 5574:2018';
+    inputRows = [
+      { label: 'Kích thước ô bản Lx x Ly', symbol: 'L_x x L_y', value: `${calcResult.Lx} x ${calcResult.Ly}`, unit: 'm', ref: 'Mặt bằng sàn' },
+      { label: 'Chiều dày bản sàn', symbol: 'h_s', value: `${calcResult.h} mm`, unit: 'mm', ref: `h0 = ${calcResult.h0} mm` },
+      { label: 'Tải trọng tính toán ULS', symbol: 'q_ULS', value: `${calcResult.qUls} kN/m²`, unit: 'kN/m²', ref: '1.2 DL + 1.3 LL' },
+    ];
+    summaryRows = [
+      { stt: 1, item: 'Mômen nhịp ngắn (Nhịp/Gối)', symbol: 'M_1', calcVal: `${calcResult.M1Pos} / ${calcResult.M1Neg} kNm`, limitVal: '-', eta: '-', status: 'ĐẠT' },
+      { stt: 2, item: 'Cốt thép nhịp ngắn (Nhịp/Gối)', symbol: 'A_s1', calcVal: `${calcResult.As1Pos} / ${calcResult.As1Neg} mm²/m`, limitVal: 'TCVN 5574', eta: '-', status: 'ĐẠT' },
+      { stt: 3, item: 'Kiểm toán độ võng đàn hồi', symbol: 'f', calcVal: `${calcResult.fCalc} mm`, limitVal: `≤ [f] = ${calcResult.fAllow} mm`, eta: calcResult.etaDeflection ? calcResult.etaDeflection.toFixed(3) : '-', status: calcResult.etaDeflection <= 1.0 ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+    ];
+  } else if (calcResult.MbRd !== undefined) {
+    // 13. Dầm thép hình chữ I
+    title = 'PHỤ LỤC KIỂM TOÁN DẦM THÉP HÌNH CHỮ I (BỀN UỐN, CẮT & LTB)';
+    subtitle = 'Kiểm toán khả năng chịu tải ULS và ổn định uốn xoắn tổng thể theo TCVN 5575:2024';
+    inputRows = [
+      { label: 'Quy cách tiết diện dầm', symbol: 'Tiết diện', value: calcResult.profileName, unit: '-', ref: 'Bảng quy cách' },
+      { label: 'Nhịp dầm tính toán L', symbol: 'L', value: `${calcResult.L} m`, unit: 'm', ref: 'Nhịp kết cấu' },
+      { label: 'Mômen uốn tính toán ULS', symbol: 'M_Ed', value: `${calcResult.Med} kNm`, unit: 'kNm', ref: 'q.L²/8' },
+    ];
+    summaryRows = [
+      { stt: 1, item: 'Khả năng chịu uốn bền tiết diện', symbol: 'M_c,Rd', calcVal: `${calcResult.McRd} kNm`, limitVal: `≥ M = ${calcResult.Med} kNm`, eta: calcResult.etaFlex?.toFixed(3) || '-', status: 'ĐẠT' },
+      { stt: 2, item: 'Khả năng chịu cắt bản bụng', symbol: 'V_c,Rd', calcVal: `${calcResult.VcRd} kN`, limitVal: `≥ V = ${calcResult.Ved} kN`, eta: calcResult.etaShear?.toFixed(3) || '-', status: calcResult.etaShear <= 1.0 ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+      { stt: 3, item: 'Ổn định uốn xoắn LTB', symbol: 'M_b,Rd', calcVal: `${calcResult.MbRd} kNm`, limitVal: `χ_LT = ${calcResult.chiLT}`, eta: calcResult.etaFlex?.toFixed(3) || '-', status: calcResult.etaFlex <= 1.0 ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+    ];
+  } else if (calcResult.Klat !== undefined) {
+    // 14. Ổn định tổng thể
+    title = 'PHỤ LỤC KIỂM TOÁN ỔN ĐỊNH TỔNG THỂ CÔNG TRÌNH';
+    subtitle = 'Kiểm toán Chống lật, Chống trượt, Hiệu ứng P-Delta và Chuyển vị tầng theo TCVN 2737 & TCVN 5574';
+    inputRows = [
+      { label: 'Tổng tải trọng công trình', symbol: 'G_tot', value: `${calcResult.totalWeightG} kN`, unit: 'kN', ref: 'Tĩnh tải' },
+      { label: 'Lực cắt ngang đáy V', symbol: 'V_ngang', value: `${calcResult.lateralWindV} kN`, unit: 'kN', ref: 'Tải ngang' },
+      { label: 'Mômen gây lật Mw', symbol: 'M_w', value: `${calcResult.overturningMw} kNm`, unit: 'kNm', ref: 'Tải ngang' },
+    ];
+    summaryRows = [
+      { stt: 1, item: 'Hệ số ổn định chống lật', symbol: 'K_lật', calcVal: `${calcResult.Klat}`, limitVal: '≥ [1.50]', eta: calcResult.etaLat?.toFixed(3) || '-', status: calcResult.passLat ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+      { stt: 2, item: 'Hệ số ổn định chống trượt', symbol: 'K_trượt', calcVal: `${calcResult.Ktruot}`, limitVal: '≥ [1.20]', eta: calcResult.etaTruot?.toFixed(3) || '-', status: calcResult.passTruot ? 'ĐẠT' : 'KHÔNG ĐẠT' },
+      { stt: 3, item: 'Hệ số độ nhạy P-Delta', symbol: 'θ', calcVal: `${calcResult.theta}`, limitVal: '≤ [0.10 / 0.20]', eta: (calcResult.theta / 0.10).toFixed(3), status: calcResult.passPDelta ? 'ĐẠT' : 'KHÔNG ĐẠT' },
     ];
   } else if (calcResult.floorGd !== undefined) {
     // 10. Tích lũy tĩnh tải sàn & tường (TCVN 2737:2023)

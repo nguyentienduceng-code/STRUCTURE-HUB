@@ -18,6 +18,8 @@ import {
   ArrowLeft,
   BookOpen,
   FileCheck2,
+  RotateCw,
+  Grid,
 } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import CalcWindTCVN2737 from '../components/calculators/CalcWindTCVN2737';
@@ -30,13 +32,17 @@ import CalcRCBeamAdvanced from '../components/calculators/CalcRCBeamAdvanced';
 import CalcLoadCombination from '../components/calculators/CalcLoadCombination';
 import CalcPunchingShear from '../components/calculators/CalcPunchingShear';
 import CalcDeadLoadBuilder from '../components/calculators/CalcDeadLoadBuilder';
+import CalcRCColumn from '../components/calculators/CalcRCColumn';
+import CalcTwoWaySlab from '../components/calculators/CalcTwoWaySlab';
+import CalcSteelBeam from '../components/calculators/CalcSteelBeam';
+import CalcGlobalStabilityCheck from '../components/calculators/CalcGlobalStabilityCheck';
 
 export default function InteractiveCalculators() {
   const [activeCategory, setActiveCategory] = useState('overview');
   const [activeModuleId, setActiveModuleId] = useState('deadload');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Cấu trúc 4 Chuyên khoa Kết cấu Chuẩn mực (Taxonomy)
+  // 5 Trụ cột Chuyên khoa Kết cấu Chuẩn mực ánh xạ 1-1 với 5 Chương Lý thuyết
   const DISCIPLINES = useMemo(
     () => [
       {
@@ -104,8 +110,8 @@ export default function InteractiveCalculators() {
         shortLabel: 'BTCT',
         standard: 'TCVN 5574:2018',
         icon: <Building2 size={18} />,
-        badgeText: '4 Mô-đun',
-        description: 'Tính toán cốt thép uốn dầm đơn/kép, kiểm toán cốt đai chịu cắt, chọc thủng sàn nấm và chi tiết neo nối thép.',
+        badgeText: '6 Mô-đun',
+        description: 'Thiết kế Dầm (cốt đơn, cốt kép & cắt), Cột (lệch tâm xiên Bresler), Bản sàn 2 phương, Chọc thủng sàn nấm và Neo nối thép.',
         modules: [
           {
             id: 'beam',
@@ -129,11 +135,35 @@ export default function InteractiveCalculators() {
             icon: <Building2 size={18} />,
             desc: "Tự động tính cốt kép (As, As') khi mômen vượt α_R, kiểm tra dải nén nghiêng bê tông V_strut và tính cốt đai V_Rd.",
             component: <CalcRCBeamAdvanced />,
-            highlights: ["Cốt kép As, As'", "Dải nén nghiêng V_strut", "Cốt đai V_Rd,c + V_Rd,s", "Oracle sai số 0.000%"],
+            highlights: ["Cốt kép As, As'", 'Dải nén nghiêng V_strut', 'Cốt đai V_Rd,c + V_Rd,s', 'Oracle sai số 0.000%'],
+          },
+          {
+            id: 'rccolumn',
+            code: '2.3',
+            title: 'Cột BTCT Nén Lệch tâm xiên (Công thức Bresler)',
+            shortTitle: 'Cột Lệch tâm xiên Bresler',
+            standard: 'TCVN 5574:2018 (Mục 8.1.4)',
+            badge: 'Cột Biaxial',
+            icon: <Building2 size={18} />,
+            desc: 'Kiểm toán uốn dọc ηx, ηy, sức kháng đơn phương NRdx, NRdy và giải bài toán lệch tâm xiên qua công thức tương tác Bresler.',
+            component: <CalcRCColumn />,
+            highlights: ['Uốn dọc ηx, ηy', 'Nén đúng tâm NRd0', 'Tương tác Bresler', 'Khống chế hàm lượng μ%'],
+          },
+          {
+            id: 'twowayslab',
+            code: '2.4',
+            title: 'Ô bản Sàn BTCT 2 phương kê 4 cạnh (Marcus)',
+            shortTitle: 'Bản sàn 2 phương Marcus',
+            standard: 'TCVN 5574:2018 (Mục 8.1.2)',
+            badge: 'Bản 2 phương',
+            icon: <Grid size={18} />,
+            desc: 'Xác định mômen uốn Marcus dải bản 1m theo tỷ số nhịp và điều kiện biên, tính cốt thép nhịp/gối và kiểm tra võng SLS.',
+            component: <CalcTwoWaySlab />,
+            highlights: ['Hệ số mômen Marcus', 'Dải bản 1m', 'Thép nhịp & gối 2 phương', 'Độ võng SLS L/250'],
           },
           {
             id: 'punching',
-            code: '2.3',
+            code: '2.5',
             title: 'Kiểm toán Chọc thủng Sàn nấm & Đài cọc',
             shortTitle: 'Chọc thủng Sàn nấm (B4)',
             standard: 'TCVN 5574:2018 (Điều 8.1.4.2)',
@@ -145,7 +175,7 @@ export default function InteractiveCalculators() {
           },
           {
             id: 'anchorage',
-            code: '2.4',
+            code: '2.6',
             title: 'Chiều dài Neo & Nối chồng Cốt thép',
             shortTitle: 'Neo & Nối Cốt thép',
             standard: 'TCVN 5574:2018 (Điều 10.3.5)',
@@ -163,12 +193,24 @@ export default function InteractiveCalculators() {
         shortLabel: 'Thép',
         standard: 'TCVN 5575:2024',
         icon: <Hammer size={18} />,
-        badgeText: '1 Mô-đun',
-        description: 'Tính toán liên kết bu lông cường độ cao chịu lực cắt, ép mặt, chịu kéo và tương tác cắt-kéo theo tiêu chuẩn mới nhất.',
+        badgeText: '2 Mô-đun',
+        description: 'Kiểm toán Dầm thép hình chữ I (bền uốn cắt & ổn định LTB) và liên kết Bu lông cường độ cao theo TCVN 5575:2024.',
         modules: [
           {
-            id: 'bolt',
+            id: 'steelbeam',
             code: '3.1',
+            title: 'Kiểm toán Dầm Thép hình chữ I (Bền Uốn, Cắt & LTB)',
+            shortTitle: 'Dầm thép I & Ổn định LTB',
+            standard: 'TCVN 5575:2024 (Mục 8.1, 8.2)',
+            badge: 'Dầm thép ULS/SLS',
+            icon: <Hammer size={18} />,
+            desc: 'Kiểm toán bền uốn McRd, bền cắt VcRd, độ võng đàn hồi L/400 và kiểm tra ổn định uốn xoắn tổng thể (LTB) qua hệ số χ_LT.',
+            component: <CalcSteelBeam />,
+            highlights: ['Tiết diện I định hình', 'Kháng uốn Mc,Rd & Cắt Vc,Rd', 'Ổn định uốn xoắn LTB', 'Võng SLS L/400'],
+          },
+          {
+            id: 'bolt',
+            code: '3.2',
             title: 'Khả năng Chịu lực Bu lông Cường độ cao',
             shortTitle: 'Bu lông CĐC 5575:2024',
             standard: 'TCVN 5575:2024 (Điều 8.4)',
@@ -177,6 +219,29 @@ export default function InteractiveCalculators() {
             desc: 'Kiểm toán sức chịu cắt Nbs, sức chịu ép mặt Nbp, sức chịu kéo Nbt và kiểm tra tương tác cắt-kéo cấp bền 4.6 - 10.9.',
             component: <CalcBoltCapacity />,
             highlights: ['Cấp bền 4.6 đến 10.9', 'Kiểm tra ép mặt N_bp', 'Tương tác cắt + kéo', 'Xuất bản vẽ & Handoff'],
+          },
+        ],
+      },
+      {
+        id: 'stability',
+        label: 'Ổn định Tổng thể',
+        shortLabel: 'Ổn định',
+        standard: 'TCVN 2737 / 5574',
+        icon: <RotateCw size={18} />,
+        badgeText: '1 Mô-đun',
+        description: 'Kiểm toán an toàn hệ thống toàn nhà: Chống lật móng, Chống trượt đáy, Hiệu ứng bậc hai P-Delta và Chuyển vị tầng.',
+        modules: [
+          {
+            id: 'globalstability',
+            code: '4.1',
+            title: 'Kiểm toán Ổn định Tổng thể Công trình (Lật, Trượt, P-Delta & Chuyển vị)',
+            shortTitle: 'Ổn định Tổng thể Toàn nhà',
+            standard: 'TCVN 2737:2023 & TCVN 5574:2018',
+            badge: 'Hệ thống Toàn nhà',
+            icon: <RotateCw size={18} />,
+            desc: 'Kiểm toán hệ số chống lật Klật ≥ 1.50, hệ số chống trượt Ktrượt ≥ 1.20, độ nhạy P-Delta θ và chuyển vị tầng Δ/h.',
+            component: <CalcGlobalStabilityCheck />,
+            highlights: ['Chống lật K_lật ≥ 1.50', 'Chống trượt K_trượt ≥ 1.20', 'Hệ số P-Delta θ', 'Chuyển vị lệch tầng 1/250'],
           },
         ],
       },
@@ -191,7 +256,7 @@ export default function InteractiveCalculators() {
         modules: [
           {
             id: 'pile',
-            code: '4.1',
+            code: '5.1',
             title: 'Sức chịu tải Cọc đơn theo Chỉ số SPT',
             shortTitle: 'Sức chịu tải Cọc SPT',
             standard: 'TCVN 10304:2014 (Phụ lục G)',
@@ -207,7 +272,7 @@ export default function InteractiveCalculators() {
     []
   );
 
-  // Danh sách phẳng 10 mô-đun tuần tự phục vụ điều hướng
+  // Danh sách phẳng 14 mô-đun tuần tự phục vụ điều hướng
   const allModulesFlat = useMemo(() => {
     const list = [];
     DISCIPLINES.forEach((disc) => {
@@ -268,9 +333,9 @@ export default function InteractiveCalculators() {
   return (
     <div className="interactive-calculators-container">
       <PageHeader
-        title="8. Bộ Công cụ Tính toán Tương tác TCVN (10 Mô-đun)"
+        title="8. Bộ Công cụ Tính toán Tương tác TCVN (14 Mô-đun)"
         breadcrumb="Trang chủ / 8. Máy tính Tương tác TCVN"
-        description="Hệ thống máy tính kỹ thuật kết cấu chuẩn 4 tầng (Zero-Error Tolerance) phân bố theo 4 Trụ cột chuyên môn: Tải trọng & Tổ hợp (TCVN 2737), Bê tông Cốt thép (TCVN 5574), Kết cấu Thép (TCVN 5575) và Nền móng (TCVN 10304)."
+        description="Hệ thống máy tính kỹ thuật kết cấu chuẩn 4 tầng (Zero-Error Tolerance) phân bố theo 5 Trụ cột chuyên môn: Tải trọng & Tổ hợp (Chương 3), Bê tông Cốt thép Dầm/Sàn/Cột (Chương 4), Kết cấu Thép (Chương 5), Ổn định Tổng thể (Chương 6) và Nền móng (Chương 7)."
       />
 
       {/* Banner giới thiệu Kiến trúc & Tiêu chuẩn */}
@@ -286,20 +351,18 @@ export default function InteractiveCalculators() {
           <div>
             <h2 style={{ margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Sparkles size={22} color="var(--accent-gold)" />
-              <span className="gradient-text">Kiến trúc Tính toán Khoa học Kết nối AI Agent Ecosystem</span>
+              <span className="gradient-text">Hệ sinh thái Tính toán Toàn diện Đồng bộ 1-1 với Lý thuyết Nền tảng</span>
             </h2>
             <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.92rem', lineHeight: 1.5 }}>
-              Sắp xếp khoa học theo <strong>4 Chuyên khoa Kết cấu</strong>. Tích hợp trọn vẹn: <strong>(1) Input kiểm soát biên</strong> &rarr;{' '}
-              <strong>(2) Toán học giải tích TCVN</strong> &rarr; <strong>(3) Policy Engine &eta;</strong> &rarr;{' '}
-              <strong>(4) Phụ lục A4 &amp; Cầu nối SKILL_BRIDGE v2.1.0</strong>.
+              Số hóa và tự động hóa theo <strong>5 Chuyên khoa Kết cấu</strong>: Tải trọng, Dầm – Sàn – Cột BTCT, Dầm Thép &amp; Bu lông, Ổn định Hệ thống (Lật, Trượt, P-Delta) và Móng cọc. Tích hợp trọn vẹn <strong>Phụ lục A4 &amp; Cầu nối SKILL_BRIDGE v2.1.0</strong>.
             </p>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <span className="spec-badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: 'var(--accent-primary)', border: '1px solid var(--accent-primary)' }}>
-              10 Mô-đun Hoàn thiện
+              14 Mô-đun Toàn diện
             </span>
             <span className="spec-badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-green)', border: '1px solid var(--accent-green)' }}>
-              29/29 Test PASS
+              Chuẩn 4 Tầng TCVN
             </span>
           </div>
         </div>
@@ -313,11 +376,11 @@ export default function InteractiveCalculators() {
             type="button"
             className={`calc-discipline-btn ${activeCategory === 'overview' ? 'active' : ''}`}
             onClick={() => setActiveCategory('overview')}
-            title="Xem danh mục tổng quan 10 bài toán phân theo chuyên môn"
+            title="Xem danh mục tổng quan 14 bài toán phân theo 5 chuyên môn"
           >
             <LayoutGrid size={17} />
             <span>Tổng quan Danh mục</span>
-            <span className="calc-discipline-count">10</span>
+            <span className="calc-discipline-count">14</span>
           </button>
 
           {DISCIPLINES.map((disc) => (
@@ -327,7 +390,6 @@ export default function InteractiveCalculators() {
               className={`calc-discipline-btn ${activeCategory === disc.id ? 'active' : ''}`}
               onClick={() => {
                 setActiveCategory(disc.id);
-                // Nếu mô-đun hiện tại không thuộc nhóm này thì gán mô-đun đầu tiên của nhóm
                 if (!disc.modules.some((m) => m.id === activeModuleId)) {
                   setActiveModuleId(disc.modules[0].id);
                 }
@@ -343,10 +405,10 @@ export default function InteractiveCalculators() {
             type="button"
             className={`calc-discipline-btn ${activeCategory === 'all' ? 'active' : ''}`}
             onClick={() => setActiveCategory('all')}
-            title="Hiển thị tuần tự toàn bộ 10 mô-đun (Phục vụ thẩm tra & in ấn)"
+            title="Hiển thị tuần tự toàn bộ 14 mô-đun (Phục vụ thẩm tra & in ấn)"
           >
             <BookOpen size={17} />
-            <span>Xem Toàn bộ 10 Mô-đun</span>
+            <span>Xem Toàn bộ 14 Mô-đun</span>
           </button>
         </div>
 
@@ -382,7 +444,7 @@ export default function InteractiveCalculators() {
               <Search size={17} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
               <input
                 type="text"
-                placeholder="Tìm nhanh mô-đun (VD: dầm, gió, bu lông, chọc thủng, cọc, tải trọng)..."
+                placeholder="Tìm nhanh mô-đun (VD: cột, dầm, sàn, ổn định, lật, gió, thép, bu lông)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
@@ -407,7 +469,7 @@ export default function InteractiveCalculators() {
             )}
           </div>
 
-          {/* Render 4 khối chuyên môn */}
+          {/* Render 5 khối chuyên môn */}
           {filteredDisciplines.map((disc) => (
             <section key={disc.id} className="calc-catalog-section">
               <div className="calc-catalog-header">
@@ -511,7 +573,7 @@ export default function InteractiveCalculators() {
       )}
 
       {/* ─────────────────────────────────────────────────────────────────── */}
-      {/* VIEW 3: XEM TOÀN BỘ 10 MÔ-ĐUN (AUDIT / PRINT MODE)                  */}
+      {/* VIEW 3: XEM TOÀN BỘ 14 MÔ-ĐUN (AUDIT / PRINT MODE)                  */}
       {/* ─────────────────────────────────────────────────────────────────── */}
       {activeCategory === 'all' && (
         <div>
@@ -532,7 +594,7 @@ export default function InteractiveCalculators() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <FileCheck2 size={20} color="var(--accent-primary)" />
               <span style={{ fontSize: '0.92rem', color: 'var(--text-primary)', fontWeight: 600 }}>
-                Chế độ Thẩm tra Toàn diện: Hiển thị tuần tự 10 Mô-đun tính toán phân theo 4 Chuyên khoa
+                Chế độ Thẩm tra Toàn diện: Hiển thị tuần tự 14 Mô-đun tính toán phân theo 5 Chuyên khoa
               </span>
             </div>
             <button
@@ -565,6 +627,8 @@ export default function InteractiveCalculators() {
             </h3>
             <CalcBeamRebar />
             <CalcRCBeamAdvanced />
+            <CalcRCColumn />
+            <CalcTwoWaySlab />
             <CalcPunchingShear />
             <CalcAnchorageLap />
           </div>
@@ -575,14 +639,24 @@ export default function InteractiveCalculators() {
               <Hammer size={22} />
               <span>PHẦN III: KẾT CẤU THÉP &amp; LIÊN KẾT (TCVN 5575:2024)</span>
             </h3>
+            <CalcSteelBeam />
             <CalcBoltCapacity />
           </div>
 
-          {/* Khối IV: Địa kỹ thuật & Móng */}
+          {/* Khối IV: Ổn định Tổng thể Công trình */}
+          <div style={{ marginBottom: '36px' }}>
+            <h3 style={{ borderBottom: '2px solid #ef4444', paddingBottom: '8px', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <RotateCw size={22} />
+              <span>PHẦN IV: ỔN ĐỊNH TỔNG THỂ CÔNG TRÌNH (TCVN 2737 / TCVN 5574)</span>
+            </h3>
+            <CalcGlobalStabilityCheck />
+          </div>
+
+          {/* Khối V: Địa kỹ thuật & Móng */}
           <div style={{ marginBottom: '36px' }}>
             <h3 style={{ borderBottom: '2px solid #8b5cf6', paddingBottom: '8px', color: '#8b5cf6', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <CheckCircle size={22} />
-              <span>PHẦN IV: ĐỊA KỸ THUẬT &amp; NỀN MÓNG (TCVN 10304:2014)</span>
+              <span>PHẦN V: ĐỊA KỸ THUẬT &amp; NỀN MÓNG (TCVN 10304:2014)</span>
             </h3>
             <CalcPileCapacity />
           </div>

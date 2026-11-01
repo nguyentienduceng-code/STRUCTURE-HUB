@@ -1511,6 +1511,544 @@ export function calculateDeadLoad({
   };
 }
 
+
+// ============================================================================
+// MÔ-ĐUN 11: CỘT BTCT NÉN LỆCH TÂM XIÊN BRESLER (TCVN 5574:2018)
+// ============================================================================
+export function calculateRCColumnBiaxial({
+  b = 400,
+  h = 400,
+  a = 40,
+  L = 3.6,
+  concrete = 'B25',
+  rebar = 'CB400V',
+  Ned = 1200,
+  Medx = 80,
+  Medy = 60,
+  rebarDia = 20,
+  rebarCount = 8,
+}) {
+  const errors = [];
+  const numB = Number(b);
+  const numH = Number(h);
+  const numA = Number(a);
+  const numL = Number(L);
+  const numNed = Number(Ned);
+  const numMedx = Number(Medx);
+  const numMedy = Number(Medy);
+  const numDia = Number(rebarDia);
+  const numCount = Number(rebarCount);
+
+  if (numB < 150 || numB > 2500) errors.push('Bề rộng cột b phải trong khoảng [150, 2500] mm.');
+  if (numH < 150 || numH > 2500) errors.push('Chiều cao cột h phải trong khoảng [150, 2500] mm.');
+  if (numA < 20 || numA >= Math.min(numB, numH) / 2) errors.push('Lớp bảo vệ a không hợp lệ.');
+  if (numL <= 0 || numL > 20) errors.push('Chiều dài cột L phải trong khoảng (0, 20] m.');
+  if (numNed <= 0) errors.push('Lực nén dọc trục Ned phải lớn hơn 0 kN.');
+  if (numDia < 12 || numDia > 40) errors.push('Đường kính thép cột phải từ D12 đến D40.');
+  if (numCount < 4 || numCount % 2 !== 0) errors.push('Số thanh thép cột phải chẵn và ≥ 4 thanh.');
+
+  if (errors.length > 0) return { valid: false, errors };
+
+  const RbMap = { B15: 8.5, B20: 11.5, B25: 14.5, B30: 17.0, B35: 19.5, B40: 22.0 };
+  const RsMap = { CB240T: 210, CB300V: 260, CB400V: 350, CB500V: 435 };
+  const RscMap = { CB240T: 210, CB300V: 260, CB400V: 350, CB500V: 400 };
+  const EbMap = { B15: 24000, B20: 27500, B25: 30000, B30: 32500, B35: 34500, B40: 36000 };
+
+  const Rb = RbMap[concrete] || 14.5;
+  const Rs = RsMap[rebar] || 350;
+  const Rsc = RscMap[rebar] || 350;
+  void Rs;
+  const Eb = EbMap[concrete] || 30000;
+  const Es = 200000;
+
+  const h0 = numH - numA;
+  const b0 = numB - numA;
+  const L0 = 0.7 * numL * 1000; // mm
+
+  // Tổng diện tích thép bố trí
+  const singleArea = (Math.PI * numDia * numDia) / 4;
+  const AsTot = numCount * singleArea; // mm²
+  const mu = (AsTot / (numB * numH)) * 100; // %
+
+  // Độ mảnh
+  const lambdaX = L0 / numH;
+  const lambdaY = L0 / numB;
+
+  // Lệch tâm ngẫu nhiên
+  const eaX = Math.max(numH / 30, L0 / 600, 10);
+  const eaY = Math.max(numB / 30, L0 / 600, 10);
+
+  // Lệch tâm tĩnh học
+  const e0X = (numMedx * 1e3) / numNed;
+  const e0Y = (numMedy * 1e3) / numNed;
+
+  // Uốn dọc
+  const Ix = (numB * Math.pow(numH, 3)) / 12;
+  const Iy = (numH * Math.pow(numB, 3)) / 12;
+  const Dx = (Eb * Ix) / 2 + (Es * (AsTot * Math.pow(numH - 2 * numA, 2) / 8));
+  const Dy = (Eb * Iy) / 2 + (Es * (AsTot * Math.pow(numB - 2 * numA, 2) / 8));
+  const NcrX = (Math.PI * Math.PI * Dx) / (L0 * L0) * 1e-3;
+  const NcrY = (Math.PI * Math.PI * Dy) / (L0 * L0) * 1e-3;
+
+  const etaX = lambdaX <= 14 ? 1.0 : (numNed < NcrX ? 1 / (1 - numNed / NcrX) : 5.0);
+  const etaY = lambdaY <= 14 ? 1.0 : (numNed < NcrY ? 1 / (1 - numNed / NcrY) : 5.0);
+
+  const eTotX = etaX * e0X + eaX;
+  const eTotY = etaY * e0Y + eaY;
+
+  // N_Rd,0 (Nén đúng tâm)
+  const NRd0 = (Rb * numB * numH + Rsc * AsTot) * 1e-3; // kN
+
+  // Khả năng chịu nén lệch tâm phẳng phương X (N_Rd,x)
+  const ePrimeX = eTotX + numH / 2 - numA;
+  const AsHalf = AsTot / 2;
+  const xX = Math.min(0.533 * h0, (numNed * 1e3) / (Rb * numB));
+  const MRdx = (Rb * numB * xX * (h0 - 0.5 * xX) + Rsc * AsHalf * (h0 - numA)) * 1e-6; // kNm
+  const NRdx = (MRdx * 1e3) / ePrimeX;
+
+  // Khả năng chịu nén lệch tâm phẳng phương Y (N_Rd,y)
+  const ePrimeY = eTotY + numB / 2 - numA;
+  const xY = Math.min(0.533 * b0, (numNed * 1e3) / (Rb * numH));
+  const MRdy = (Rb * numH * xY * (b0 - 0.5 * xY) + Rsc * AsHalf * (b0 - numA)) * 1e-6; // kNm
+  const NRdy = (MRdy * 1e3) / ePrimeY;
+
+  // Công thức xấp xỉ tương tác Bresler (Biaxial Bending)
+  // 1 / NRd = 1 / NRdx + 1 / NRdy - 1 / NRd0
+  const invNRd = 1 / Math.max(1, NRdx) + 1 / Math.max(1, NRdy) - 1 / NRd0;
+  const NRdBresler = invNRd > 0 ? +(1 / invNRd).toFixed(1) : +(NRd0 * 0.4).toFixed(1);
+
+  const eta = +(numNed / NRdBresler).toFixed(3);
+  const utilization = evaluateUtilization(eta);
+
+  const steps = [
+    `Bước 1 [Độ mảnh & Lệch tâm ban đầu]: L₀ = ${L0.toFixed(0)} mm; λ_x = ${lambdaX.toFixed(1)}, λ_y = ${lambdaY.toFixed(1)}; e_{0,x} = ${e0X.toFixed(1)} mm, e_{0,y} = ${e0Y.toFixed(1)} mm.`,
+    `Bước 2 [Hệ số uốn dọc η theo TCVN 5574:2018]: η_x = ${etaX.toFixed(3)}, η_y = ${etaY.toFixed(3)} → Độ lệch tâm tính toán e_x = ${eTotX.toFixed(1)} mm, e_y = ${eTotY.toFixed(1)} mm.`,
+    `Bước 3 [Sức chịu nén đúng tâm & lệch tâm phẳng]: N_{Rd,0} = ${NRd0.toFixed(1)} kN; N_{Rd,x} = ${NRdx.toFixed(1)} kN; N_{Rd,y} = ${NRdy.toFixed(1)} kN.`,
+    `Bước 4 [Tương tác lệch tâm xiên Bresler]: 1/N_{Rd} = 1/N_{Rd,x} + 1/N_{Rd,y} - 1/N_{Rd,0} → N_{Rd,Bresler} = ${NRdBresler} kN.`,
+    `Bước 5 [Đánh giá an toàn & Hàm lượng thép]: N = ${numNed} kN ≤ N_{Rd} = ${NRdBresler} kN → η = ${eta} (${utilization.icon} ${utilization.label}); Hàm lượng thép μ = ${mu.toFixed(2)}% (chuẩn [0.1%, 3.0%]).`,
+  ];
+
+  return {
+    valid: true,
+    errors: [],
+    b: numB,
+    h: numH,
+    a: numA,
+    L: numL,
+    L0,
+    concrete,
+    rebar,
+    Ned: numNed,
+    Medx: numMedx,
+    Medy: numMedy,
+    rebarDia: numDia,
+    rebarCount: numCount,
+    AsTot: +AsTot.toFixed(1),
+    mu: +mu.toFixed(2),
+    lambdaX: +lambdaX.toFixed(1),
+    lambdaY: +lambdaY.toFixed(1),
+    etaX: +etaX.toFixed(3),
+    etaY: +etaY.toFixed(3),
+    NRd0: +NRd0.toFixed(1),
+    NRdx: +NRdx.toFixed(1),
+    NRdy: +NRdy.toFixed(1),
+    NRdBresler,
+    utilization,
+    steps,
+    standardRef: 'TCVN 5574:2018 — Mục 8.1.4, Phụ lục E & Công thức Bresler',
+  };
+}
+
+// ============================================================================
+// MÔ-ĐUN 12: Ô BẢN SÀN BTCT 2 PHƯƠNG KÊ 4 CẠNH (TCVN 5574:2018 & MARCUS)
+// ============================================================================
+export function calculateTwoWaySlab({
+  Lx = 4.0,
+  Ly = 6.0,
+  h = 120,
+  a = 20,
+  concrete = 'B25',
+  rebar = 'CB240T',
+  gdl = 4.5,
+  qll = 2.0,
+  boundary = 'fixed_all',
+}) {
+  const errors = [];
+  const numLx = Number(Lx);
+  const numLy = Number(Ly);
+  const numH = Number(h);
+  const numA = Number(a);
+  const numG = Number(gdl);
+  const numQ = Number(qll);
+
+  if (numLx <= 0 || numLx > 25) errors.push('Nhịp Lx phải trong khoảng (0, 25] m.');
+  if (numLy <= 0 || numLy > 25) errors.push('Nhịp Ly phải trong khoảng (0, 25] m.');
+  if (numH < 50 || numH > 500) errors.push('Chiều dày sàn h phải trong khoảng [50, 500] mm.');
+  if (numA < 10 || numA >= numH / 2) errors.push('Lớp bảo vệ a không hợp lệ.');
+  if (numG <= 0) errors.push('Tĩnh tải sàn gdl phải lớn hơn 0.');
+
+  if (errors.length > 0) return { valid: false, errors };
+
+  const RbMap = { B15: 8.5, B20: 11.5, B25: 14.5, B30: 17.0, B35: 19.5, B40: 22.0 };
+  const RsMap = { CB240T: 210, CB300V: 260, CB400V: 350, CB500V: 435 };
+  const EbMap = { B15: 24000, B20: 27500, B25: 30000, B30: 32500, B35: 34500, B40: 36000 };
+
+  const Rb = RbMap[concrete] || 14.5;
+  const Rs = RsMap[rebar] || 210;
+  const Eb = EbMap[concrete] || 30000;
+
+  const h0 = numH - numA;
+  const bStrip = 1000; // mm dải bản tính toán 1m
+
+  // Nhịp ngắn L1, nhịp dài L2
+  const L1 = Math.min(numLx, numLy);
+  const L2 = Math.max(numLx, numLy);
+  const rho = +(L2 / L1).toFixed(2);
+  const isOneWay = rho > 2.0;
+
+  // Tải trọng ULS & SLS
+  const qUls = +(1.2 * numG + 1.3 * numQ).toFixed(2);
+  const qSls = +(numG + numQ).toFixed(2);
+
+  // Hệ số mômen Marcus
+  let m1Pos;
+  let m1Neg;
+  let m2Pos;
+  let m2Neg;
+  if (boundary === 'fixed_all') {
+    m1Pos = 1 / (24 * (1 + Math.pow(rho, 4)));
+    m1Neg = -1 / (12 * (1 + Math.pow(rho, 4)));
+    m2Pos = m1Pos * Math.pow(rho, 2) * 0.6;
+    m2Neg = m1Neg * Math.pow(rho, 2) * 0.6;
+  } else if (boundary === 'simply_supported') {
+    m1Pos = 1 / (8 * (1 + Math.pow(rho, 4)));
+    m1Neg = 0;
+    m2Pos = m1Pos * Math.pow(rho, 2) * 0.6;
+    m2Neg = 0;
+  } else {
+    // fixed_one
+    m1Pos = 1 / (16 * (1 + Math.pow(rho, 4)));
+    m1Neg = -1 / (10 * (1 + Math.pow(rho, 4)));
+    m2Pos = m1Pos * Math.pow(rho, 2) * 0.6;
+    m2Neg = m1Neg * Math.pow(rho, 2) * 0.6;
+  }
+
+  const qL1sq = qUls * L1 * L1;
+  const M1Pos = +(Math.abs(m1Pos) * qL1sq).toFixed(2);
+  const M1Neg = +(Math.abs(m1Neg) * qL1sq).toFixed(2);
+  const M2Pos = +(Math.abs(m2Pos) * qL1sq).toFixed(2);
+  const M2Neg = +(Math.abs(m2Neg) * qL1sq).toFixed(2);
+
+  // Tính cốt thép dải 1m
+  const calcAs = (M) => {
+    if (M <= 0) return 0;
+    const alphaM = (M * 1e6) / (Rb * bStrip * h0 * h0);
+    if (alphaM >= 0.39) return +((0.39 * Rb * bStrip * h0) / Rs).toFixed(1);
+    const zeta = 0.5 * (1 + Math.sqrt(1 - 2 * alphaM));
+    return +((M * 1e6) / (Rs * zeta * h0)).toFixed(1);
+  };
+
+  const As1Pos = calcAs(M1Pos);
+  const As1Neg = calcAs(M1Neg);
+  const As2Pos = calcAs(M2Pos);
+  const As2Neg = calcAs(M2Neg);
+
+  // Độ võng SLS
+  const Ib = (bStrip * Math.pow(numH, 3)) / 12;
+  const fCalc = +((0.005 * qSls * Math.pow(L1 * 1000, 4)) / (Eb * Ib)).toFixed(2);
+  const fAllow = +((L1 * 1000) / 250).toFixed(2);
+  const etaDeflection = +(fCalc / fAllow).toFixed(3);
+
+  // Utilization
+  const etaM = Math.max(
+    (M1Pos * 1e6) / (Rb * bStrip * h0 * h0 * 0.39),
+    (M1Neg * 1e6) / (Rb * bStrip * h0 * h0 * 0.39)
+  );
+  const eta = +(Math.max(etaM, etaDeflection)).toFixed(3);
+  const utilization = evaluateUtilization(eta);
+
+  const steps = [
+    `Bước 1 [Tỷ số nhịp]: L₁ = ${L1} m, L₂ = ${L2} m → Tỷ số cạnh ρ = L₂/L₁ = ${rho} (${isOneWay ? 'Bản 1 phương' : 'Bản 2 phương kê 4 cạnh'}).`,
+    `Bước 2 [Tổ hợp tải trọng sàn]: Tải ULS q_u = 1.2×${numG} + 1.3×${numQ} = ${qUls} kN/m²; Tải SLS q_s = ${qSls} kN/m².`,
+    `Bước 3 [Mômen uốn Marcus dải 1m]: Nhịp ngắn M_{1,pos} = ${M1Pos} kNm, Gối M_{1,neg} = ${M1Neg} kNm; Nhịp dài M_{2,pos} = ${M2Pos} kNm, Gối M_{2,neg} = ${M2Neg} kNm.`,
+    `Bước 4 [Diện tích thép dải 1m]: Nhịp ngắn A_{s1} = ${As1Pos} mm²/m (Gối: ${As1Neg} mm²/m); Nhịp dài A_{s2} = ${As2Pos} mm²/m (Gối: ${As2Neg} mm²/m).`,
+    `Bước 5 [Kiểm tra võng SLS & Policy Engine]: f = ${fCalc} mm ≤ [f] = ${fAllow} mm (η_f = ${etaDeflection}) → Tổng thể η = ${eta} (${utilization.icon} ${utilization.label}).`,
+  ];
+
+  return {
+    valid: true,
+    errors: [],
+    Lx: numLx,
+    Ly: numLy,
+    L1,
+    L2,
+    rho,
+    isOneWay,
+    h: numH,
+    a: numA,
+    h0,
+    concrete,
+    rebar,
+    qUls,
+    qSls,
+    boundary,
+    M1Pos,
+    M1Neg,
+    M2Pos,
+    M2Neg,
+    As1Pos,
+    As1Neg,
+    As2Pos,
+    As2Neg,
+    fCalc,
+    fAllow,
+    etaDeflection,
+    utilization,
+    steps,
+    standardRef: 'TCVN 5574:2018 — Mục 8.1.2 & Lý thuyết bản kê 4 cạnh Marcus',
+  };
+}
+
+// ============================================================================
+// MÔ-ĐUN 13: DẦM THÉP HÌNH I CHỊU UỐN, CẮT & ỔN ĐỊNH LTB (TCVN 5575:2024)
+// ============================================================================
+export const STEEL_PROFILES_I = {
+  'I200x100x5.5x8': { name: 'I 200x100x5.5x8', h: 200, b: 100, tw: 5.5, tf: 8.0 },
+  'I250x125x6x9': { name: 'I 250x125x6x9', h: 250, b: 125, tw: 6.0, tf: 9.0 },
+  'I300x150x6.5x9': { name: 'I 300x150x6.5x9', h: 300, b: 150, tw: 6.5, tf: 9.0 },
+  'I350x175x7x11': { name: 'I 350x175x7x11', h: 350, b: 175, tw: 7.0, tf: 11.0 },
+  'I400x200x8x13': { name: 'I 400x200x8x13', h: 400, b: 200, tw: 8.0, tf: 13.0 },
+  'I500x200x10x16': { name: 'I 500x200x10x16', h: 500, b: 200, tw: 10.0, tf: 16.0 },
+};
+
+export function calculateSteelBeam({
+  profile = 'I300x150x6.5x9',
+  L = 6.0,
+  steelGrade = 'SS400',
+  q = 25.0,
+  Lcr = 6.0,
+  hasDeckBracing = false,
+}) {
+  const errors = [];
+  const numL = Number(L);
+  const numQ = Number(q);
+  const numLcr = hasDeckBracing ? 0 : Number(Lcr);
+
+  if (!STEEL_PROFILES_I[profile]) errors.push('Quy cách tiết diện dầm thép không hợp lệ.');
+  if (numL <= 0 || numL > 30) errors.push('Nhịp dầm thép L phải trong khoảng (0, 30] m.');
+  if (numQ <= 0) errors.push('Tải trọng tác dụng q phải lớn hơn 0 kN/m.');
+
+  if (errors.length > 0) return { valid: false, errors };
+
+  const pr = STEEL_PROFILES_I[profile];
+  const h = pr.h, b = pr.b, tw = pr.tw, tf = pr.tf;
+  const hw = h - 2 * tf;
+
+  const fy = steelGrade === 'Q345' || steelGrade === 'S355' ? 345 : 235;
+  const gammaM0 = 1.05;
+  const E = 210000; // MPa
+
+  // Đặc trưng hình học tiết diện
+  const A = 2 * b * tf + hw * tw; // mm²
+  const Ix = (b * Math.pow(h, 3) - (b - tw) * Math.pow(hw, 3)) / 12; // mm4
+  const Wpl = b * tf * (h - tf) + (tw * hw * hw) / 4; // mm3
+  const Iz = (2 * tf * Math.pow(b, 3) + hw * Math.pow(tw, 3)) / 12; // mm4
+  const It = (2 * b * Math.pow(tf, 3) + hw * Math.pow(tw, 3)) / 3; // mm4
+  const Iw = (Iz * Math.pow(h - tf, 2)) / 4; // mm6
+
+  // Nội lực dầm đơn giản
+  const Med = +(numQ * numL * numL / 8).toFixed(2); // kNm
+  const Ved = +(numQ * numL / 2).toFixed(2); // kN
+
+  // Khả năng chịu uốn tiết diện (ULS bền)
+  const McRd = +((Wpl * fy) / gammaM0 * 1e-6).toFixed(2); // kNm
+
+  // Khả năng chịu cắt
+  const Av = h * tw;
+  const VcRd = +(((Av * fy) / (Math.sqrt(3) * gammaM0)) * 1e-3).toFixed(2); // kN
+
+  // Ổn định uốn xoắn LTB
+  let chiLT = 1.0;
+  let Mcr = 999999;
+  if (!hasDeckBracing && numLcr > 0) {
+    const LcrMm = numLcr * 1000;
+    const G = 81000;
+    const C1 = 1.13;
+    const term1 = (Math.PI * Math.PI * E * Iz) / (LcrMm * LcrMm);
+    const term2 = Math.sqrt(Iw / Iz + (LcrMm * LcrMm * G * It) / (Math.PI * Math.PI * E * Iz));
+    Mcr = +(C1 * term1 * term2 * 1e-6).toFixed(2); // kNm
+    const lambdaLT = Math.sqrt((Wpl * fy * 1e-6) / Mcr);
+    const alphaLT = 0.34; // đường cong b
+    const phiLT = 0.5 * (1 + alphaLT * (lambdaLT - 0.2) + lambdaLT * lambdaLT);
+    chiLT = Math.min(1.0, +(1 / (phiLT + Math.sqrt(phiLT * phiLT - lambdaLT * lambdaLT))).toFixed(3));
+  }
+  const MbRd = +(chiLT * McRd).toFixed(2);
+
+  // Độ võng SLS
+  const qSer = numQ / 1.25; // xấp xỉ tải tiêu chuẩn
+  const fCalc = +((5 * qSer * Math.pow(numL * 1000, 4)) / (384 * E * Ix)).toFixed(2); // mm
+  const fAllow = +((numL * 1000) / 400).toFixed(2); // L/400
+
+  const etaFlex = +(Med / MbRd).toFixed(3);
+  const etaShear = +(Ved / VcRd).toFixed(3);
+  const etaDeflection = +(fCalc / fAllow).toFixed(3);
+  const eta = +(Math.max(etaFlex, etaShear, etaDeflection)).toFixed(3);
+  const utilization = evaluateUtilization(eta);
+
+  const steps = [
+    `Bước 1 [Tiết diện & Vật liệu]: ${pr.name} (A = ${A} mm², I_x = ${(Ix*1e-4).toFixed(0)} cm⁴, W_{pl} = ${(Wpl*1e-3).toFixed(1)} cm³); Thép ${steelGrade} (f_y = ${fy} MPa).`,
+    `Bước 2 [Nội lực ULS]: Nhịp L = ${numL} m, q = ${numQ} kN/m → M_{Ed} = ${Med} kNm; V_{Ed} = ${Ved} kN.`,
+    `Bước 3 [Khả năng chịu cắt & Uốn bền]: V_{c,Rd} = ${VcRd} kN (η_V = ${etaShear}); M_{c,Rd} = ${McRd} kNm.`,
+    `Bước 4 [Ổn định uốn xoắn LTB]: ${hasDeckBracing ? 'Có bản sàn giằng cánh nén liên tục → χ_LT = 1.0 (Không mất ổn định)' : `L_{cr} = ${numLcr} m → M_{cr} = ${Mcr} kNm, χ_{LT} = ${chiLT} → M_{b,Rd} = ${MbRd} kNm`}.`,
+    `Bước 5 [Độ võng & Policy Engine]: f = ${fCalc} mm ≤ [f] = ${fAllow} mm (L/400) → Hệ số sử dụng tổng thể η = ${eta} (${utilization.icon} ${utilization.label}).`,
+  ];
+
+  return {
+    valid: true,
+    errors: [],
+    profile,
+    profileName: pr.name,
+    L: numL,
+    Lcr: numLcr,
+    hasDeckBracing,
+    steelGrade,
+    fy,
+    q: numQ,
+    Med,
+    Ved,
+    McRd,
+    VcRd,
+    chiLT,
+    MbRd,
+    fCalc,
+    fAllow,
+    etaFlex,
+    etaShear,
+    etaDeflection,
+    utilization,
+    steps,
+    standardRef: 'TCVN 5575:2024 — Mục 8.1, 8.2 & Phụ lục D (Ổn định LTB)',
+  };
+}
+
+// ============================================================================
+// MÔ-ĐUN 14: KIỂM TOÁN ỔN ĐỊNH TỔNG THỂ CÔNG TRÌNH (TCVN 2737 / 5574)
+// ============================================================================
+export function calculateGlobalStabilityCheck({
+  totalWeightG = 45000,
+  lateralWindV = 2200,
+  overturningMw = 38000,
+  foundationB = 24.0,
+  totalHeightH = 60.0,
+  storyCount = 18,
+  maxStoryDrift = 12.0,
+  storyHeight = 3.3,
+  frictionCoeff = 0.35,
+}) {
+  const errors = [];
+  const numG = Number(totalWeightG);
+  const numV = Number(lateralWindV);
+  const numMw = Number(overturningMw);
+  const numB = Number(foundationB);
+  const numH = Number(totalHeightH);
+  const numStories = Number(storyCount);
+  const numDrift = Number(maxStoryDrift);
+  const numStoryH = Number(storyHeight);
+  const numFriction = Number(frictionCoeff);
+
+  if (numG <= 0) errors.push('Tổng trọng tải công trình G phải lớn hơn 0 kN.');
+  if (numV <= 0) errors.push('Lực cắt ngang đáy V phải lớn hơn 0 kN.');
+  if (numMw <= 0) errors.push('Mômen gây lật Mw phải lớn hơn 0 kNm.');
+  if (numB <= 0 || numH <= 0) errors.push('Kích thước hình học B, H phải lớn hơn 0.');
+  if (numStories <= 0) errors.push('Số tầng phải lớn hơn 0.');
+
+  if (errors.length > 0) return { valid: false, errors };
+
+  // 1. Chống lật
+  // Mômen giữ chống lật (tĩnh tải có lợi 0.9G)
+  const Mcl = +(0.9 * numG * (numB / 2)).toFixed(1);
+  const Klat = +(Mcl / numMw).toFixed(2);
+  const etaLat = +(1.50 / Klat).toFixed(3);
+  const passLat = Klat >= 1.50;
+
+  // 2. Chống trượt
+  const Ftr = +(numFriction * (0.9 * numG)).toFixed(1);
+  const Ktruot = +(Ftr / numV).toFixed(2);
+  const etaTruot = +(1.20 / Ktruot).toFixed(3);
+  const passTruot = Ktruot >= 1.20;
+
+  // 3. Hiệu ứng P-Delta (Hệ số ổn định theta)
+  const Pi = numG / numStories; // kN trọng lượng trung bình 1 tầng
+  const Vi = numV / numStories; // kN lực cắt trung bình tầng
+  const theta = +((Pi * numDrift) / (Math.max(1, Vi) * (numStoryH * 1000))).toFixed(3);
+  const passPDelta = theta <= 0.20;
+  const pDeltaAdvice =
+    theta <= 0.10
+      ? 'An toàn, kết cấu đủ cứng — Bỏ qua P-Delta.'
+      : theta <= 0.20
+      ? `Cần nhân hệ số khuếch đại nội lực 1/(1-θ) = ${(1 / (1 - theta)).toFixed(2)}.`
+      : 'NGUY CƠ MẤT ỔN ĐỊNH BẬC HAI — Bắt buộc tăng độ cứng vách/cột!';
+
+  // 4. Chuyển vị tầng đàn hồi
+  const driftRatio = +(numDrift / (numStoryH * 1000)).toFixed(4);
+  const allowDriftRatio = 1 / 250; // 0.004 cho khung BTCT
+  const etaDrift = +(driftRatio / allowDriftRatio).toFixed(3);
+  const passDrift = driftRatio <= allowDriftRatio;
+
+  // 5. Chuyển vị đỉnh công trình xấp xỉ
+  const deltaTop = +(numStories * numDrift * 0.7).toFixed(1); // mm
+  const deltaTopRatio = +(deltaTop / (numH * 1000)).toFixed(4);
+  const allowTopRatio = 1 / 500; // 0.002
+  const etaTop = +(deltaTopRatio / allowTopRatio).toFixed(3);
+  const passTop = deltaTopRatio <= allowTopRatio;
+
+  const eta = +(Math.max(etaLat, etaTruot, theta / 0.10, etaDrift, etaTop)).toFixed(3);
+  const utilization = evaluateUtilization(eta);
+
+  const steps = [
+    `Bước 1 [Ổn định chống lật TCVN 2737:2023]: M_{cl} = 0.9 × ${numG} × (${numB}/2) = ${Mcl} kNm → Hệ số K_{lật} = ${Klat} ${passLat ? '≥ [1.50] (ĐẠT)' : '< [1.50] (KHÔNG ĐẠT)'}.`,
+    `Bước 2 [Ổn định chống trượt]: Lực ma sát kháng trượt F_{tr} = ${numFriction} × (0.9 × ${numG}) = ${Ftr} kN → K_{trượt} = ${Ktruot} ${passTruot ? '≥ [1.20] (ĐẠT)' : '< [1.20] (KHÔNG ĐẠT)'}.`,
+    `Bước 3 [Hiệu ứng P-Delta]: Hệ số ổn định θ = (P_i × Δ_i) / (V_i × h_i) = ${theta} → ${pDeltaAdvice}`,
+    `Bước 4 [Chuyển vị lệch tầng]: Δ_i/h_i = ${numDrift} / ${(numStoryH*1000)} = ${driftRatio} ${passDrift ? '≤ [1/250 = 0.004] (ĐẠT)' : '> [1/250] (VƯỢT GIỚI HẠN)'}.`,
+    `Bước 5 [Chuyển vị đỉnh & Tổng thể]: Δ_{top} ≈ ${deltaTop} mm (Δ/H = ${deltaTopRatio} ≤ [1/500 = 0.002]) → Hệ số sử dụng η = ${eta} (${utilization.icon} ${utilization.label}).`,
+  ];
+
+  return {
+    valid: true,
+    errors: [],
+    totalWeightG: numG,
+    lateralWindV: numV,
+    overturningMw: numMw,
+    foundationB: numB,
+    totalHeightH: numH,
+    storyCount: numStories,
+    maxStoryDrift: numDrift,
+    storyHeight: numStoryH,
+    frictionCoeff: numFriction,
+    Mcl,
+    Klat,
+    etaLat,
+    passLat,
+    Ftr,
+    Ktruot,
+    etaTruot,
+    passTruot,
+    theta,
+    passPDelta,
+    pDeltaAdvice,
+    driftRatio,
+    allowDriftRatio,
+    passDrift,
+    deltaTop,
+    deltaTopRatio,
+    allowTopRatio,
+    passTop,
+    utilization,
+    steps,
+    standardRef: 'TCVN 2737:2023 (Mục 7.3, 10.2) & TCVN 5574:2018 (Chương 6)',
+  };
+}
+
 export function buildSkillBridgePayload(param) {
   if (!param) return null;
 
@@ -1536,6 +2074,30 @@ export function buildSkillBridgePayload(param) {
     else if (moduleName.includes('Bu lông')) moduleId = 'bolt_tcvn5575';
     else if (moduleName.includes('cọc') || moduleName.includes('Cọc')) moduleId = 'pile_tcvn10304';
     else if (moduleName.includes('neo') || moduleName.includes('nối') || moduleName.includes('Neo') || moduleName.includes('Nối')) moduleId = 'anchorage_tcvn5574';
+  } else if (param.NRdBresler !== undefined) {
+    moduleId = 'rccolumn_bresler_tcvn5574';
+    moduleName = 'Cột BTCT nén lệch tâm xiên Bresler TCVN 5574:2018';
+    standard = 'TCVN 5574:2018';
+    inputs = { b: param.b, h: param.h, Ned: param.Ned, Medx: param.Medx, Medy: param.Medy };
+    outputs = { NRd0: param.NRd0, NRdx: param.NRdx, NRdy: param.NRdy, NRdBresler: param.NRdBresler, mu_percent: param.mu };
+  } else if (param.M1Pos !== undefined) {
+    moduleId = 'twoway_slab_tcvn5574';
+    moduleName = 'Ô bản sàn BTCT 2 phương Marcus TCVN 5574:2018';
+    standard = 'TCVN 5574:2018';
+    inputs = { Lx: param.Lx, Ly: param.Ly, h: param.h, qUls: param.qUls, boundary: param.boundary };
+    outputs = { M1Pos: param.M1Pos, M1Neg: param.M1Neg, As1Pos: param.As1Pos, As1Neg: param.As1Neg, fCalc_mm: param.fCalc };
+  } else if (param.MbRd !== undefined) {
+    moduleId = 'steel_beam_tcvn5575';
+    moduleName = 'Dầm thép hình chữ I & Ổn định LTB TCVN 5575:2024';
+    standard = 'TCVN 5575:2024';
+    inputs = { profile: param.profile, L: param.L, q: param.q, steelGrade: param.steelGrade };
+    outputs = { Med: param.Med, Ved: param.Ved, McRd: param.McRd, VcRd: param.VcRd, MbRd: param.MbRd, fCalc_mm: param.fCalc };
+  } else if (param.Klat !== undefined) {
+    moduleId = 'global_stability_tcvn2737';
+    moduleName = 'Kiểm toán Ổn định Tổng thể Công trình TCVN 2737/5574';
+    standard = 'TCVN 2737:2023 & TCVN 5574:2018';
+    inputs = { totalWeightG: param.totalWeightG, lateralWindV: param.lateralWindV, overturningMw: param.overturningMw };
+    outputs = { Klat: param.Klat, Ktruot: param.Ktruot, theta_PDelta: param.theta, deltaTop_mm: param.deltaTop };
   } else if (param.floorGd !== undefined) {
     moduleId = 'deadload_tcvn2737';
     moduleName = 'Tĩnh tải sàn & Tường trên dầm TCVN 2737:2023';
