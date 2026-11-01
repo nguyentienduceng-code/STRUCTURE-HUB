@@ -348,6 +348,436 @@ export const REBAR_GRADES_TCVN5574 = {
   CB500V: { code: 'CB500V', Rs: 435, Rsc: 400, Rsw: 300, Es: 200000, type: 'deformed' },
 };
 
+export const COMMERCIAL_BEAM_REBAR_DIAMETERS = [12, 14, 16, 18, 20, 22, 25, 28, 32];
+export const COMMERCIAL_SLAB_REBAR_DIAMETERS = [6, 8, 10, 12];
+export const COMMERCIAL_SLAB_SPACINGS = [100, 120, 150, 180, 200];
+export const COMMERCIAL_COLUMN_REBAR_DIAMETERS = [16, 18, 20, 22, 25, 28, 32];
+
+/**
+ * Gợi ý các phương án bố trí cốt thép dầm tối ưu (Đơn kính hoặc Kết hợp 2 đường kính)
+ * Đảm bảo: As_prov >= As_req, khoảng hở thông thủy s_clear >= max(d, s_min)
+ */
+export function suggestBeamRebar({
+  AsReq,
+  b,
+  a = 40,
+  isTop = false,
+  minBars = 2,
+  maxBars = 6,
+  allowedDiameters = [14, 16, 18, 20, 22, 25, 28, 32],
+}) {
+  if (!AsReq || AsReq <= 0 || !b || b <= 0) return [];
+  const sMin = isTop ? 30 : 25; // TCVN 5574:2018 Điều 10.3.1
+  const candidates = [];
+
+  // 1. Phương án đồng kính (n * Ød)
+  for (const d of allowedDiameters) {
+    const aCover = Math.max(25, a - d / 2);
+    const area1 = (Math.PI * d * d) / 4;
+    for (let n = minBars; n <= maxBars; n++) {
+      const areaTot = n * area1;
+      if (areaTot >= AsReq * 0.98) {
+        const sClear = n > 1 ? (b - 2 * aCover - n * d) / (n - 1) : b - 2 * aCover - d;
+        const clearanceOk = sClear >= Math.max(d, sMin);
+        const deltaPct = ((areaTot - AsReq) / AsReq) * 100;
+
+        candidates.push({
+          label: `${n}Ø${d}`,
+          count: n,
+          dia: d,
+          secondCount: 0,
+          secondDia: 0,
+          totalBars: n,
+          areaMm2: Math.round(areaTot),
+          areaCm2: +(areaTot / 100).toFixed(2),
+          deltaPct: +deltaPct.toFixed(1),
+          sClear: +sClear.toFixed(1),
+          clearanceOk,
+          isCombined: false,
+        });
+      }
+    }
+  }
+
+  // 2. Phương án kết hợp 2 đường kính (thường gặp: 2 thanh góc d1 + 1 hoặc 2 thanh giữa d2)
+  for (let i = 0; i < allowedDiameters.length; i++) {
+    const d1 = allowedDiameters[i];
+    const areaD1 = (Math.PI * d1 * d1) / 4;
+    for (let j = 0; j < allowedDiameters.length; j++) {
+      if (i === j) continue;
+      const d2 = allowedDiameters[j];
+      if (Math.abs(d1 - d2) > 4) continue; // chỉ kết hợp đường kính gần nhau
+      const areaD2 = (Math.PI * d2 * d2) / 4;
+
+      for (const n2 of [1, 2]) {
+        const n1 = 2;
+        const totalBars = n1 + n2;
+        if (totalBars > maxBars) continue;
+
+        const areaTot = n1 * areaD1 + n2 * areaD2;
+        if (areaTot >= AsReq * 0.98) {
+          const dMax = Math.max(d1, d2);
+          const aCover = Math.max(25, a - dMax / 2);
+          const sClear = (b - 2 * aCover - (n1 * d1 + n2 * d2)) / (totalBars - 1);
+          const clearanceOk = sClear >= Math.max(dMax, sMin);
+          const deltaPct = ((areaTot - AsReq) / AsReq) * 100;
+
+          candidates.push({
+            label: `${n1}Ø${d1}+${n2}Ø${d2}`,
+            count: n1,
+            dia: d1,
+            secondCount: n2,
+            secondDia: d2,
+            totalBars,
+            areaMm2: Math.round(areaTot),
+            areaCm2: +(areaTot / 100).toFixed(2),
+            deltaPct: +deltaPct.toFixed(1),
+            sClear: +sClear.toFixed(1),
+            clearanceOk,
+            isCombined: true,
+          });
+        }
+      }
+    }
+  }
+
+  const validClear = candidates.filter((c) => c.clearanceOk && c.sClear >= 20);
+  const pool = validClear.length > 0 ? validClear : candidates;
+
+  pool.sort((p1, p2) => {
+    const penalty1 = (p1.deltaPct < 0 ? 100 : 0) + (!p1.clearanceOk ? 50 : 0) + Math.abs(p1.deltaPct);
+    const penalty2 = (p2.deltaPct < 0 ? 100 : 0) + (!p2.clearanceOk ? 50 : 0) + Math.abs(p2.deltaPct);
+    return penalty1 - penalty2;
+  });
+
+  const seen = new Set();
+  const results = [];
+  for (const c of pool) {
+    const key = `${c.label}_${c.areaMm2}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      let tag = '🟢 Đạt';
+      if (c.deltaPct >= 0 && c.deltaPct <= 10 && c.clearanceOk) {
+        tag = '⭐ Tối ưu (0-10%)';
+      } else if (c.deltaPct > 10 && c.deltaPct <= 20 && c.clearanceOk) {
+        tag = '🟡 Hợp lý (10-20%)';
+      } else if (c.deltaPct > 20) {
+        tag = '🟠 Dư nhiều (>20%)';
+      }
+      results.push({ ...c, tag });
+      if (results.length >= 4) break;
+    }
+  }
+  return results;
+}
+
+/**
+ * Đánh giá chi tiết phương án bố trí cốt thép dầm được chọn
+ */
+export function evaluateBeamProvidedRebar({
+  AsReq,
+  barCount,
+  barDia,
+  secondCount = 0,
+  secondDia = 0,
+  b,
+  h,
+  a,
+  concrete = 'B25',
+  rebar = 'CB400V',
+  gammaB = 1.0,
+  M = 0,
+  isTop = false,
+}) {
+  const numB = Number(b);
+  const numH = Number(h);
+  const numA = Number(a);
+  const numM = Number(M);
+  const n1 = Number(barCount) || 0;
+  const d1 = Number(barDia) || 0;
+  const n2 = Number(secondCount) || 0;
+  const d2 = Number(secondDia) || 0;
+
+  const totalBars = n1 + n2;
+  const area1 = (Math.PI * d1 * d1) / 4;
+  const area2 = d2 > 0 ? (Math.PI * d2 * d2) / 4 : 0;
+  const AsProv = n1 * area1 + n2 * area2;
+
+  const conc = CONCRETE_GRADES_TCVN5574[concrete] || CONCRETE_GRADES_TCVN5574.B25;
+  const steel = REBAR_GRADES_TCVN5574[rebar] || REBAR_GRADES_TCVN5574.CB400V;
+  const Rb = conc.Rb * Number(gammaB);
+  const Rs = steel.Rs;
+  const h0 = numH - numA;
+
+  const dMax = Math.max(d1, d2);
+  const aCover = Math.max(25, numA - dMax / 2);
+  const sMin = isTop ? 30 : 25;
+  const sClear = totalBars > 1
+    ? (numB - 2 * aCover - (n1 * d1 + n2 * d2)) / (totalBars - 1)
+    : numB - 2 * aCover - dMax;
+  const clearanceOk = sClear >= Math.max(dMax, sMin);
+
+  const xiR = 0.8 / (1 + (Rs / steel.Es) / 0.0035);
+  const xProv = (Rs * AsProv) / (Rb * numB);
+  const xiProv = xProv / h0;
+  const isDuctile = xiProv <= xiR;
+
+  let MRdProv;
+  if (isDuctile) {
+    MRdProv = (Rb * numB * xProv * (h0 - 0.5 * xProv)) * 1e-6;
+  } else {
+    const xR = xiR * h0;
+    MRdProv = (Rb * numB * xR * (h0 - 0.5 * xR)) * 1e-6;
+  }
+  const etaProv = numM > 0 && MRdProv > 0 ? numM / MRdProv : 0;
+  const deltaPct = AsReq > 0 ? ((AsProv - AsReq) / AsReq) * 100 : 0;
+  const muProvPercent = (AsProv / (numB * h0)) * 100;
+
+  const remarks = [];
+  let status = 'PASS';
+
+  if (AsProv < AsReq) {
+    status = 'FAIL';
+    remarks.push(`🔴 THIẾU THÉP: As,prov = ${AsProv.toFixed(0)} mm² < As,req = ${AsReq.toFixed(0)} mm² (thiếu ${Math.abs(deltaPct).toFixed(1)}%). Tiết diện không bảo đảm khả năng chịu uốn.`);
+  } else if (deltaPct <= 12) {
+    remarks.push(`🟢 TỐI ƯU KINH TẾ: Thép bố trí dư +${deltaPct.toFixed(1)}% so với tính toán (biên 0% – 12%), tiết kiệm chi phí và tối ưu hóa trọng lượng cấu kiện.`);
+  } else if (deltaPct <= 25) {
+    remarks.push(`🟡 DƯ THÉP VỪA PHẢI: Thép bố trí dư +${deltaPct.toFixed(1)}%, đảm bảo an toàn nhưng có thể giảm đường kính hoặc số thanh nếu cần.`);
+  } else {
+    remarks.push(`🟠 DƯ THÉP NHIỀU (> 25%): Thép bố trí dư +${deltaPct.toFixed(1)}%. Khuyến nghị Value Engineering để tránh hao phí cốt thép.`);
+  }
+
+  if (clearanceOk) {
+    remarks.push(`🟢 KHOẢNG HỞ THÔNG THỦY ĐẠT: s_clear = ${sClear.toFixed(1)} mm ≥ [s_min = ${Math.max(dMax, sMin)} mm] theo TCVN 5574:2018 Điều 10.3.1. Bê tông và cốt liệu lớn (đá 1x2) chui lọt dễ dàng, loại trừ rỗ tổ ong.`);
+  } else {
+    status = 'WARN';
+    remarks.push(`⚠️ KHOẢNG HỞ QUÁ CHẬT: s_clear = ${sClear.toFixed(1)} mm < [s_min = ${Math.max(dMax, sMin)} mm]. Nguy cơ kẹt đá, rỗ tổ ong bê tông đáy dầm. Khuyến nghị: tách thành 2 lớp thép hoặc tăng đường kính giảm số thanh.`);
+  }
+
+  if (!isDuctile) {
+    status = 'FAIL';
+    remarks.push(`🔴 NGUY CƠ PHÁ HOẠI GIÒN: ξ_prov = ${xiProv.toFixed(3)} > ξ_R = ${xiR.toFixed(3)}. Bê tông nén vỡ vụn trước khi thép chảy dẻo. Cần tăng kích thước dầm hoặc đặt thêm cốt kép As'.`);
+  } else {
+    remarks.push(`🟢 PHÁ HOẠI DẺO AN TOÀN: ξ_prov = ${xiProv.toFixed(3)} ≤ ξ_R = ${xiR.toFixed(3)}. Kết cấu dẻo dai, cảnh báo trước biến dạng trước khi tới hạn.`);
+  }
+
+  const label = n2 > 0 ? `${n1}Ø${d1} + ${n2}Ø${d2}` : `${n1}Ø${d1}`;
+
+  return {
+    status,
+    label,
+    totalBars,
+    AsProvMm2: +AsProv.toFixed(1),
+    AsProvCm2: +(AsProv / 100).toFixed(2),
+    deltaPct: +deltaPct.toFixed(1),
+    sClear: +sClear.toFixed(1),
+    sMin: Math.max(dMax, sMin),
+    clearanceOk,
+    xProv: +xProv.toFixed(1),
+    xiProv: +xiProv.toFixed(3),
+    isDuctile,
+    MRdProv: +MRdProv.toFixed(2),
+    etaProv: +etaProv.toFixed(3),
+    muProvPercent: +muProvPercent.toFixed(2),
+    remarks,
+  };
+}
+
+/**
+ * Gợi ý các phương án chọn thép sàn (dải 1m)
+ */
+export function suggestSlabRebar({ AsReqPerM, h = 120 }) {
+  if (!AsReqPerM || AsReqPerM <= 0) return [];
+  const numH = Number(h);
+  const sMax = Math.min(1.5 * numH, numH <= 150 ? 200 : 300);
+  const diameters = COMMERCIAL_SLAB_REBAR_DIAMETERS;
+  const spacings = COMMERCIAL_SLAB_SPACINGS;
+  const candidates = [];
+
+  for (const d of diameters) {
+    const area1 = (Math.PI * d * d) / 4;
+    for (const s of spacings) {
+      if (s > sMax) continue;
+      const AsProv = (1000 / s) * area1;
+      if (AsProv >= AsReqPerM * 0.95) {
+        const deltaPct = ((AsProv - AsReqPerM) / AsReqPerM) * 100;
+        candidates.push({
+          label: `Ø${d}a${s}`,
+          dia: d,
+          spacing: s,
+          areaMm2: Math.round(AsProv),
+          areaCm2: +(AsProv / 100).toFixed(2),
+          deltaPct: +deltaPct.toFixed(1),
+          sMax,
+          spacingOk: s <= sMax && s >= 70,
+        });
+      }
+    }
+  }
+
+  candidates.sort((a, b) => {
+    const p1 = (a.deltaPct < 0 ? 100 : 0) + Math.abs(a.deltaPct);
+    const p2 = (b.deltaPct < 0 ? 100 : 0) + Math.abs(b.deltaPct);
+    return p1 - p2;
+  });
+
+  const seen = new Set();
+  const results = [];
+  for (const c of candidates) {
+    if (!seen.has(c.label)) {
+      seen.add(c.label);
+      let tag = '🟢 Đạt';
+      if (c.deltaPct >= 0 && c.deltaPct <= 12) tag = '⭐ Tối ưu (0-12%)';
+      else if (c.deltaPct > 12 && c.deltaPct <= 25) tag = '🟡 Hợp lý (12-25%)';
+      results.push({ ...c, tag });
+      if (results.length >= 4) break;
+    }
+  }
+  return results;
+}
+
+/**
+ * Đánh giá chi tiết phương án thép sàn được chọn
+ */
+export function evaluateSlabProvidedRebar({ AsReqPerM, dia, spacing, h = 120 }) {
+  const d = Number(dia) || 8;
+  const s = Number(spacing) || 150;
+  const numH = Number(h) || 120;
+  const area1 = (Math.PI * d * d) / 4;
+  const AsProv = (1000 / s) * area1;
+  const deltaPct = AsReqPerM > 0 ? ((AsProv - AsReqPerM) / AsReqPerM) * 100 : 0;
+  const sMax = Math.min(1.5 * numH, numH <= 150 ? 200 : 300);
+  const spacingOk = s <= sMax && s >= 70;
+
+  const remarks = [];
+  let status = 'PASS';
+  if (AsProv < AsReqPerM) {
+    status = 'FAIL';
+    remarks.push(`🔴 THIẾU THÉP SÀN: As,prov = ${AsProv.toFixed(0)} mm²/m < As,req = ${Number(AsReqPerM).toFixed(0)} mm²/m (thiếu ${Math.abs(deltaPct).toFixed(1)}%).`);
+  } else {
+    remarks.push(`🟢 ĐẠT KHẢ NĂNG CHỊU LỰC: As,prov = ${AsProv.toFixed(0)} mm²/m ≥ As,req = ${Number(AsReqPerM).toFixed(0)} mm²/m (dư +${deltaPct.toFixed(1)}%).`);
+  }
+
+  if (spacingOk) {
+    remarks.push(`🟢 KHOẢNG CÁCH HỢP CHUẨN: Bước thép a = ${s} mm ≤ [a_max = ${sMax} mm] (TCVN 5574:2018 Điều 10.3.3) và ≥ 70 mm.`);
+  } else if (s > sMax) {
+    status = 'WARN';
+    remarks.push(`⚠️ BƯỚC THÉP QUÁ THƯA: a = ${s} mm > [a_max = ${sMax} mm]. Dễ gây nứt cục bộ giữa các thanh thép.`);
+  } else {
+    status = 'WARN';
+    remarks.push(`⚠️ BƯỚC THÉP QUÁ DÀY: a = ${s} mm < 70 mm. Khó thi công đổ bê tông sàn.`);
+  }
+
+  return {
+    dia: d,
+    spacing: s,
+    label: `Ø${d}a${s}`,
+    AsProvMm2: +AsProv.toFixed(1),
+    AsProvCm2: +(AsProv / 100).toFixed(2),
+    deltaPct: +deltaPct.toFixed(1),
+    sMax,
+    spacingOk,
+    status,
+    remarks,
+  };
+}
+
+/**
+ * Kiểm tra khoảng hở cốt thép cột
+ */
+export function evaluateColumnClearance(b, h, a, dia, count) {
+  const numB = Number(b);
+  const numH = Number(h);
+  const numA = Number(a);
+  const d = Number(dia);
+  const c = Number(count);
+
+  const ratio = numH / numB;
+  const nh = Math.max(2, Math.round((c / 2 + 2) * ratio / (1 + ratio)));
+  const nb = Math.max(2, Math.round(c / 2 + 2 - nh));
+
+  const sB = nb > 1 ? (numB - 2 * numA - nb * d) / (nb - 1) : numB - 2 * numA - d;
+  const sH = nh > 1 ? (numH - 2 * numA - nh * d) / (nh - 1) : numH - 2 * numA - d;
+  const minClear = Math.min(sB, sH);
+  const maxSpace = Math.max(sB, sH);
+
+  const sMinLimit = Math.max(d, 50); // TCVN 5574:2018 Điều 10.3.1 (đổ đứng >= max(d, 50 mm))
+  const clearOk = minClear >= sMinLimit;
+  const maxSpaceOk = maxSpace <= 400; // Điều 10.3.1: khoảng cách max <= 400 mm
+
+  return {
+    nb,
+    nh,
+    sB: +sB.toFixed(1),
+    sH: +sH.toFixed(1),
+    minClear: +minClear.toFixed(1),
+    sMinLimit,
+    clearOk,
+    maxSpaceOk,
+  };
+}
+
+/**
+ * Gợi ý các phương án bố trí cốt thép cột tối ưu
+ */
+export function suggestColumnRebar({
+  Ned,
+  Medx,
+  Medy,
+  b,
+  h,
+  a = 40,
+  L = 3.6,
+  concrete = 'B25',
+  rebar = 'CB400V',
+}) {
+  const configs = [
+    { count: 4, dia: 18 }, { count: 4, dia: 20 }, { count: 4, dia: 22 },
+    { count: 6, dia: 18 }, { count: 6, dia: 20 }, { count: 6, dia: 22 },
+    { count: 8, dia: 18 }, { count: 8, dia: 20 }, { count: 8, dia: 22 }, { count: 8, dia: 25 },
+    { count: 10, dia: 20 }, { count: 10, dia: 22 },
+    { count: 12, dia: 20 }, { count: 12, dia: 22 }, { count: 12, dia: 25 },
+  ];
+
+  const results = [];
+  for (const cfg of configs) {
+    const res = calculateRCColumnBiaxial({
+      b, h, a, L, concrete, rebar,
+      Ned, Medx, Medy,
+      rebarDia: cfg.dia,
+      rebarCount: cfg.count,
+      isSuggesting: true,
+    });
+    if (res.valid && res.utilization.eta <= 1.0) {
+      const clearCheck = evaluateColumnClearance(b, h, a, cfg.dia, cfg.count);
+      results.push({
+        label: `${cfg.count}Ø${cfg.dia}`,
+        count: cfg.count,
+        dia: cfg.dia,
+        AsTot: res.AsTot,
+        mu: res.mu,
+        NRdBresler: res.NRdBresler,
+        eta: res.utilization.eta,
+        clearOk: clearCheck.clearOk,
+        minClear: clearCheck.minClear,
+      });
+    }
+  }
+
+  results.sort((a, b) => {
+    const p1 = (!a.clearOk ? 50 : 0) + (a.mu < 0.8 ? 20 : 0) + a.mu;
+    const p2 = (!b.clearOk ? 50 : 0) + (b.mu < 0.8 ? 20 : 0) + b.mu;
+    return p1 - p2;
+  });
+
+  return results.slice(0, 4).map((r) => {
+    let tag = '🟢 Đạt';
+    if (r.eta >= 0.75 && r.eta <= 0.95 && r.mu <= 2.2 && r.clearOk) tag = '⭐ Tối ưu (η 75-95%)';
+    else if (r.eta < 0.75) tag = '🟡 Dư khả năng chịu tải';
+    return { ...r, tag };
+  });
+}
+
 export function calculateBeamRebarTCVN5574({
   b = 300,
   h = 600,
@@ -356,6 +786,11 @@ export function calculateBeamRebarTCVN5574({
   concrete = 'B25',
   rebar = 'CB400V',
   gammaB = 1.0,
+  selectedCount,
+  selectedDia,
+  secondCount = 0,
+  secondDia = 0,
+  isTop = false,
 }) {
   const errors = [];
   const numB = Number(b);
@@ -508,6 +943,26 @@ export function calculateBeamRebarTCVN5574({
     muMax: +muMax.toFixed(2),
     statusMessage,
     rebarSuggestions: finalSuggestions,
+    suggestedRebars: !isOverReinforced
+      ? suggestBeamRebar({ AsReq: AsDesign, b: numB, a: numA, isTop })
+      : [],
+    providedRebar: (selectedCount && selectedDia)
+      ? evaluateBeamProvidedRebar({
+          AsReq: AsDesign,
+          barCount: selectedCount,
+          barDia: selectedDia,
+          secondCount,
+          secondDia,
+          b: numB,
+          h: numH,
+          a: numA,
+          concrete,
+          rebar,
+          gammaB: numGammaB,
+          M: numM,
+          isTop,
+        })
+      : null,
     utilization: finalUtilization,
     steps,
     standardRef: 'TCVN 5574:2018 — Điều 8.1.2.2 & Điều 10.3.3',
@@ -945,6 +1400,10 @@ export function calculateRCBeamAdvanced({
   stirrupLegs = 2,
   stirrupSpacing,
   gammaB = 1.0,
+  tensionDia,
+  tensionCount,
+  compDia,
+  compCount,
 }) {
   const errors = [];
   const numB = Number(b);
@@ -1098,6 +1557,54 @@ export function calculateRCBeamAdvanced({
     etaShear: etaShear !== null ? +etaShear.toFixed(3) : null,
     etaStrut: +etaStrut.toFixed(3),
     statusMessage,
+    tensionSuggestions: suggestBeamRebar({
+      AsReq: AsDesign,
+      b: numB,
+      a: numA,
+      isTop: false,
+      minBars: 2,
+      maxBars: 6,
+    }),
+    compSuggestions: isDoubleLayer && AsPrimeRequired > 0
+      ? suggestBeamRebar({
+          AsReq: AsPrimeRequired,
+          b: numB,
+          a: numAp,
+          isTop: true,
+          minBars: 2,
+          maxBars: 4,
+        })
+      : [],
+    providedTension: (tensionCount && tensionDia)
+      ? evaluateBeamProvidedRebar({
+          AsReq: AsDesign,
+          barCount: tensionCount,
+          barDia: tensionDia,
+          b: numB,
+          h: numH,
+          a: numA,
+          concrete,
+          rebar,
+          gammaB: numGammaB,
+          M: numM,
+          isTop: false,
+        })
+      : null,
+    providedComp: (compCount && compDia)
+      ? evaluateBeamProvidedRebar({
+          AsReq: AsPrimeRequired || 1,
+          barCount: compCount,
+          barDia: compDia,
+          b: numB,
+          h: numH,
+          a: numAp,
+          concrete,
+          rebar,
+          gammaB: numGammaB,
+          M: 0,
+          isTop: true,
+        })
+      : null,
     utilization,
     steps,
     standardRef: 'TCVN 5574:2018 — Điều 8.1.2 (uốn) & 8.1.3 (cắt)',
@@ -1527,6 +2034,7 @@ export function calculateRCColumnBiaxial({
   Medy = 60,
   rebarDia = 20,
   rebarCount = 8,
+  isSuggesting = false,
 }) {
   const errors = [];
   const numB = Number(b);
@@ -1619,6 +2127,41 @@ export function calculateRCColumnBiaxial({
 
   const eta = +(numNed / NRdBresler).toFixed(3);
   const utilization = evaluateUtilization(eta);
+  const columnClearance = evaluateColumnClearance(numB, numH, numA, numDia, numCount);
+  const columnSuggestions = !isSuggesting
+    ? suggestColumnRebar({
+        Ned: numNed,
+        Medx: numMedx,
+        Medy: numMedy,
+        b: numB,
+        h: numH,
+        a: numA,
+        L: numL,
+        concrete,
+        rebar,
+      })
+    : [];
+
+  const remarks = [];
+  if (eta <= 1.0) {
+    if (mu >= 0.8 && mu <= 2.2) {
+      remarks.push(`🟢 CỘT THIẾT KẾ TỐI ƯU: η = ${eta} ≤ 1.0; Hàm lượng thép μ = ${mu.toFixed(2)}% nằm trong dải kinh tế lý tưởng (0.8% – 2.2%), tiết kiệm thép và đảm bảo độ dẻo.`);
+    } else if (mu > 2.2 && mu <= 3.5) {
+      remarks.push(`🟡 CỘT TẢI LỚN AN TOÀN: η = ${eta} ≤ 1.0; Hàm lượng thép μ = ${mu.toFixed(2)}% (phù hợp cột tầng dưới nhà nhiều tầng).`);
+    } else if (mu < 0.8) {
+      remarks.push(`ℹ️ HÀM LƯỢNG THÉP THẤP: μ = ${mu.toFixed(2)}% ≥ μ_min = 0.40%, cột chịu nén chiếm ưu thế.`);
+    } else {
+      remarks.push(`🟠 CỐT THÉP DÀY: μ = ${mu.toFixed(2)}% > 3.5%. Cần lưu ý nút khung khi nối cốt thép.`);
+    }
+  } else {
+    remarks.push(`🔴 VƯỢT KHẢ NĂNG CHỊU TẢI: η = ${eta} > 1.0. Tiết diện hoặc cốt thép không đủ chịu nén lệch tâm xiên. Cần tăng số thanh, tăng đường kính hoặc mở rộng tiết diện b × h.`);
+  }
+
+  if (columnClearance.clearOk) {
+    remarks.push(`🟢 KHOẢNG HỞ CỐT THÉP ĐẠT: s_min = ${columnClearance.minClear} mm ≥ [${columnClearance.sMinLimit} mm] theo TCVN 5574:2018 Điều 10.3.1. Thuận tiện luồn đầm dùi và đổ bê tông cột thẳng đứng không lo rỗ phân tầng.`);
+  } else {
+    remarks.push(`⚠️ KHOẢNG HỞ CỐT THÉP HẸP: s_min = ${columnClearance.minClear} mm < [${columnClearance.sMinLimit} mm]. Nguy cơ nghẽn cốt liệu bê tông tại cổ cột.`);
+  }
 
   const steps = [
     `Bước 1 [Độ mảnh & Lệch tâm ban đầu]: L₀ = ${L0.toFixed(0)} mm; λ_x = ${lambdaX.toFixed(1)}, λ_y = ${lambdaY.toFixed(1)}; e_{0,x} = ${e0X.toFixed(1)} mm, e_{0,y} = ${e0Y.toFixed(1)} mm.`,
@@ -1653,6 +2196,9 @@ export function calculateRCColumnBiaxial({
     NRdx: +NRdx.toFixed(1),
     NRdy: +NRdy.toFixed(1),
     NRdBresler,
+    columnClearance,
+    columnSuggestions,
+    remarks,
     utilization,
     steps,
     standardRef: 'TCVN 5574:2018 — Mục 8.1.4, Phụ lục E & Công thức Bresler',
@@ -1672,6 +2218,14 @@ export function calculateTwoWaySlab({
   gdl = 4.5,
   qll = 2.0,
   boundary = 'fixed_all',
+  dia1Pos,
+  s1Pos,
+  dia1Neg,
+  s1Neg,
+  dia2Pos,
+  s2Pos,
+  dia2Neg,
+  s2Neg,
 }) {
   const errors = [];
   const numLx = Number(Lx);
@@ -1803,6 +2357,18 @@ export function calculateTwoWaySlab({
     fCalc,
     fAllow,
     etaDeflection,
+    slabSuggestions: {
+      pos1: suggestSlabRebar({ AsReqPerM: As1Pos, h: numH }),
+      neg1: suggestSlabRebar({ AsReqPerM: As1Neg, h: numH }),
+      pos2: suggestSlabRebar({ AsReqPerM: As2Pos, h: numH }),
+      neg2: suggestSlabRebar({ AsReqPerM: As2Neg, h: numH }),
+    },
+    providedSlabRebars: {
+      pos1: dia1Pos && s1Pos ? evaluateSlabProvidedRebar({ AsReqPerM: As1Pos, dia: dia1Pos, spacing: s1Pos, h: numH }) : null,
+      neg1: dia1Neg && s1Neg ? evaluateSlabProvidedRebar({ AsReqPerM: As1Neg, dia: dia1Neg, spacing: s1Neg, h: numH }) : null,
+      pos2: dia2Pos && s2Pos ? evaluateSlabProvidedRebar({ AsReqPerM: As2Pos, dia: dia2Pos, spacing: s2Pos, h: numH }) : null,
+      neg2: dia2Neg && s2Neg ? evaluateSlabProvidedRebar({ AsReqPerM: As2Neg, dia: dia2Neg, spacing: s2Neg, h: numH }) : null,
+    },
     utilization,
     steps,
     standardRef: 'TCVN 5574:2018 — Mục 8.1.2 & Lý thuyết bản kê 4 cạnh Marcus',

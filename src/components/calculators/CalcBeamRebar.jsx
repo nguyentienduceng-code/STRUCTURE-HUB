@@ -8,10 +8,14 @@ import {
   Bot,
   Lightbulb,
   ShieldAlert,
+  CheckCircle,
+  Sparkles,
+  Layers,
 } from 'lucide-react';
 import {
   CONCRETE_GRADES_TCVN5574,
   REBAR_GRADES_TCVN5574,
+  COMMERCIAL_BEAM_REBAR_DIAMETERS,
   calculateBeamRebarTCVN5574,
   exportHandoffJSON,
 } from '../../services/calculatorEngines';
@@ -27,6 +31,14 @@ export default function CalcBeamRebar() {
   const [concrete, setConcrete] = useState('B25');
   const [rebar, setRebar] = useState('CB400V');
   const [gammaB, setGammaB] = useState(1.0);
+
+  // Cốt thép thực tế do người dùng chọn / cấu hình
+  const [selectedCount, setSelectedCount] = useState(4);
+  const [selectedDia, setSelectedDia] = useState(20);
+  const [secondCount, setSecondCount] = useState(0);
+  const [secondDia, setSecondDia] = useState(0);
+  const [isCombined, setIsCombined] = useState(false);
+
   const [copied, setCopied] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [isHandoffOpen, setIsHandoffOpen] = useState(false);
@@ -40,7 +52,28 @@ export default function CalcBeamRebar() {
     concrete,
     rebar,
     gammaB,
+    selectedCount,
+    selectedDia,
+    secondCount: isCombined ? secondCount : 0,
+    secondDia: isCombined ? secondDia : 0,
+    isTop: false,
   });
+
+  const handleApplySuggestion = (sug) => {
+    if (sug.isCombined) {
+      setIsCombined(true);
+      setSelectedCount(sug.count);
+      setSelectedDia(sug.dia);
+      setSecondCount(sug.secondCount);
+      setSecondDia(sug.secondDia);
+    } else {
+      setIsCombined(false);
+      setSelectedCount(sug.count);
+      setSelectedDia(sug.dia);
+      setSecondCount(0);
+      setSecondDia(0);
+    }
+  };
 
   const handleCopy = () => {
     if (!result.valid) return;
@@ -50,11 +83,19 @@ export default function CalcBeamRebar() {
       `- Vật liệu: Bê tông ${concrete} (R_b = ${result.Rb} MPa) | Cốt thép ${rebar} (R_s = ${result.Rs} MPa)`,
       `- Mômen uốn tính toán M = ${M} kNm (M_ult = ${result.Mult} kNm)`,
       `- Chiều cao vùng nén: x = ${result.x} mm | ξ = ${result.xi} (ξ_R = ${result.xiR})`,
-      `- Diện tích thép yêu cầu: A_s = ${result.AsDesignMm2} mm² (${result.AsDesignCm2} cm²)`,
-      `- Hàm lượng cốt thép: μ = ${result.muDesignPercent}%`,
+      `- Diện tích thép yêu cầu: A_s,req = ${result.AsDesignMm2} mm² (${result.AsDesignCm2} cm²) | μ = ${result.muDesignPercent}%`,
+      result.providedRebar
+        ? `- Thép chọn thực tế: ${result.providedRebar.label} (As,prov = ${result.providedRebar.AsProvCm2} cm² [${result.providedRebar.AsProvMm2} mm²], chênh lệch ${result.providedRebar.deltaPct > 0 ? '+' : ''}${result.providedRebar.deltaPct}%)`
+        : '',
+      result.providedRebar
+        ? `- Khoảng hở tịnh: s_clear = ${result.providedRebar.sClear} mm (s_min = ${result.providedRebar.sMin} mm) -> ${result.providedRebar.clearanceOk ? 'ĐẠT ĐIỀU 10.3.1' : 'KHÔNG ĐẠT'}`
+        : '',
+      result.providedRebar
+        ? `- Sức chịu uốn thực tế M_Rd,prov = ${result.providedRebar.MRdProv} kNm (η_prov = ${result.providedRebar.etaProv})`
+        : '',
       `- Đánh giá η = M / M_ult = ${result.utilization.eta.toFixed(3)} (${result.utilization.icon} ${result.utilization.label})`,
       ...result.steps,
-    ].join('\n');
+    ].filter(Boolean).join('\n');
 
     try {
       navigator.clipboard.writeText(text);
@@ -77,6 +118,7 @@ export default function CalcBeamRebar() {
           concrete,
           rebar,
           gamma_b: Number(gammaB),
+          selected_rebar: result.providedRebar ? result.providedRebar.label : null,
         },
         outputs: {
           h0_mm: result.h0,
@@ -89,6 +131,8 @@ export default function CalcBeamRebar() {
           is_over_reinforced: result.isOverReinforced,
           As_required_cm2: result.AsDesignCm2,
           mu_percent: result.muDesignPercent,
+          As_provided_cm2: result.providedRebar ? result.providedRebar.AsProvCm2 : null,
+          s_clear_mm: result.providedRebar ? result.providedRebar.sClear : null,
           utilization_eta: result.utilization.eta,
         },
         utilization: result.utilization,
@@ -97,7 +141,20 @@ export default function CalcBeamRebar() {
     : null;
 
   const phuLucData = result.valid
-    ? generatePhuLucData('beam', { b_mm: b, h_mm: h, a_mm: a, M_kNm: M, concrete, rebar, gamma_b: gammaB }, result)
+    ? generatePhuLucData(
+        'beam',
+        {
+          b_mm: b,
+          h_mm: h,
+          a_mm: a,
+          M_kNm: M,
+          concrete,
+          rebar,
+          gamma_b: gammaB,
+          selected_rebar: result.providedRebar ? result.providedRebar.label : null,
+        },
+        result
+      )
     : null;
 
   return (
@@ -107,10 +164,10 @@ export default function CalcBeamRebar() {
           <Building2 size={22} color="var(--accent-primary)" />
           <div>
             <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
-              Mô-đun 3: Tính Cốt thép Dầm Chữ nhật Đặt Cốt Đơn (<var>A<sub>s</sub>, &xi;, &mu;%</var>)
+              Mô-đun 3: Tính &amp; Chọn Cốt thép Dầm Đặt Cốt Đơn (<var>A<sub>s</sub>, &xi;, &mu;%, s<sub>clear</sub></var>)
             </h3>
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-              Trích dẫn pháp lý: <strong>TCVN 5574:2018 — Điều 8.1.2.2, Bảng 6, Bảng 13 &amp; Điều 10.3.3</strong>
+              Trích dẫn pháp lý: <strong>TCVN 5574:2018 — Điều 8.1.2.2, Điều 10.3.1 (khoảng hở) &amp; Điều 10.3.3</strong>
             </span>
           </div>
         </div>
@@ -256,7 +313,7 @@ export default function CalcBeamRebar() {
               </div>
 
               <div className="calc-metric-box highlight">
-                <span className="calc-metric-label">Diện tích thép yêu cầu <var>A<sub>s</sub></var></span>
+                <span className="calc-metric-label">Diện tích thép yêu cầu <var>A<sub>s,req</sub></var></span>
                 <strong className="calc-metric-value" style={{ color: 'var(--accent-gold)' }}>
                   {result.AsDesignCm2} <small>cm²</small>
                 </strong>
@@ -285,20 +342,246 @@ export default function CalcBeamRebar() {
                 </small>
               </div>
             </div>
-
-            {!result.isOverReinforced && result.rebarSuggestions.length > 0 && (
-              <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                  Gợi ý chọn cốt thép thực tế:
-                </span>
-                {result.rebarSuggestions.map((sug) => (
-                  <span key={sug.diameter} className="spec-badge" style={{ fontSize: '0.82rem' }}>
-                    <strong>{sug.label}</strong> ({sug.totalAreaCm2} cm²)
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
+
+          {/* TẦNG 2.5: BỘ CHỌN CỐT THÉP & KIỂM TRA THỰC TẾ (REBAR SELECTOR & VERIFICATION) */}
+          {!result.isOverReinforced && (
+            <div className="calc-tier" style={{ border: '1px solid var(--accent-primary)', background: 'rgba(59, 130, 246, 0.04)' }}>
+              <div className="calc-tier-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-primary)' }}>
+                <Sparkles size={17} />
+                <span>Gợi ý &amp; Chọn Cốt thép Dọc Thực tế (Kiểm tra Cấu tạo Điều 10.3 TCVN 5574:2018)</span>
+              </div>
+
+              {/* CHIPS GỢI Ý THÉP THÔNG MINH */}
+              {result.suggestedRebars && result.suggestedRebars.length > 0 && (
+                <div style={{ marginBottom: '14px' }}>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '6px' }}>
+                    💡 Gợi ý phương án bố trí tối ưu (bấm để tự động áp dụng):
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {result.suggestedRebars.map((sug, idx) => {
+                      const isActive = (!isCombined && !sug.isCombined && selectedCount === sug.count && selectedDia === sug.dia)
+                        || (isCombined && sug.isCombined && selectedCount === sug.count && selectedDia === sug.dia && secondCount === sug.secondCount && secondDia === sug.secondDia);
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleApplySuggestion(sug)}
+                          className="spec-badge"
+                          style={{
+                            cursor: 'pointer',
+                            padding: '6px 12px',
+                            fontSize: '0.84rem',
+                            background: isActive ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.06)',
+                            color: isActive ? '#fff' : 'var(--text-primary)',
+                            borderColor: 'var(--accent-primary)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            transition: 'all 0.2s ease',
+                          }}
+                        >
+                          <strong>{sug.label}</strong>
+                          <span>({sug.areaCm2} cm², {sug.deltaPct > 0 ? `+${sug.deltaPct}%` : `${sug.deltaPct}%`})</span>
+                          <span style={{ fontSize: '0.72rem', opacity: 0.85 }}>[{sug.tag}]</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* ĐIỀU KHIỂN CHỌN THÉP TÙY CHỈNH */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: isCombined ? '1fr 1fr 1fr 1fr auto' : '1fr 1fr auto',
+                  gap: '10px',
+                  alignItems: 'end',
+                  padding: '12px',
+                  background: 'rgba(0, 0, 0, 0.15)',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-color)',
+                  marginBottom: '14px',
+                }}
+              >
+                <div className="calc-field" style={{ margin: 0 }}>
+                  <label style={{ fontSize: '0.8rem' }}>Số thanh chính <var>n₁</var></label>
+                  <select
+                    value={selectedCount}
+                    onChange={(e) => setSelectedCount(Number(e.target.value))}
+                    className="calc-select"
+                  >
+                    {[2, 3, 4, 5, 6, 7, 8].map((n) => (
+                      <option key={n} value={n}>{n} thanh</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="calc-field" style={{ margin: 0 }}>
+                  <label style={{ fontSize: '0.8rem' }}>Đường kính <var>&Phi; d₁</var> (mm)</label>
+                  <select
+                    value={selectedDia}
+                    onChange={(e) => setSelectedDia(Number(e.target.value))}
+                    className="calc-select"
+                  >
+                    {COMMERCIAL_BEAM_REBAR_DIAMETERS.map((d) => (
+                      <option key={d} value={d}>&Phi;{d} (A₁ = {((Math.PI * d * d) / 4).toFixed(0)} mm²)</option>
+                    ))}
+                  </select>
+                </div>
+
+                {isCombined && (
+                  <>
+                    <div className="calc-field" style={{ margin: 0 }}>
+                      <label style={{ fontSize: '0.8rem' }}>Số thanh phụ <var>n₂</var></label>
+                      <select
+                        value={secondCount}
+                        onChange={(e) => setSecondCount(Number(e.target.value))}
+                        className="calc-select"
+                      >
+                        {[1, 2, 3, 4].map((n) => (
+                          <option key={n} value={n}>{n} thanh</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="calc-field" style={{ margin: 0 }}>
+                      <label style={{ fontSize: '0.8rem' }}>Đường kính phụ <var>&Phi; d₂</var></label>
+                      <select
+                        value={secondDia}
+                        onChange={(e) => setSecondDia(Number(e.target.value))}
+                        className="calc-select"
+                      >
+                        {COMMERCIAL_BEAM_REBAR_DIAMETERS.map((d) => (
+                          <option key={d} value={d}>&Phi;{d}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCombined(!isCombined);
+                    if (!isCombined) {
+                      setSecondCount(1);
+                      setSecondDia(selectedDia === 22 ? 20 : selectedDia);
+                    } else {
+                      setSecondCount(0);
+                      setSecondDia(0);
+                    }
+                  }}
+                  className="calc-action-btn"
+                  style={{
+                    padding: '8px 12px',
+                    fontSize: '0.8rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    height: '38px',
+                  }}
+                >
+                  <Layers size={15} />
+                  <span>{isCombined ? 'Chỉ dùng 1 đường kính' : '+ Kết hợp 2 đường kính'}</span>
+                </button>
+              </div>
+
+              {/* BẢNG KẾT QUẢ KIỂM TRA THÉP ĐÃ CHỌN */}
+              {result.providedRebar && (
+                <div>
+                  <div className="calc-results-grid" style={{ marginBottom: '12px' }}>
+                    <div className="calc-metric-box highlight">
+                      <span className="calc-metric-label">Thép bố trí <var>A<sub>s,prov</sub></var></span>
+                      <strong className="calc-metric-value" style={{ color: 'var(--green)' }}>
+                        {result.providedRebar.label} <small>({result.providedRebar.AsProvCm2} cm²)</small>
+                      </strong>
+                      <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                        {result.providedRebar.AsProvMm2} mm² (Yêu cầu: {result.AsDesignMm2} mm²)
+                      </small>
+                    </div>
+
+                    <div className="calc-metric-box">
+                      <span className="calc-metric-label">Tỷ lệ chênh lệch <var>&Delta;A<sub>s</sub>%</var></span>
+                      <strong
+                        className="calc-metric-value"
+                        style={{
+                          color: result.providedRebar.deltaPct < 0
+                            ? '#ef4444'
+                            : result.providedRebar.deltaPct <= 15
+                            ? '#10b981'
+                            : '#f59e0b',
+                        }}
+                      >
+                        {result.providedRebar.deltaPct > 0 ? `+${result.providedRebar.deltaPct}%` : `${result.providedRebar.deltaPct}%`}
+                      </strong>
+                      <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                        {result.providedRebar.deltaPct < 0 ? 'Thiếu thép ULS' : result.providedRebar.deltaPct <= 15 ? 'Biên độ tối ưu kinh tế' : 'Dư thép'}
+                      </small>
+                    </div>
+
+                    <div className="calc-metric-box">
+                      <span className="calc-metric-label">Khoảng hở thông thủy <var>s<sub>clear</sub></var></span>
+                      <strong
+                        className="calc-metric-value"
+                        style={{ color: result.providedRebar.clearanceOk ? '#10b981' : '#ef4444' }}
+                      >
+                        {result.providedRebar.sClear} mm <small>({result.providedRebar.clearanceOk ? 'ĐẠT' : 'KHÔNG ĐẠT'})</small>
+                      </strong>
+                      <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                        Yêu cầu &ge; [s<sub>min</sub> = {result.providedRebar.sMin} mm] (Đ.10.3.1)
+                      </small>
+                    </div>
+
+                    <div className="calc-metric-box">
+                      <span className="calc-metric-label">Sức chịu uốn thực tế <var>M<sub>Rd,prov</sub></var></span>
+                      <strong className="calc-metric-value" style={{ color: '#60a5fa' }}>
+                        {result.providedRebar.MRdProv} <small>kNm</small>
+                      </strong>
+                      <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                        &eta;<sub>prov</sub> = {result.providedRebar.etaProv} (&mu; = {result.providedRebar.muProvPercent}%)
+                      </small>
+                    </div>
+                  </div>
+
+                  {/* THẺ NHẬN XÉT KỸ THUẬT CHUYÊN SÂU */}
+                  <div
+                    style={{
+                      padding: '12px 14px',
+                      borderRadius: '8px',
+                      background: result.providedRebar.status === 'PASS'
+                        ? 'rgba(16, 185, 129, 0.08)'
+                        : result.providedRebar.status === 'WARN'
+                        ? 'rgba(245, 158, 11, 0.08)'
+                        : 'rgba(239, 68, 68, 0.08)',
+                      border: `1px solid ${
+                        result.providedRebar.status === 'PASS'
+                          ? '#10b981'
+                          : result.providedRebar.status === 'WARN'
+                          ? '#f59e0b'
+                          : '#ef4444'
+                      }`,
+                    }}
+                  >
+                    <div style={{ fontWeight: 700, fontSize: '0.88rem', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {result.providedRebar.status === 'PASS' ? (
+                        <CheckCircle size={16} color="#10b981" />
+                      ) : (
+                        <AlertTriangle size={16} color="#f59e0b" />
+                      )}
+                      <span>Nhận xét Kỹ thuật &amp; Khả năng Thi công Thực tế:</span>
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '0.84rem', lineHeight: 1.55, color: 'var(--text-secondary)' }}>
+                      {result.providedRebar.remarks.map((rem, idx) => (
+                        <li key={idx}>{rem}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* TẦNG 3: ĐÁNH GIÁ CHỈ SỐ SỬ DỤNG η & POLICY ENGINE */}
           <div
@@ -456,6 +739,34 @@ export default function CalcBeamRebar() {
                         <td style={{ textAlign: 'center' }}>—</td>
                         <td style={{ textAlign: 'center', color: '#10b981', fontWeight: 700 }}>HỢP LÝ</td>
                       </tr>
+                      {result.providedRebar && (
+                        <>
+                          <tr style={{ background: 'rgba(59, 130, 246, 0.08)' }}>
+                            <td style={{ fontWeight: 700 }}>Cốt thép chọn thực tế</td>
+                            <td style={{ textAlign: 'center', fontStyle: 'italic', fontWeight: 700 }}>A_s,prov</td>
+                            <td style={{ textAlign: 'right', fontWeight: 700, color: 'var(--accent-primary)' }}>
+                              {result.providedRebar.label} ({result.providedRebar.AsProvCm2} cm²)
+                            </td>
+                            <td style={{ textAlign: 'right' }}>≥ {result.AsDesignCm2} cm²</td>
+                            <td style={{ textAlign: 'center', fontWeight: 600 }}>
+                              {result.providedRebar.deltaPct > 0 ? `+${result.providedRebar.deltaPct}%` : `${result.providedRebar.deltaPct}%`}
+                            </td>
+                            <td style={{ textAlign: 'center', color: result.providedRebar.status === 'PASS' ? '#10b981' : '#ef4444', fontWeight: 700 }}>
+                              {result.providedRebar.status === 'PASS' ? 'ĐẠT' : 'CẢNH BÁO'}
+                            </td>
+                          </tr>
+                          <tr style={{ background: 'rgba(59, 130, 246, 0.04)' }}>
+                            <td>Khoảng hở thông thủy</td>
+                            <td style={{ textAlign: 'center', fontStyle: 'italic' }}>s_clear</td>
+                            <td style={{ textAlign: 'right', fontWeight: 600 }}>{result.providedRebar.sClear} mm</td>
+                            <td style={{ textAlign: 'right' }}>≥ {result.providedRebar.sMin} mm</td>
+                            <td style={{ textAlign: 'center' }}>{(result.providedRebar.sMin / result.providedRebar.sClear).toFixed(2)}</td>
+                            <td style={{ textAlign: 'center', color: result.providedRebar.clearanceOk ? '#10b981' : '#ef4444', fontWeight: 700 }}>
+                              {result.providedRebar.clearanceOk ? 'ĐẠT ĐIỀU 10.3.1' : 'QUÁ CHẬT'}
+                            </td>
+                          </tr>
+                        </>
+                      )}
                       <tr style={{ background: 'rgba(255, 242, 204, 0.25)' }}>
                         <td style={{ fontWeight: 700 }}>Khả năng chịu uốn ULS</td>
                         <td style={{ textAlign: 'center', fontStyle: 'italic', fontWeight: 700 }}>M_ult</td>

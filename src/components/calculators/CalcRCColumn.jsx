@@ -6,10 +6,13 @@ import {
   Check,
   Bot,
   AlertTriangle,
+  Sparkles,
+  CheckCircle,
 } from 'lucide-react';
 import {
   calculateRCColumnBiaxial,
   exportHandoffJSON,
+  COMMERCIAL_COLUMN_REBAR_DIAMETERS,
 } from '../../services/calculatorEngines';
 import HandoffModal from './HandoffModal';
 import PhuLucCalculationModal from './PhuLucCalculationModal';
@@ -33,7 +36,17 @@ export default function CalcRCColumn() {
   const [isPhuLucOpen, setIsPhuLucOpen] = useState(false);
 
   const result = calculateRCColumnBiaxial({
-    b, h, a, L, concrete, rebar, Ned, Medx, Medy, rebarDia, rebarCount,
+    b,
+    h,
+    a,
+    L,
+    concrete,
+    rebar,
+    Ned,
+    Medx,
+    Medy,
+    rebarDia,
+    rebarCount,
   });
 
   const handleCopy = () => {
@@ -42,10 +55,15 @@ export default function CalcRCColumn() {
       `=== CỘT BTCT NÉN LỆCH TÂM XIÊN BRESLER (${result.standardRef}) ===`,
       `- Tiết diện: ${b}x${h} mm, H_tầng = ${L} m, Bê tông: ${concrete}, Thép: ${rebar}`,
       `- Bố trí thép: ${rebarCount}Ø${rebarDia} (As = ${result.AsTot} mm², μ = ${result.mu}%)`,
+      result.columnClearance
+        ? `- Khoảng hở tịnh: s_b = ${result.columnClearance.sB} mm, s_h = ${result.columnClearance.sH} mm (s_min = ${result.columnClearance.sMinLimit} mm) -> ${result.columnClearance.clearOk ? 'ĐẠT ĐIỀU 10.3.1' : 'QUÁ CHẬT'}`
+        : '',
       `- Nội lực: N = ${Ned} kN, Mx = ${Medx} kNm, My = ${Medy} kNm`,
       `=> Sức kháng: N_Rd,0 = ${result.NRd0} kN, N_Rd,x = ${result.NRdx} kN, N_Rd,y = ${result.NRdy} kN`,
       `=> N_Rd,Bresler = ${result.NRdBresler} kN (η = ${result.utilization.eta} -> ${result.utilization.icon} ${result.utilization.label})`,
-    ].join('\n');
+      ...(result.remarks || []).map((r) => `* ${r}`),
+      ...result.steps,
+    ].filter(Boolean).join('\n');
     try {
       navigator.clipboard.writeText(text);
       setCopied(true);
@@ -56,14 +74,44 @@ export default function CalcRCColumn() {
   };
 
   const phuLucData = result.valid
-    ? generatePhuLucData('rccolumn', { b, h, a, L, concrete, rebar, Ned, Medx, Medy, rebarDia, rebarCount }, result)
+    ? generatePhuLucData(
+        'rccolumn',
+        {
+          b,
+          h,
+          a,
+          L,
+          concrete,
+          rebar,
+          Ned,
+          Medx,
+          Medy,
+          rebarDia,
+          rebarCount,
+          selected_rebar: `${rebarCount}Ø${rebarDia}`,
+        },
+        result
+      )
     : null;
 
   const handoffData = result.valid
     ? exportHandoffJSON({
         moduleName: 'Mô-đun 11: Cột BTCT Nén lệch tâm xiên Bresler',
         standard: result.standardRef,
-        inputs: { b, h, a, L, concrete, rebar, Ned, Medx, Medy, rebarDia, rebarCount },
+        inputs: {
+          b,
+          h,
+          a,
+          L,
+          concrete,
+          rebar,
+          Ned,
+          Medx,
+          Medy,
+          rebarDia,
+          rebarCount,
+          selected_rebar: `${rebarCount}Ø${rebarDia}`,
+        },
         outputs: {
           AsTot_mm2: result.AsTot,
           mu_percent: result.mu,
@@ -71,6 +119,7 @@ export default function CalcRCColumn() {
           NRdx_kN: result.NRdx,
           NRdy_kN: result.NRdy,
           NRdBresler_kN: result.NRdBresler,
+          minClear_mm: result.columnClearance ? result.columnClearance.minClear : null,
           utilization_eta: result.utilization.eta,
         },
         utilization: result.utilization,
@@ -85,10 +134,10 @@ export default function CalcRCColumn() {
           <Building2 size={22} color="var(--accent-primary)" />
           <div>
             <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
-              Mô-đun 2.3: Thiết kế Cột BTCT Nén Lệch tâm xiên (Công thức tương tác Bresler)
+              Mô-đun 2.3: Thiết kế Cột BTCT Nén Lệch tâm xiên (Công thức Bresler &amp; TCVN 5574:2018)
             </h3>
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-              Trích dẫn pháp lý: <strong>TCVN 5574:2018 — Mục 8.1.4, Phụ lục E (Uốn dọc η) &amp; Xấp xỉ tương tác Bresler</strong>
+              Trích dẫn pháp lý: <strong>TCVN 5574:2018 — Mục 8.1.4, Phụ lục E, Điều 10.3.1 (khoảng hở &ge; 50mm) &amp; Xấp xỉ Bresler</strong>
             </span>
           </div>
         </div>
@@ -177,14 +226,18 @@ export default function CalcRCColumn() {
             <div>
               <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: '3px' }}>Đường kính Ø (mm):</label>
               <select value={rebarDia} onChange={(e) => setRebarDia(Number(e.target.value))} style={{ width: '100%', padding: '5px 8px', background: 'var(--bg-input, #1e293b)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px' }}>
-                {[14, 16, 18, 20, 22, 25, 28, 32].map((d) => (
+                {COMMERCIAL_COLUMN_REBAR_DIAMETERS.map((d) => (
                   <option key={d} value={d}>Ø{d}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: '3px' }}>Số thanh n:</label>
-              <input type="number" step="2" min="4" value={rebarCount} onChange={(e) => setRebarCount(Number(e.target.value))} style={{ width: '100%', padding: '5px 8px', background: 'var(--bg-input, #1e293b)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+              <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: '3px' }}>Số thanh n (chẵn &ge; 4):</label>
+              <select value={rebarCount} onChange={(e) => setRebarCount(Number(e.target.value))} style={{ width: '100%', padding: '5px 8px', background: 'var(--bg-input, #1e293b)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px' }}>
+                {[4, 6, 8, 10, 12, 14, 16].map((n) => (
+                  <option key={n} value={n}>{n} thanh</option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
@@ -211,6 +264,7 @@ export default function CalcRCColumn() {
 
       {result.valid ? (
         <div style={{ padding: '16px', background: 'var(--bg-card-secondary, rgba(255,255,255,0.02))', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+          {/* STATS TILES */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '12px', marginBottom: '14px' }}>
             <div style={{ padding: '12px', background: 'var(--bg-primary)', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Sức kháng Bresler N_Rd</div>
@@ -234,7 +288,7 @@ export default function CalcRCColumn() {
 
             <div style={{ padding: '12px', background: 'var(--bg-primary)', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Hàm lượng thép μ</div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: result.mu >= 0.1 && result.mu <= 3.0 ? 'var(--accent-green)' : 'var(--accent-red)', marginTop: '4px' }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: result.mu >= 0.8 && result.mu <= 2.5 ? 'var(--accent-green)' : 'var(--text-warning, #f97316)', marginTop: '4px' }}>
                 {result.mu}%
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
@@ -243,15 +297,77 @@ export default function CalcRCColumn() {
             </div>
 
             <div style={{ padding: '12px', background: 'var(--bg-primary)', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Sức kháng đơn phương</div>
-              <div style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px' }}>
-                X: {result.NRdx} kN | Y: {result.NRdy} kN
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Khoảng hở cốt thép Điều 10.3.1</div>
+              <div style={{ fontSize: '1.15rem', fontWeight: 700, color: result.columnClearance?.clearOk ? 'var(--accent-green)' : '#ef4444', marginTop: '4px' }}>
+                s<sub>min</sub> = {result.columnClearance?.minClear} mm
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                Nén đúng tâm: {result.NRd0} kN
+                {result.columnClearance?.clearOk ? 'ĐẠT (≥ 50mm đổ đứng)' : 'QUÁ CHẬT (< 50mm)'}
               </div>
             </div>
           </div>
+
+          {/* GỢI Ý CHỌN THÉP CỘT THÔNG MINH */}
+          <div style={{ marginBottom: '14px', padding: '12px 14px', background: 'rgba(59, 130, 246, 0.04)', borderRadius: '8px', border: '1px solid var(--accent-primary)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-primary)', fontWeight: 700, fontSize: '0.88rem', marginBottom: '8px' }}>
+              <Sparkles size={16} />
+              <span>Gợi ý phương án thép cột tối ưu (bấm để áp dụng):</span>
+            </div>
+            {result.columnSuggestions && result.columnSuggestions.length > 0 ? (
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {result.columnSuggestions.map((sug, i) => {
+                  const isActive = rebarCount === sug.count && rebarDia === sug.dia;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => { setRebarCount(sug.count); setRebarDia(sug.dia); }}
+                      className="spec-badge"
+                      style={{
+                        cursor: 'pointer',
+                        padding: '6px 12px',
+                        fontSize: '0.82rem',
+                        background: isActive ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.06)',
+                        color: isActive ? '#fff' : 'var(--text-primary)',
+                        borderColor: 'var(--accent-primary)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <strong>{sug.label}</strong>
+                      <span>(μ = {sug.mu}%, η = {sug.eta})</span>
+                      <span style={{ fontSize: '0.72rem', opacity: 0.85 }}>[{sug.tag}]</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                Chưa tìm thấy phương án tối ưu chuẩn trong dải đường kính thông thường. Hãy tăng kích thước tiết diện b x h.
+              </div>
+            )}
+          </div>
+
+          {/* NHẬN XÉT KỸ THUẬT & KHẢ NĂNG THI CÔNG CỘT */}
+          {result.remarks && result.remarks.length > 0 && (
+            <div style={{ marginBottom: '14px', padding: '12px 14px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid #10b981' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.86rem', color: 'var(--text-success)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <CheckCircle size={16} />
+                <span>Nhận xét Kỹ thuật &amp; Cấu tạo Cốt thép Cột (TCVN 5574:2018):</span>
+              </div>
+              <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '0.82rem', lineHeight: 1.55, color: 'var(--text-secondary)' }}>
+                {result.remarks.map((rem, idx) => (
+                  <li key={idx}>{rem}</li>
+                ))}
+                {result.columnClearance && (
+                  <li>
+                    Phân bố thép: 4 thanh góc Ø{rebarDia} + cạnh b ({result.columnClearance.nb} thanh, s<sub>b</sub> = {result.columnClearance.sB} mm) + cạnh h ({result.columnClearance.nh} thanh, s<sub>h</sub> = {result.columnClearance.sH} mm). Khoảng cách lớn nhất giữa các thanh cốt thép dọc ≤ 400 mm theo Điều 10.3.1.
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
 
           <div style={{ fontSize: '0.82rem', borderTop: '1px solid var(--border-color)', paddingTop: '12px' }}>
             <div style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>
@@ -271,8 +387,8 @@ export default function CalcRCColumn() {
         </div>
       )}
 
-      {phuLucData && <PhuLucCalculationModal isOpen={isPhuLucOpen} onClose={() => setIsPhuLucOpen(false)} data={phuLucData} />}
-      {handoffData && <HandoffModal isOpen={isHandoffOpen} onClose={() => setIsHandoffOpen(false)} handoffData={handoffData} />}
+      {phuLucData && <PhuLucCalculationModal isOpen={isPhuLucOpen} onClose={() => setIsPhuLucOpen(false)} phuLucData={phuLucData} />}
+      {handoffData && <HandoffModal isOpen={isHandoffOpen} onClose={() => setIsHandoffOpen(false)} data={handoffData} />}
     </div>
   );
 }

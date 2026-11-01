@@ -7,10 +7,14 @@ import {
   AlertTriangle,
   Bot,
   Lightbulb,
+  CheckCircle,
+  Sparkles,
+  Layers,
 } from 'lucide-react';
 import {
   CONCRETE_GRADES_TCVN5574,
   REBAR_GRADES_TCVN5574,
+  COMMERCIAL_BEAM_REBAR_DIAMETERS,
   calculateRCBeamAdvanced,
   exportHandoffJSON,
 } from '../../services/calculatorEngines';
@@ -28,17 +32,38 @@ export default function CalcRCBeamAdvanced() {
   const [concrete, setConcrete] = useState('B25');
   const [rebar, setRebar] = useState('CB400V');
   const [stirrupRebar, setStirrupRebar] = useState('CB240T');
-  const [stirrupDia, setStirrupDia] = useState('');
+  const [stirrupDia, setStirrupDia] = useState('8');
   const [stirrupLegs, setStirrupLegs] = useState('2');
-  const [stirrupSpacing, setStirrupSpacing] = useState('');
+  const [stirrupSpacing, setStirrupSpacing] = useState('150');
+
+  // Thép dọc thực tế lựa chọn (kéo & nén)
+  const [tensionCount, setTensionCount] = useState(5);
+  const [tensionDia, setTensionDia] = useState(25);
+  const [compCount, setCompCount] = useState(2);
+  const [compDia, setCompDia] = useState(18);
+
   const [copied, setCopied] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [isHandoffOpen, setIsHandoffOpen] = useState(false);
   const [isPhuLucOpen, setIsPhuLucOpen] = useState(false);
 
   const result = calculateRCBeamAdvanced({
-    b, h, a, aPrime, M, V, concrete, rebar, stirrupRebar,
-    stirrupDia, stirrupLegs, stirrupSpacing,
+    b,
+    h,
+    a,
+    aPrime,
+    M,
+    V,
+    concrete,
+    rebar,
+    stirrupRebar,
+    stirrupDia,
+    stirrupLegs,
+    stirrupSpacing,
+    tensionCount,
+    tensionDia,
+    compCount,
+    compDia,
   });
 
   const handleCopy = () => {
@@ -48,13 +73,19 @@ export default function CalcRCBeamAdvanced() {
       `- Tiết diện: b×h = ${b}×${h} mm (a = ${a}, a' = ${aPrime})`,
       `- Nội lực: M = ${M} kNm, V = ${V} kN`,
       `- Trạng thái: ${result.isDoubleLayer ? 'CỐT KÉP (As & As\')' : 'Cốt đơn (As)'}`,
-      `- A_s = ${result.AsDesignMm2} mm²${result.isDoubleLayer ? `, A_s' = ${result.AsPrimeRequiredMm2} mm²` : ''} (x = ${result.x} mm)`,
+      `- A_s,req = ${result.AsDesignMm2} mm²${result.isDoubleLayer ? `, A_s',req = ${result.AsPrimeRequiredMm2} mm²` : ''} (x = ${result.x} mm)`,
+      result.providedTension
+        ? `- Thép kéo chọn: ${result.providedTension.label} (${result.providedTension.AsProvCm2} cm², chênh ${result.providedTension.deltaPct > 0 ? '+' : ''}${result.providedTension.deltaPct}%) | s_clear = ${result.providedTension.sClear} mm`
+        : '',
+      result.isDoubleLayer && result.providedComp
+        ? `- Thép nén chọn: ${result.providedComp.label} (${result.providedComp.AsProvCm2} cm², chênh ${result.providedComp.deltaPct > 0 ? '+' : ''}${result.providedComp.deltaPct}%) | s_clear = ${result.providedComp.sClear} mm`
+        : '',
       result.VRd !== null
-        ? `- Khả năng chịu cắt: V_Rd = ${result.VRd} kN (V_Rd,c = ${result.VRdc}, V_Rd,s = ${result.VRds})`
+        ? `- Khả năng chịu cắt: V_Rd = ${result.VRd} kN (V_Rd,c = ${result.VRdc}, V_Rd,s = ${result.VRds}) với đai Ø${stirrupDia}a${stirrupSpacing} (${stirrupLegs} nhánh)`
         : `- Khả năng chịu cắt: CHƯA KẾT LUẬN (thiếu thông số cốt đai; q_sw yêu cầu ≥ ${result.qSwReq} N/mm)`,
       `- η tổng hợp = ${result.utilization.eta.toFixed(3)} (${result.utilization.icon} ${result.utilization.label})`,
       ...result.steps,
-    ].join('\n');
+    ].filter(Boolean).join('\n');
     try {
       navigator.clipboard.writeText(text);
       setCopied(true);
@@ -67,7 +98,22 @@ export default function CalcRCBeamAdvanced() {
   const phuLucData = result.valid
     ? generatePhuLucData(
         'rcbeamadvanced',
-        { b, h, a, aPrime, M, V, concrete, rebar, stirrupRebar, stirrupDia, stirrupLegs, stirrupSpacing },
+        {
+          b,
+          h,
+          a,
+          aPrime,
+          M,
+          V,
+          concrete,
+          rebar,
+          stirrupRebar,
+          stirrupDia,
+          stirrupLegs,
+          stirrupSpacing,
+          selected_tension: result.providedTension ? result.providedTension.label : null,
+          selected_comp: result.providedComp ? result.providedComp.label : null,
+        },
         result
       )
     : null;
@@ -76,7 +122,21 @@ export default function CalcRCBeamAdvanced() {
     ? exportHandoffJSON({
         moduleName: 'Mô-đun 7: Dầm BTCT Cốt kép & Cắt cốt đai (B1 nâng cao)',
         standard: result.standardRef,
-        inputs: { b_mm: Number(b), h_mm: Number(h), a_mm: Number(a), aPrime_mm: Number(aPrime), M_kNm: Number(M), V_kN: Number(V), concrete, rebar, stirrupRebar, stirrup_dia: stirrupDia || null, stirrup_spacing: stirrupSpacing || null },
+        inputs: {
+          b_mm: Number(b),
+          h_mm: Number(h),
+          a_mm: Number(a),
+          aPrime_mm: Number(aPrime),
+          M_kNm: Number(M),
+          V_kN: Number(V),
+          concrete,
+          rebar,
+          stirrupRebar,
+          stirrup_dia: stirrupDia || null,
+          stirrup_spacing: stirrupSpacing || null,
+          selected_tension: result.providedTension ? result.providedTension.label : null,
+          selected_comp: result.providedComp ? result.providedComp.label : null,
+        },
         outputs: {
           is_double: result.isDoubleLayer,
           As_cm2: result.AsDesignCm2,
@@ -84,6 +144,8 @@ export default function CalcRCBeamAdvanced() {
           x_mm: result.x,
           xi: result.xi,
           VRd_kN: result.VRd,
+          As_tension_prov_cm2: result.providedTension ? result.providedTension.AsProvCm2 : null,
+          As_comp_prov_cm2: result.providedComp ? result.providedComp.AsProvCm2 : null,
           eta_overall: result.utilization.eta,
         },
         utilization: result.utilization,
@@ -98,15 +160,15 @@ export default function CalcRCBeamAdvanced() {
           <Building size={22} color="var(--accent-primary)" />
           <div>
             <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
-              Mô-đun 7: Dầm BTCT Toàn diện — Cốt đơn/Cốt kép + Cắt Cốt đai (<var>A<sub>s</sub>, A<sub>s</sub>' &amp; V<sub>Rd</sub></var>)
+              Mô-đun 7: Dầm BTCT Toàn diện — Cốt đơn/Cốt kép + Cắt Cốt đai (<var>A<sub>s</sub>, A<sub>s</sub>&apos; &amp; V<sub>Rd</sub></var>)
             </h3>
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-              Trích dẫn pháp lý: <strong>TCVN 5574:2018 — Điều 8.1.2 (uốn) &amp; 8.1.3 (cắt)</strong>
+              Trích dẫn pháp lý: <strong>TCVN 5574:2018 — Điều 8.1.2 (uốn), Điều 8.1.3 (cắt) &amp; Điều 10.3 (cấu tạo)</strong>
             </span>
           </div>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <span className="spec-badge">Tự động chuyển cốt kép khi α_m &gt; α_R</span>
+          <span className="spec-badge">Tự động chuyển cốt kép khi &alpha;<sub>m</sub> &gt; &alpha;<sub>R</sub></span>
           <button
             type="button"
             className="calc-action-btn phuluc-btn"
@@ -131,10 +193,10 @@ export default function CalcRCBeamAdvanced() {
             <input type="number" min="150" max="4000" value={h} onChange={(e) => setH(e.target.value)} className="calc-input" />
           </div>
           <div className="calc-field">
-            <label>Lớp bảo vệ a / a' (mm)</label>
+            <label>Lớp bảo vệ a / a&apos; (mm)</label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <input type="number" min="15" value={a} onChange={(e) => setA(e.target.value)} className="calc-input" />
-              <input type="number" min="15" value={aPrime} onChange={(e) => setAPrime(e.target.value)} className="calc-input" />
+              <input type="number" min="15" value={a} onChange={(e) => setA(e.target.value)} className="calc-input" placeholder="a (kéo)" />
+              <input type="number" min="15" value={aPrime} onChange={(e) => setAPrime(e.target.value)} className="calc-input" placeholder="a' (nén)" />
             </div>
           </div>
           <div className="calc-field">
@@ -160,7 +222,7 @@ export default function CalcRCBeamAdvanced() {
             </div>
           </div>
           <div className="calc-field">
-            <label>Cốt đai (bỏ trống = chưa nhập, không kết luận cắt)</label>
+            <label>Cốt đai (TCVN 5574:2018 Điều 8.1.3 &amp; 10.3.2)</label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.6fr 1fr', gap: '8px' }}>
               <select value={stirrupRebar} onChange={(e) => setStirrupRebar(e.target.value)} className="calc-select">
                 {Object.values(REBAR_GRADES_TCVN5574).map((r) => (
@@ -169,7 +231,7 @@ export default function CalcRCBeamAdvanced() {
               </select>
               <input type="number" min="4" max="25" placeholder="Ø (mm)" value={stirrupDia} onChange={(e) => setStirrupDia(e.target.value)} className="calc-input" />
               <div style={{ display: 'grid', gridTemplateColumns: '0.6fr 1fr', gap: '8px' }}>
-                <input type="number" min="1" max="4" value={stirrupLegs} onChange={(e) => setStirrupLegs(e.target.value)} className="calc-input" title="Số nhánh" />
+                <input type="number" min="1" max="4" value={stirrupLegs} onChange={(e) => setStirrupLegs(e.target.value)} className="calc-input" title="Số nhánh đai (1-4)" />
                 <input type="number" min="50" max="300" placeholder="Bước s (mm)" value={stirrupSpacing} onChange={(e) => setStirrupSpacing(e.target.value)} className="calc-input" />
               </div>
             </div>
@@ -194,7 +256,7 @@ export default function CalcRCBeamAdvanced() {
             </div>
           ))}
 
-          {/* TẦNG 2: KẾT QUẢ */}
+          {/* TẦNG 2: KẾT QUẢ THUẦN */}
           <div className="calc-tier">
             <div className="calc-tier-title">2. Tầng Tính toán Thuần (Deterministic Math Engine)</div>
             <div className="calc-results-grid">
@@ -204,7 +266,7 @@ export default function CalcRCBeamAdvanced() {
                   {result.isDoubleLayer ? 'CỐT KÉP (As & As\')' : 'Cốt đơn (As)'}
                 </strong>
                 <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                  α_m = {result.alphaM} {result.isDoubleLayer ? '> α_R = ' : '≤ α_R = '}{result.alphaR}
+                  &alpha;<sub>m</sub> = {result.alphaM} {result.isDoubleLayer ? '> α_R = ' : '≤ α_R = '}{result.alphaR}
                 </small>
               </div>
               <div className="calc-metric-box highlight">
@@ -228,8 +290,163 @@ export default function CalcRCBeamAdvanced() {
               <div className="calc-metric-box">
                 <span className="calc-metric-label">Khả năng chịu uốn M<sub>Rd</sub></span>
                 <strong className="calc-metric-value">{result.MRd} <small>kNm</small></strong>
-                <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>ξ = {result.xi} (ξ_R = {result.xiR})</small>
+                <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>&xi; = {result.xi} (&xi;<sub>R</sub> = {result.xiR})</small>
               </div>
+            </div>
+          </div>
+
+          {/* TẦNG 2.5: BỘ CHỌN CỐT THÉP & ĐÁNH GIÁ THỰC TẾ */}
+          <div className="calc-tier" style={{ border: '1px solid var(--accent-primary)', background: 'rgba(59, 130, 246, 0.04)' }}>
+            <div className="calc-tier-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-primary)' }}>
+              <Sparkles size={17} />
+              <span>Gợi ý &amp; Chọn Cốt Thép Dọc &amp; Cốt Đai Thực Tế (Kiểm tra Cấu tạo Điều 10.3 TCVN 5574:2018)</span>
+            </div>
+
+            {/* PHẦN 1: THÉP DỌC CHỊU KÉO As */}
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  1. Cốt thép dọc chịu kéo <var>A<sub>s</sub></var> (Yêu cầu: {result.AsDesignMm2} mm² / {result.AsDesignCm2} cm²)
+                </span>
+                {result.providedTension && (
+                  <span
+                    className="spec-badge"
+                    style={{
+                      color: result.providedTension.clearanceOk ? '#10b981' : '#ef4444',
+                      borderColor: result.providedTension.clearanceOk ? '#10b981' : '#ef4444',
+                    }}
+                  >
+                    {result.providedTension.label} ({result.providedTension.AsProvCm2} cm², {result.providedTension.deltaPct > 0 ? `+${result.providedTension.deltaPct}%` : `${result.providedTension.deltaPct}%`}) — s<sub>clear</sub> = {result.providedTension.sClear} mm
+                  </span>
+                )}
+              </div>
+
+              {/* Gợi ý thép kéo */}
+              {result.tensionSuggestions && result.tensionSuggestions.length > 0 && (
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                  {result.tensionSuggestions.map((sug, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setTensionCount(sug.count);
+                        setTensionDia(sug.dia);
+                      }}
+                      className="spec-badge"
+                      style={{
+                        cursor: 'pointer',
+                        padding: '4px 10px',
+                        fontSize: '0.8rem',
+                        background: tensionCount === sug.count && tensionDia === sug.dia ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.05)',
+                        color: tensionCount === sug.count && tensionDia === sug.dia ? '#fff' : 'var(--text-primary)',
+                      }}
+                    >
+                      <strong>{sug.label}</strong> ({sug.areaCm2} cm², {sug.deltaPct > 0 ? `+${sug.deltaPct}%` : `${sug.deltaPct}%`})
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Bộ chọn thép kéo */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '10px', maxWidth: '380px' }}>
+                <select value={tensionCount} onChange={(e) => setTensionCount(Number(e.target.value))} className="calc-select">
+                  {[2, 3, 4, 5, 6, 7, 8].map((n) => (<option key={n} value={n}>{n} thanh</option>))}
+                </select>
+                <select value={tensionDia} onChange={(e) => setTensionDia(Number(e.target.value))} className="calc-select">
+                  {COMMERCIAL_BEAM_REBAR_DIAMETERS.map((d) => (<option key={d} value={d}>&Phi;{d} (Thanh A₁ = {((Math.PI * d * d) / 4).toFixed(0)} mm²)</option>))}
+                </select>
+              </div>
+            </div>
+
+            {/* PHẦN 2: THÉP DỌC CHỊU NÉN As' (NẾU CỐT KÉP) */}
+            {result.isDoubleLayer && (
+              <div style={{ marginBottom: '16px', paddingTop: '12px', borderTop: '1px dashed var(--border-color)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                    2. Cốt thép dọc chịu nén <var>A&apos;<sub>s</sub></var> (Yêu cầu: {result.AsPrimeRequiredMm2} mm² / {result.AsPrimeCm2} cm²)
+                  </span>
+                  {result.providedComp && (
+                    <span
+                      className="spec-badge"
+                      style={{
+                        color: result.providedComp.clearanceOk ? '#10b981' : '#ef4444',
+                        borderColor: result.providedComp.clearanceOk ? '#10b981' : '#ef4444',
+                      }}
+                    >
+                      {result.providedComp.label} ({result.providedComp.AsProvCm2} cm², {result.providedComp.deltaPct > 0 ? `+${result.providedComp.deltaPct}%` : `${result.providedComp.deltaPct}%`}) — s<sub>clear</sub> = {result.providedComp.sClear} mm
+                    </span>
+                  )}
+                </div>
+
+                {/* Gợi ý thép nén */}
+                {result.compSuggestions && result.compSuggestions.length > 0 && (
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                    {result.compSuggestions.map((sug, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setCompCount(sug.count);
+                          setCompDia(sug.dia);
+                        }}
+                        className="spec-badge"
+                        style={{
+                          cursor: 'pointer',
+                          padding: '4px 10px',
+                          fontSize: '0.8rem',
+                          background: compCount === sug.count && compDia === sug.dia ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.05)',
+                          color: compCount === sug.count && compDia === sug.dia ? '#fff' : 'var(--text-primary)',
+                        }}
+                      >
+                        <strong>{sug.label}</strong> ({sug.areaCm2} cm², {sug.deltaPct > 0 ? `+${sug.deltaPct}%` : `${sug.deltaPct}%`})
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Bộ chọn thép nén */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '10px', maxWidth: '380px' }}>
+                  <select value={compCount} onChange={(e) => setCompCount(Number(e.target.value))} className="calc-select">
+                    {[2, 3, 4, 5, 6].map((n) => (<option key={n} value={n}>{n} thanh</option>))}
+                  </select>
+                  <select value={compDia} onChange={(e) => setCompDia(Number(e.target.value))} className="calc-select">
+                    {COMMERCIAL_BEAM_REBAR_DIAMETERS.map((d) => (<option key={d} value={d}>&Phi;{d} (Thanh A₁ = {((Math.PI * d * d) / 4).toFixed(0)} mm²)</option>))}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {/* NHẬN XÉT CẤU TẠO THÉP TOÀN DIỆN */}
+            <div
+              style={{
+                marginTop: '12px',
+                padding: '12px 14px',
+                borderRadius: '8px',
+                background: 'rgba(16, 185, 129, 0.08)',
+                border: '1px solid #10b981',
+              }}
+            >
+              <div style={{ fontWeight: 700, fontSize: '0.88rem', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <CheckCircle size={16} color="#10b981" />
+                <span>Đánh giá Chi tiết Cấu tạo &amp; Thi công Cốt thép (TCVN 5574:2018):</span>
+              </div>
+              <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '0.84rem', lineHeight: 1.5, color: 'var(--text-secondary)' }}>
+                {result.providedTension && (
+                  <li>
+                    Thép kéo lớp dưới: {result.providedTension.label} (As = {result.providedTension.AsProvCm2} cm²), khoảng hở thông thủy s<sub>clear</sub> = {result.providedTension.sClear} mm {result.providedTension.clearanceOk ? '≥ [25 mm] đạt chuẩn Điều 10.3.1 (thuận tiện đầm dùi bê tông).' : '< [25 mm] QUÁ CHẬT, nguy cơ rỗ bê tông đáy dầm!'}
+                  </li>
+                )}
+                {result.isDoubleLayer && result.providedComp && (
+                  <li>
+                    Thép nén lớp trên: {result.providedComp.label} (As&apos; = {result.providedComp.AsProvCm2} cm²), khoảng hở s<sub>clear</sub> = {result.providedComp.sClear} mm {result.providedComp.clearanceOk ? '≥ [30 mm] đạt chuẩn Điều 10.3.1.' : '< [30 mm] quá chật!'}
+                  </li>
+                )}
+                {result.VRd !== null && (
+                  <li>
+                    Cốt đai đã chọn: &Phi;{stirrupDia}a{stirrupSpacing} ({stirrupLegs} nhánh) đạt sức kháng cắt V<sub>Rd</sub> = {result.VRd} kN ≥ V = {V} kN (bước đai s = {stirrupSpacing} mm ≤ [s<sub>max</sub> = {Math.min(h / 2, 300)} mm] theo Điều 10.3.2.1).
+                  </li>
+                )}
+              </ul>
             </div>
           </div>
 
@@ -266,6 +483,15 @@ export default function CalcRCBeamAdvanced() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
               <div className="calc-tier-title" style={{ margin: 0 }}>4. Tầng Trình bày Bước tính &amp; Xuất Hồ sơ</div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="calc-action-btn phuluc-btn"
+                  onClick={() => setIsPhuLucOpen(true)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <FileText size={15} />
+                  <span>📑 Xem Phụ lục Kỹ thuật (SKILL_PHULUC)</span>
+                </button>
                 <button type="button" className="calc-action-btn" onClick={() => setIsHandoffOpen(true)}>
                   <Bot size={15} /> <span>Xuất Handoff JSON</span>
                 </button>
@@ -273,7 +499,7 @@ export default function CalcRCBeamAdvanced() {
                   {copied ? <Check size={15} /> : <Copy size={15} />} <span>{copied ? 'Đã sao chép!' : 'Sao chép kết quả'}</span>
                 </button>
                 <button type="button" className="calc-action-btn" onClick={() => setShowSummary(!showSummary)}>
-                  <AlertTriangle size={15} /> <span>{showSummary ? 'Ẩn bảng tổng hợp' : 'Bảng tổng hợp'}</span>
+                  <Layers size={15} /> <span>{showSummary ? 'Ẩn bảng tổng hợp' : 'Bảng tổng hợp'}</span>
                 </button>
               </div>
             </div>
@@ -298,6 +524,16 @@ export default function CalcRCBeamAdvanced() {
                         <td style={{ textAlign: 'center', fontWeight: 700 }}>{result.etaFlex}</td>
                         <td style={{ textAlign: 'center', color: result.etaFlex <= 1 ? '#10b981' : '#ef4444', fontWeight: 700 }}>{result.etaFlex <= 1 ? 'ĐẠT' : 'KHÔNG ĐẠT'}</td>
                       </tr>
+                      {result.providedTension && (
+                        <tr style={{ background: 'rgba(59, 130, 246, 0.08)' }}>
+                          <td>Thép kéo chọn thực tế</td>
+                          <td style={{ textAlign: 'center', fontStyle: 'italic' }}>A_s,prov</td>
+                          <td style={{ textAlign: 'right', fontWeight: 600 }}>{result.providedTension.label} ({result.providedTension.AsProvCm2} cm²)</td>
+                          <td style={{ textAlign: 'right' }}>≥ {result.AsDesignCm2} cm²</td>
+                          <td style={{ textAlign: 'center', fontWeight: 700 }}>{result.providedTension.deltaPct > 0 ? `+${result.providedTension.deltaPct}%` : `${result.providedTension.deltaPct}%`}</td>
+                          <td style={{ textAlign: 'center', color: result.providedTension.status === 'PASS' ? '#10b981' : '#ef4444', fontWeight: 700 }}>{result.providedTension.status === 'PASS' ? 'ĐẠT' : 'CẢNH BÁO'}</td>
+                        </tr>
+                      )}
                       <tr>
                         <td>Cắt (nếu có cốt đai)</td>
                         <td style={{ textAlign: 'center', fontStyle: 'italic' }}>V/V_Rd</td>

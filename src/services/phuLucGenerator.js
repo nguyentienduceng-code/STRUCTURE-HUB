@@ -98,6 +98,11 @@ ${results.steps.map((s, i) => `#### 2.${i + 1} Bước ${i + 1}\n> ${s}\n`).join
 |:---:|---|:---:|---:|---:|:---:|:---:|
 ${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} | ${r.limitVal} | ${r.eta} | **${r.status}** |`).join('\n')}
 
+${results.providedTension ? `
+#### 3.1 Bố trí Cốt thép Thực tế Lựa chọn:
+- Thép dọc chịu kéo As: **${results.providedTension.label}** (${results.providedTension.AsProvCm2} cm², chênh ${results.providedTension.deltaPct > 0 ? '+' : ''}${results.providedTension.deltaPct}%) — Khoảng hở s_clear = ${results.providedTension.sClear} mm (≥ 25mm -> ${results.providedTension.clearanceOk ? 'ĐẠT' : 'KHÔNG ĐẠT'}).
+${results.isDoubleLayer && results.providedComp ? `- Thép dọc chịu nén As': **${results.providedComp.label}** (${results.providedComp.AsProvCm2} cm², chênh ${results.providedComp.deltaPct > 0 ? '+' : ''}${results.providedComp.deltaPct}%) — Khoảng hở s_clear = ${results.providedComp.sClear} mm (≥ 30mm -> ${results.providedComp.clearanceOk ? 'ĐẠT' : 'KHÔNG ĐẠT'}).` : ''}
+` : ''}
 ---
 *Ghi chú: Hồ sơ do Trợ lý AI lập tự động chuẩn SKILL_PHULUC. Cần kỹ sư có CCHN kiểm tra trước khi ký đóng dấu.*
 `;
@@ -213,7 +218,14 @@ ${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} |
 
 #### 3.1 Khuyến nghị chọn cốt thép thực tế:
 - Diện tích thép yêu cầu tính toán: **A_s = ${results.AsDesignCm2} cm² (${results.AsDesignMm2} mm²)**.
-- Gợi ý bố trí: ${results.rebarSuggestions && results.rebarSuggestions.length > 0 ? results.rebarSuggestions.map((s) => `${s.label} (${s.totalAreaCm2} cm²)`).join('; ') : 'Tùy chọn kỹ sư'}.
+- Gợi ý bố trí: ${results.suggestedRebars && results.suggestedRebars.length > 0 ? results.suggestedRebars.map((s) => `${s.label} (${s.areaCm2} cm²)`).join('; ') : results.rebarSuggestions && results.rebarSuggestions.length > 0 ? results.rebarSuggestions.map((s) => `${s.label} (${s.totalAreaCm2} cm²)`).join('; ') : 'Tùy chọn kỹ sư'}.
+${results.providedRebar ? `
+#### 3.2 Đánh giá Cốt thép Thực tế Lựa chọn:
+- Phương án bố trí: **${results.providedRebar.label}** (A_s,prov = ${results.providedRebar.AsProvCm2} cm² [${results.providedRebar.AsProvMm2} mm²]).
+- Tỷ lệ chênh lệch: **${results.providedRebar.deltaPct > 0 ? '+' : ''}${results.providedRebar.deltaPct}%** (${results.providedRebar.deltaPct <= 15 ? '🟢 Tối ưu kinh tế' : 'Dư khả năng chịu lực'}).
+- Khoảng hở tịnh: **s_clear = ${results.providedRebar.sClear} mm** (Yêu cầu [s_min = ${results.providedRebar.sMin} mm] theo Điều 10.3.1 TCVN 5574:2018 -> **${results.providedRebar.clearanceOk ? 'ĐẠT' : 'KHÔNG ĐẠT'}**).
+- Sức chịu uốn thực tế: **M_Rd,prov = ${results.providedRebar.MRdProv} kNm** (η_prov = ${results.providedRebar.etaProv}).
+` : ''}
 `;
 
   return { title, subtitle, standardRef, dateStr, inputTable, summaryTable, steps: results.steps, utilization: results.utilization, markdown };
@@ -488,6 +500,11 @@ ${results.steps.map((s, i) => `#### 2.${i + 1} Bước ${i + 1}\n> ${s}\n`).join
 |:---:|---|:---:|---:|---:|:---:|:---:|
 ${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} | ${r.limitVal} | ${r.eta} | **${r.status}** |`).join('\n')}
 
+${results.providedTension ? `
+#### 3.1 Bố trí Cốt thép Thực tế Lựa chọn:
+- Thép dọc chịu kéo As: **${results.providedTension.label}** (${results.providedTension.AsProvCm2} cm², chênh ${results.providedTension.deltaPct > 0 ? '+' : ''}${results.providedTension.deltaPct}%) — Khoảng hở s_clear = ${results.providedTension.sClear} mm (≥ 25mm -> ${results.providedTension.clearanceOk ? 'ĐẠT' : 'KHÔNG ĐẠT'}).
+${results.isDoubleLayer && results.providedComp ? `- Thép dọc chịu nén As': **${results.providedComp.label}** (${results.providedComp.AsProvCm2} cm², chênh ${results.providedComp.deltaPct > 0 ? '+' : ''}${results.providedComp.deltaPct}%) — Khoảng hở s_clear = ${results.providedComp.sClear} mm (≥ 30mm -> ${results.providedComp.clearanceOk ? 'ĐẠT' : 'KHÔNG ĐẠT'}).` : ''}
+` : ''}
 ---
 *Ghi chú: Hồ sơ do Trợ lý AI lập tự động chuẩn SKILL_PHULUC. Cần kỹ sư có CCHN kiểm tra trước khi ký đóng dấu.*
 `;
@@ -643,6 +660,11 @@ ${results.steps.map((s, i) => `#### 2.${i + 1} Bước ${i + 1}\n> ${s}\n`).join
 |:---:|---|:---:|---:|---:|:---:|:---:|
 ${summaryTable.map((r) => `| ${r.stt} | ${r.item} | ${r.symbol} | ${r.calcVal} | ${r.limitVal} | ${r.eta} | **${r.status}** |`).join('\n')}
 
+${results.providedTension ? `
+#### 3.1 Bố trí Cốt thép Thực tế Lựa chọn:
+- Thép dọc chịu kéo As: **${results.providedTension.label}** (${results.providedTension.AsProvCm2} cm², chênh ${results.providedTension.deltaPct > 0 ? '+' : ''}${results.providedTension.deltaPct}%) — Khoảng hở s_clear = ${results.providedTension.sClear} mm (≥ 25mm -> ${results.providedTension.clearanceOk ? 'ĐẠT' : 'KHÔNG ĐẠT'}).
+${results.isDoubleLayer && results.providedComp ? `- Thép dọc chịu nén As': **${results.providedComp.label}** (${results.providedComp.AsProvCm2} cm², chênh ${results.providedComp.deltaPct > 0 ? '+' : ''}${results.providedComp.deltaPct}%) — Khoảng hở s_clear = ${results.providedComp.sClear} mm (≥ 30mm -> ${results.providedComp.clearanceOk ? 'ĐẠT' : 'KHÔNG ĐẠT'}).` : ''}
+` : ''}
 ---
 *Ghi chú: Hồ sơ do Trợ lý AI lập tự động chuẩn SKILL_PHULUC. Cần kỹ sư có CCHN kiểm tra trước khi ký đóng dấu.*
 `;
